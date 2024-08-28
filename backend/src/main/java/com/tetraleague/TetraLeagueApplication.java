@@ -1,13 +1,13 @@
-package com.CS203proj;
+package com.tetraleague;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Cs203projApplication {
+public class TetraLeagueApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Cs203projApplication.class, args);
+		SpringApplication.run(TetraLeagueApplication.class, args);
 	}
 
 }

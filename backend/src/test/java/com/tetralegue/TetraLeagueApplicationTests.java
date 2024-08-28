@@ -1,10 +1,10 @@
-package com.CS203proj;
+package com.tetraleague;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class Cs203projApplicationTests {
+class TetraLeagueApplicationTests {
 
 	@Test
 	void contextLoads() {

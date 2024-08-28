@@ -11,8 +11,8 @@
 	<groupId>com</groupId>
 	<artifactId>CS203proj</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>CS203proj</name>
-	<description>CS203 Tournament Management System</description>
+	<name>Tetra League</name>
+	<description>Tetris Tournament Management System</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -37,6 +37,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.cdimascio</groupId>
+			<artifactId>dotenv-java</artifactId>
+			<version>2.2.0</version>
 		</dependency>
 
 		<dependency>

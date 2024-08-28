@@ -1,4 +1,4 @@
-package com.cs203proj;
+package com.CS203proj;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

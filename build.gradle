@@ -29,6 +29,14 @@ ext {
 	set('springCloudVersion', "2023.0.3")
 }
 
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-freemarker'

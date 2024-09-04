@@ -13,10 +13,10 @@ const LandingPage = () => {
         </header>
 
         <div className="flex flex-col md:flex-row gap-6 mb-12">
-          <Link to="/register" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
+          <Link to="/login" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
             Login
           </Link>
-          <Link to="/login" className="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
+          <Link to="/register" className="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
             Register Now
           </Link>
         </div>

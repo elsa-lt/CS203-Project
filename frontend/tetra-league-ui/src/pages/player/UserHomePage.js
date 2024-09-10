@@ -33,21 +33,25 @@ const UserHomePage = () => {
       </div>
 
       <div className="w-1/2 p-8 relative">
+      <div className="text-center ">
+          <img src="/Headers/Current Match Header.png" alt="Current Match Header" className="mx-auto mb-10 ml-80" style={{ width: '400px' }} /> 
+        </div>
+
         <div className="flex justify-between items-center h-full">
-          <div className="flex flex-col items-center">
-            <img src="/Misc Design/Player Image 1.png" alt="Player 1" className="w-40 h-64 mb-4" />
+          <div className="flex flex-col items-center mb-72">
+            <img src="/Misc Design/Player Image 1.png" alt="Player 1" className="w-40 h-64" />
             <div className="bg-gray-800 text-white p-4 rounded-lg">
               <p className="font-bold">Player 1</p>
               <p>Score: 999</p>
             </div>
           </div>
 
-          <div className="text-center text-white text-6xl font-bold">
-            VS
+          <div className="flex flex-col items-center">
+            <img src="/Headers/VS Logo.png" alt="VS" className="w-40 h-40 mb-4 mb-24" />
           </div>
 
           <div className="flex flex-col items-center">
-            <img src="/Misc Design/Player Image 2.png" alt="Player 2" className="w-40 h-64 mb-4" />
+            <img src="/Misc Design/Player Image 2.png" alt="Player 2" className="w-40 h-64 mb-4 mr-32" />
             <div className="bg-gray-800 text-white p-4 rounded-lg">
               <p className="font-bold">Player 2</p>
               <p>Score: 999</p>

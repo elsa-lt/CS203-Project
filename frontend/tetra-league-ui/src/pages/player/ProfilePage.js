@@ -5,7 +5,7 @@ const ProfilePage = () => {
   return (
     <main
       className="flex min-h-screen items-center justify-center bg-cover bg-center p-6"
-      style={{ backgroundImage: `url('/Background/Blue Red Background.png')` }}
+      style={{ backgroundImage: `url('/Background/Yellow Background.png')` }}
     >
         <Navbar />
     </main>

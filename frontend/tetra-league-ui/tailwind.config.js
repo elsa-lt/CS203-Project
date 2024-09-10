@@ -9,6 +9,9 @@ module.exports = {
         customBlue: '#1E3A8A',
         customGreen: '#10B981',
       },
+      fontFamily: {
+        'press-start': ['"Press Start 2P"', 'system-ui'],
+      },
     },
   },
   plugins: [],

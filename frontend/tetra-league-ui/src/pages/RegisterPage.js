@@ -1,19 +1,41 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const RegisterPage = () => {
+const SignUpPage = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-      <div className="w-full max-w-sm bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">Register</h2>
+    <main
+      className="flex items-center justify-center min-h-screen bg-cover"
+      style={{ backgroundImage: `url('/Background/White Background.png')` }}
+    >
+      {/* Centered Sign-up Form */}
+      <div className="w-full max-w-md p-8 bg-white bg-opacity-60 rounded-lg shadow-lg">
+        <div className="mb-8 text-center">
+          <img
+            src="/Headers/Tetra League Logo.png"
+            alt="Tetra League"
+            className="mx-auto mb-8"
+            style={{ width: '250px' }}
+          />
+          <h1 className="text-4xl font-bold text-gray-900">Sign Up</h1>
+          <p className="text-gray-600">Join the Tetra League</p>
+        </div>
         <form>
           <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700">Email</label>
+            <label htmlFor="name" className="block text-gray-700">Name</label>
+            <input
+              id="name"
+              type="text"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              placeholder="Name"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="email" className="block text-gray-700">Email Address</label>
             <input
               id="email"
               type="email"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              placeholder="Email"
+              placeholder="Email Address"
             />
           </div>
           <div className="mb-4">
@@ -25,19 +47,29 @@ const RegisterPage = () => {
               placeholder="Password"
             />
           </div>
+          <div className="mb-4">
+            <label htmlFor="confirmPassword" className="block text-gray-700">Confirm Password</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              placeholder="Confirm Password"
+            />
+          </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+            className="w-full bg-black text-white font-semibold py-2 px-4 rounded-lg"
           >
-            Register
+            Sign Up
           </button>
         </form>
         <p className="mt-4 text-center">
-          Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Login</Link>
+          Already have an account?{' '}
+          <Link to="/login" className="text-blue-600 hover:underline">Login Here</Link>
         </p>
       </div>
-    </div>
+    </main>
   );
 };
 
-export default RegisterPage;
+export default SignUpPage;

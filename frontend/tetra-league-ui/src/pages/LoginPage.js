@@ -1,42 +1,92 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('http://localhost:8080/login', {
+        email,
+        password,
+      });
+
+      const { token, role } = response.data;
+      
+      // Save JWT token in local storage
+      localStorage.setItem('token', token);
+
+      // Redirect based on the user role
+      if (role === 'player') {
+        navigate('/home');
+      } else if (role === 'admin') {
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  };
+  
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-      <div className="w-full max-w-sm bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">Login</h2>
-        <form>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700">Email</label>
-            <input
-              id="email"
-              type="email"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              placeholder="Email"
-            />
+    <main
+      className="flex min-h-screen"
+      style={{ backgroundImage: `url('/Background/White Background.png')` }}
+    >
+      <div className="flex flex-col justify-center w-1/2 p-8 bg-white bg-opacity-60">
+        <div className="max-w-md mx-auto">
+          <div className="mb-8 text-center">
+            <img src="/Headers/Tetra League Logo.png" alt="Tetra League" className="mx-auto mb-8" style={{ width: '350px' }} />
+            <h1 className="text-4xl font-bold text-gray-900">Welcome!</h1>
+            <p className="text-gray-600">Stack your way to the top with Tetra League</p>
           </div>
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-gray-700">Password</label>
-            <input
-              id="password"
-              type="password"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              placeholder="Password"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
-          >
-            Login
-          </button>
-        </form>
-        <p className="mt-4 text-center">
-          Don't have an account? <Link to="/register" className="text-blue-600 hover:underline">Register</Link>
-        </p>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label htmlFor="email" className="block text-gray-700">Email Address</label>
+              <input
+                id="email"
+                type="email"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="password" className="block text-gray-700">Password</label>
+              <input
+                id="password"
+                type="password"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-between items-center mb-4">
+              <Link to="/forgot-password" className="text-blue-600 hover:underline">Forgot your password?</Link>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-black text-white font-semibold py-2 px-4 rounded-lg"
+            >
+              Login
+            </button>
+          </form>
+          <p className="mt-4 text-center">
+            Don’t have an Account?{' '}
+            <Link to="/register" className="text-blue-600 hover:underline">Register Here</Link>
+          </p>
+        </div>
       </div>
-    </div>
+      <div className="w-1/2 relative">
+        <img src="/Background/Blue Red Background.png" alt="Background Right" className="w-full h-full object-cover" />
+      </div>
+    </main>
   );
 };
 

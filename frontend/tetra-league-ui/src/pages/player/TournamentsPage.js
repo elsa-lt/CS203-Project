@@ -1,0 +1,17 @@
+// src/App.js or any page component
+
+import React from 'react';
+import Navbar from '../../components/UserNavbar';
+
+const TournamentsPage = () => {
+  return (
+    <main
+      className="flex min-h-screen items-center justify-center bg-cover bg-center p-6"
+      style={{ backgroundImage: `url('/Background/Blue Red Background.png')` }}
+    >
+        <Navbar />
+    </main>
+  );
+};
+
+export default TournamentsPage;

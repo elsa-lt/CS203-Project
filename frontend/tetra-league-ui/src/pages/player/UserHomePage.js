@@ -10,7 +10,7 @@ const UserHomePage = () => {
     >
       <div className="w-1/2 p-8 relative">
         <div className="text-center ">
-          <img src="/Headers/Tetra League Logo.png" alt="Tetra League Logo" className="mx-auto mb-10" style={{ width: '400px' }} />
+          <img src="/Headers/Tetra League Logo.png" alt="Tetra League Logo" className="mx-auto mb-10 mr-80" style={{ width: '425px' }} /> 
         </div>
         
         <ul className="text-white space-y-14 text-4xl ml-12">
@@ -32,7 +32,6 @@ const UserHomePage = () => {
         </ul>
       </div>
 
-      {/* Right Section: Current Match */}
       <div className="w-1/2 p-8 relative">
         <div className="flex justify-between items-center h-full">
           <div className="flex flex-col items-center">

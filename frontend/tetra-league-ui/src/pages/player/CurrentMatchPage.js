@@ -1,5 +1,3 @@
-// src/App.js or any page component
-
 import React from 'react';
 import Navbar from '../../components/UserNavbar';
 

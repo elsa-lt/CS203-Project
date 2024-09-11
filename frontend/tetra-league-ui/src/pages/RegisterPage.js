@@ -7,7 +7,6 @@ const SignUpPage = () => {
       className="flex items-center justify-center min-h-screen bg-cover"
       style={{ backgroundImage: `url('/Background/White Background.png')` }}
     >
-      {/* Centered Sign-up Form */}
       <div className="w-full max-w-md p-8 bg-white bg-opacity-60 rounded-lg shadow-lg">
         <div className="mb-8 text-center">
           <img
@@ -27,6 +26,15 @@ const SignUpPage = () => {
               type="text"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
               placeholder="Name"
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="username" className="block text-gray-700">Username</label>
+            <input
+              id="username"
+              type="text"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              placeholder="Username"
             />
           </div>
           <div className="mb-4">

@@ -1,5 +1,3 @@
-// src/components/UserNavbar.js
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -11,7 +9,7 @@ const UserNavbar = () => {
       <div className="flex items-center">
         <div className="text-white text-3xl font-bold mr-8">
           <Link to="/home">
-            <img src="/Headers/Tetra League Logo.png" alt="Logo" className="h-14" />
+            <img src="/Headers/Tetra League Logo.png" alt="Logo" className="h-16" />
           </Link>
         </div>
         <ul className="text-white flex space-x-14 text-xl p-4">

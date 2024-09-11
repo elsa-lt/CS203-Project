@@ -10,7 +10,11 @@ import LeaderboardPage from "./pages/player/LeaderboardPage";
 import MatchHistoryPage from "./pages/player/MatchHistoryPage";
 import ProfilePage from "./pages/player/ProfilePage";
 import TournamentsPage from "./pages/player/TournamentsPage";
-
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import ManageTournamentsPage from "./pages/admin/ManageTournamentsPage";
+import ManageParticipantsPage from "./pages/admin/ManageParticipantsPage";
+import ManageSchedulesPage from "./pages/admin/ManageSchedulesPage";
+import ManageResultsPage from "./pages/admin/ManageResultsPage";
 
 function App() {
   return (
@@ -24,6 +28,11 @@ function App() {
       <Route path="/match-history" element={<MatchHistoryPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/tournaments" element={<TournamentsPage />} />
+      <Route path="/dashboard" element={<AdminDashboardPage />} />
+      <Route path="/manage-tournaments" element={<ManageTournamentsPage />} />
+      <Route path="/manage-schedules" element={<ManageSchedulesPage />} />
+      <Route path="/manage-participants" element={<ManageParticipantsPage />} />
+      <Route path="/manage-results" element={<ManageResultsPage />} />
     </Routes>
   );
 }

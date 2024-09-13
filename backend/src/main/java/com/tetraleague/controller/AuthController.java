@@ -18,12 +18,10 @@ public class AuthController {
     @PostMapping("/register/user")
     public String registerUser(@RequestBody User user) {
         if ("admin".equalsIgnoreCase(user.getRole())) {
-            adminService.registerAdmin(user.getId(), user.getFirstName(), user.getLastName(),
-                                    user.getUsername(), user.getEmail(), user.getPassword());
+            adminService.registerAdmin((Admin) user);
             return "Admin registered successfully!";
         } else {
-            playerService.registerPlayer(user.getId(), user.getFirstName(), user.getLastName(),
-                                        user.getUsername(), user.getEmail(), user.getPassword());
+            playerService.registerPlayer((Player) user);
             return "Player registered successfully!";
         }
     }

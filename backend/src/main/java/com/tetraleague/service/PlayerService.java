@@ -1,6 +1,6 @@
 package com.tetraleague.service;
 
-import com.tetraleague.Player;
+import com.tetraleague.model.Player;
 import com.tetraleague.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

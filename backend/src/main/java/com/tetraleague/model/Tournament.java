@@ -1,6 +1,7 @@
-package com.tetraleague;
+package com.tetraleague.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Tournament {
     private String id;
@@ -10,6 +11,27 @@ public class Tournament {
     private int eloRange;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private List<Player> participants;
+
+    // Default constructor
+    public Tournament() {}
+
+    // Constructor to create a tournament
+    public Tournament(String id, String name, String description, int numParticipants, int eloRange, LocalDateTime startDate, LocalDateTime endDate) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.numParticipants = numParticipants;
+        this.eloRange = eloRange;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public void addParticipant(Player player) {
+        if (participants.size() < numParticipants && player.getEloRating() <= eloRange) {
+            participants.add(player);
+        }
+    }
 
     // Getters and setters
     public String getId() {
@@ -66,5 +88,13 @@ public class Tournament {
 
     public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
+    }
+
+    public List<Player> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(List<Player> participants) {
+        this.participants = participants;
     }
 }

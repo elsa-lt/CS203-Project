@@ -1,6 +1,6 @@
 package com.tetraleague.service;
 
-import com.tetraleague.Admin;
+import com.tetraleague.model.Admin;
 import com.tetraleague.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

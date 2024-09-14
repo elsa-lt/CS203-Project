@@ -1,8 +1,8 @@
 package com.tetraleague.controller;
 
-import com.tetraleague.Admin;
-import com.tetraleague.Player;
-import com.tetraleague.User;
+import com.tetraleague.model.Admin;
+import com.tetraleague.model.Player;
+import com.tetraleague.model.User;
 import com.tetraleague.service.AdminService;
 import com.tetraleague.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;

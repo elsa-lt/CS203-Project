@@ -2,15 +2,24 @@ package com.tetraleague;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "users")
+@Document(collection = "players")
 public class Player extends User {
     private int eloRating;
 
-    public Player() {}
+    // Default constructor
+    public Player() {
+        super();
+    }
 
-    public Player(String id, String firstName, String lastName, String username, String email, String password, String role, int eloRating) {
-        super(id, firstName, lastName, username, email, password, "Player");
-        this.eloRating = eloRating;
+    // Constructor for registration
+    public Player(String id, String firstName, String lastName, String username, String email, String password, String confirmPassword, int eloRating) {
+        super(id, firstName, lastName, username, email, password, confirmPassword, "player");
+        this.eloRating = 400;
+    }
+
+    // Constructor for login
+    public Player(String username, String password) {
+        super(username, password);
     }
 
     // Getters and setters

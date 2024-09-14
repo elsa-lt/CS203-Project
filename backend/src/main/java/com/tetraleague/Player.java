@@ -8,8 +8,8 @@ public class Player extends User {
 
     public Player() {}
 
-    public Player(String id, String firstName, String lastName, String username, String email, String password, int eloRating) {
-        super(id, firstName, lastName, username, email, password);
+    public Player(String id, String firstName, String lastName, String username, String email, String password, String role, int eloRating) {
+        super(id, firstName, lastName, username, email, password, "Player");
         this.eloRating = eloRating;
     }
 

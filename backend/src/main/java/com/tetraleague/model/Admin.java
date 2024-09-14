@@ -1,9 +1,5 @@
 package com.tetraleague.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document(collection = "admin")
 public class Admin extends User {
     // Default constructor
     public Admin() {

@@ -1,15 +1,13 @@
 package com.tetraleague.model;
 
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-@Document(collection = "players")
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class Player extends User {
     private int eloRating;
-
-    // Default constructor
-    public Player() {
-        super();
-    }
 
     // Constructor for registration
     public Player(String id, String firstName, String lastName, String username, String email, String password, String confirmPassword, int eloRating) {
@@ -22,7 +20,7 @@ public class Player extends User {
         super(username, password);
     }
 
-    // Getters and setters
+    // Getter and setter
     public int getEloRating() {
         return eloRating;
     }

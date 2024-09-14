@@ -16,13 +16,12 @@ public class AdminService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public String registerAdmin(String id, String firstName, String lastName, String username, String email, String password, String confirmPassword) {
-        if (!password.equals(confirmPassword)) {
+    public String registerAdmin(Admin admin, String confirmPassword) {
+        if (!admin.getPassword().equals(confirmPassword)) {
             return "Passwords do not match";
         }
-        Admin admin = new Admin(id, firstName, lastName, username, email, password, confirmPassword);
-        admin.setPassword(passwordEncoder.encode(password));
-        adminRepository.save(admin);
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        adminRepository.save(admin); 
         return "Registration successful";
     }
 
@@ -34,3 +33,4 @@ public class AdminService {
         return null;
     }
 }
+

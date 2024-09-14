@@ -1,16 +1,14 @@
 package com.tetraleague.controller;
 
-import com.tetraleague.model.Admin;
-import com.tetraleague.model.Player;
-import com.tetraleague.model.User;
-import com.tetraleague.service.AdminService;
-import com.tetraleague.service.PlayerService;
+import com.tetraleague.model.*;
+import com.tetraleague.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/auth")
+
 public class AuthController {
 
     @Autowired

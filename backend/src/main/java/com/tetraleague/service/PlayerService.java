@@ -16,12 +16,11 @@ public class PlayerService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public String registerPlayer(String username, String password, String confirmPassword) {
-        if (!password.equals(confirmPassword)) {
+    public String registerPlayer(Player player, String confirmPassword) {
+        if (!player.getPassword().equals(confirmPassword)) {
             return "Passwords do not match";
         }
-        Player player = new Player(username, password);
-        player.setPassword(passwordEncoder.encode(password));
+        player.setPassword(passwordEncoder.encode(player.getPassword()));
         playerRepository.save(player);
         return "Registration successful";
     }

@@ -1,9 +1,11 @@
-/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/Admin.java
-/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/Player.java
-/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/TetraLeagueApplication.java
-/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/Tournament.java
-/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/User.java
+/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/config/SecurityConfig.java
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/controller/AuthController.java
+/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/model/Admin.java
+/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/model/Glicko2Player.java
+/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/model/Player.java
+/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/model/TetraLeagueApplication.java
+/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/model/Tournament.java
+/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/model/User.java
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/repository/AdminRepository.java
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/repository/PlayerRepository.java
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/service/AdminService.java

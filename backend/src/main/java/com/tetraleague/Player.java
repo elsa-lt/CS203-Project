@@ -9,7 +9,7 @@ public class Player extends User {
     public Player() {}
 
     public Player(String id, String firstName, String lastName, String username, String email, String password, String role, int eloRating) {
-        super(id, firstName, lastName, username, email, password, "Player");
+        super(id, firstName, lastName, username, email, password, "player");
         this.eloRating = eloRating;
     }
 

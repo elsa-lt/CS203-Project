@@ -12,21 +12,31 @@ public abstract class User {
     private String username;
     private String email;
     private String password;
+    private String confirmPassword;
     private String role;
 
-    // Constructors, Getters, Setters
+    // Default constructor
     public User() {}
 
-    public User(String id, String firstName, String lastName, String username, String email, String password, String role) {
+    // Constructor for registration
+    public User(String id, String firstName, String lastName, String username, String email, String password, String confirmPassword, String role) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
         this.email = email;
         this.password = password;
+        this.confirmPassword = confirmPassword;
         this.role = role;
     }
 
+    // Constructor for login
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    // Getters and setters
     public String getId() {
         return id;
     }
@@ -73,6 +83,14 @@ public abstract class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
 
     public String getRole() {

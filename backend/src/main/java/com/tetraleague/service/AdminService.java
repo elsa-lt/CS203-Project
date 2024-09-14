@@ -5,6 +5,7 @@ import com.tetraleague.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
 public class AdminService {
@@ -15,14 +16,16 @@ public class AdminService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    // Register a new admin
-    public void registerAdmin(Admin admin) {
-        // Encode the password before saving
-        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+    public String registerAdmin(String id, String firstName, String lastName, String username, String email, String password, String confirmPassword) {
+        if (!password.equals(confirmPassword)) {
+            return "Passwords do not match";
+        }
+        Admin admin = new Admin(id, firstName, lastName, username, email, password, confirmPassword);
+        admin.setPassword(passwordEncoder.encode(password));
         adminRepository.save(admin);
+        return "Registration successful";
     }
 
-    // Log in an admin by checking username and password
     public Admin login(String username, String password) {
         Admin admin = adminRepository.findByUsername(username);
         if (admin != null && passwordEncoder.matches(password, admin.getPassword())) {

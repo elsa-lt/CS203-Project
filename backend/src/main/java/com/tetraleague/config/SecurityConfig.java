@@ -13,15 +13,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                .anyRequest().authenticated()
-            )
-            .csrf(csrf -> csrf.disable());
-
+                .requestMatchers("/api/auth/health").permitAll()  // Allow access to health endpoint
+                .requestMatchers("/api/auth/register").permitAll()  // Allow access to register endpoint
+                .anyRequest().authenticated()  // Secure other endpoints
+            );
         return http.build();
     }
-
+    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

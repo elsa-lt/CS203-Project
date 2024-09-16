@@ -4,6 +4,8 @@ import com.tetraleague.model.*;
 import com.tetraleague.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -17,8 +19,16 @@ public class AuthController {
     @Autowired
     private PlayerService playerService;
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
+    @GetMapping("/health")
+    public String healthCheck() {
+        return "Application is up and running!";
+    }    
+
     @PostMapping("/register")
     public String registerUser(@RequestBody User user) {
+        logger.info("Register request received: {}", user);
         String role = user.getRole().toLowerCase();
         String result;
         

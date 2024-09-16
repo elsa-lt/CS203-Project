@@ -1,51 +1,70 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { FaTachometerAlt, FaTrophy, FaUser, FaCalendarAlt, FaChartBar, FaSignOutAlt } from 'react-icons/fa'; // Import icons from React Icons
 
 const AdminNavbar = () => {
   const location = useLocation();
 
   return (
-    <nav className="bg-gray-800 p-4 fixed top-0 left-0 w-full z-50">
-      <div className="flex items-center">
-        <div className="text-white text-3xl font-bold mr-8">
+    <nav className="bg-gray-700 bg-opacity-80 p-4 fixed top-0 left-0 h-full w-80 z-50 shadow-md flex flex-col">
+      <div className="flex flex-col flex-grow">
+        <div className="text-gray-800 text-4xl font-bold mb-12 ml-10">
           <Link to="/dashboard">
             <img src="/Headers/Tetra League Logo.png" alt="Logo" className="h-16" />
           </Link>
         </div>
-        <ul className="text-white flex space-x-56 text-xl p-4">
+        <ul className="text-gray-200 flex flex-col space-y-6 text-lg">
+          <li>
+            <Link
+              to="/dashboard"
+              className={`flex items-center space-x-2 font-bold font-press-start ${location.pathname === '/dashboard' ? 'text-yellow-500' : 'hover:text-yellow-500'}`}
+            >
+              <FaTachometerAlt className="text-3xl" />
+              <span>DASHBOARD</span>
+            </Link>
+          </li>
           <li>
             <Link
               to="/manage-tournaments"
-              className={`font-bold font-press-start ${location.pathname === '/manage-tournaments' ? 'text-yellow-400' : 'hover:text-yellow-400'}`}
+              className={`flex items-center space-x-2 font-bold font-press-start ${location.pathname === '/manage-tournaments' ? 'text-yellow-500' : 'hover:text-yellow-500'}`}
             >
-              TOURNAMENTS
+              <FaTrophy className="text-3xl" />
+              <span>TOURNAMENTS</span>
             </Link>
           </li>
           <li>
             <Link
               to="/manage-participants"
-              className={`font-press-start ${location.pathname === '/manage-participants' ? 'text-yellow-400' : 'hover:text-yellow-400'}`}
+              className={`flex items-center space-x-2 font-bold font-press-start ${location.pathname === '/manage-participants' ? 'text-yellow-500' : 'hover:text-yellow-500'}`}
             >
-              PARTICIPANTS
+              <FaUser className="text-3xl" />
+              <span>PARTICIPANTS</span>
             </Link>
           </li>
           <li>
             <Link
               to="/manage-schedules"
-              className={`font-press-start ${location.pathname === '/manage-schedules' ? 'text-yellow-400' : 'hover:text-yellow-400'}`}
+              className={`flex items-center space-x-2 font-bold font-press-start ${location.pathname === '/manage-schedules' ? 'text-yellow-500' : 'hover:text-yellow-500'}`}
             >
-              SCHEDULES
+              <FaCalendarAlt className="text-3xl" />
+              <span>SCHEDULES</span>
             </Link>
           </li>
           <li>
             <Link
               to="/manage-results"
-              className={`font-press-start ${location.pathname === '/manage-results' ? 'text-yellow-400' : 'hover:text-yellow-400'}`}
+              className={`flex items-center space-x-2 font-bold font-press-start ${location.pathname === '/manage-results' ? 'text-yellow-500' : 'hover:text-yellow-500'}`}
             >
-              RESULTS
+              <FaChartBar className="text-3xl" />
+              <span>RESULTS</span>
             </Link>
           </li>
         </ul>
+      </div>
+      <div className="mt-auto">
+        <button className="flex items-center justify-center text-gray-200 hover:text-yellow-500 p-2 rounded-full">
+          <FaSignOutAlt className="text-3xl" />
+        </button>
       </div>
     </nav>
   );

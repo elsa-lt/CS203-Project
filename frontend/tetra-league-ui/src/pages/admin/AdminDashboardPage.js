@@ -11,7 +11,7 @@ const AdminDashboardPage = () => {
         className="flex-1 min-h-screen bg-cover bg-center p-6 ml-80" 
         style={{ backgroundImage: `url('/Background/White Background.png')` }}
       >
-        <div className="text-2xl font-press-start mb-6">
+        <div className="text-4xl font-bold font-press-start mb-4 ml-4 text-gray-700">
           DASHBOARD
         </div>
         <div className="flex flex-col space-y-6">

@@ -6,8 +6,8 @@ import java.util.Date;
 
 @Component
 public class JwtUtils {
-    private final String jwtSecret = System.getenv("JWT_SECRET_KEY");
-    private final long jwtExpirationMs = 86400000;  // 24 hours expiration time
+    private final String jwtSecret = "yourSecretKey"; 
+    private final long jwtExpirationMs = 86400000;    
 
     public String generateJwtToken(String username) {
         return Jwts.builder()

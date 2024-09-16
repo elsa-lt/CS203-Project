@@ -1,3 +1,4 @@
+com/tetraleague/TetraLeagueApplication.class
 com/tetraleague/controller/LoginRequest.class
 com/tetraleague/service/AdminService.class
 com/tetraleague/model/Player.class
@@ -9,13 +10,11 @@ com/tetraleague/config/SecurityConfig.class
 com/tetraleague/model/Glicko2Player.class
 com/tetraleague/repository/AdminRepository.class
 com/tetraleague/model/Tournament.class
+com/tetraleague/controller/AuthResponse.class
 com/tetraleague/service/UserService.class
-com/tetraleague/dto/LoginRequest.class
 com/tetraleague/model/User.class
 com/tetraleague/service/AuthService.class
 com/tetraleague/service/PlayerService.class
 com/tetraleague/model/Admin.class
-com/tetraleague/dto/AuthResponse.class
-com/tetraleague/model/TetraLeagueApplication.class
 com/tetraleague/controller/UserController.class
 com/tetraleague/security/JwtUtils.class

@@ -2,7 +2,10 @@ package com.tetraleague.model;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.annotation.Id;
 
+@Document(collection = "players")
 @NoArgsConstructor
 @AllArgsConstructor
 

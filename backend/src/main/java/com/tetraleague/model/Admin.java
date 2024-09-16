@@ -1,10 +1,6 @@
 package com.tetraleague.model;
 
 public class Admin extends User {
-    // Default constructor
-    public Admin() {
-        super();
-    }
 
     // Constructor for registration
     public Admin(String id, String firstName, String lastName, String username, String email, String password, String confirmPassword) {
@@ -13,6 +9,6 @@ public class Admin extends User {
 
     // Constructor for login
     public Admin(String username, String password) {
-        super(username, password);
+        super(null, null, null, username, null, password, null, "admin");
     }
 }

@@ -1,0 +1,15 @@
+GET http://localhost:8080
+
+###
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "John",
+    "username": "johndoe",
+    "email": "john@example.com",
+    "password": "password123",
+    "confirmPassword": "password123"
+}
+
+

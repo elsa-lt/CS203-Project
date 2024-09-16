@@ -1,52 +1,39 @@
 package com.tetraleague.controller;
 
-import com.tetraleague.model.*;
-import com.tetraleague.service.*;
+import com.tetraleague.dto.AuthResponse;
+import com.tetraleague.dto.LoginRequest;
+import com.tetraleague.model.User;
+import com.tetraleague.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/auth")
-
 public class AuthController {
 
     @Autowired
-    private AdminService adminService;
+    private AuthService authService;
 
-    @Autowired
-    private PlayerService playerService;
-
+    // Registration endpoint
     @PostMapping("/register")
-    public String registerUser(@RequestBody User user) {
-        String role = user.getRole().toLowerCase();
-        String result;
-        
-        if ("admin".equals(role)) {
-        // Create Admin instance and register
-            Admin admin = new Admin(user.getId(), user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPassword(), user.getConfirmPassword());
-            result = adminService.registerAdmin(admin, user.getConfirmPassword());        
-        } else {
-            // Create Player instance and register
-            Player player = new Player(user.getId(), user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPassword(), user.getConfirmPassword(), 1000); // Default eloRating set to 1000
-            result = playerService.registerPlayer(player, user.getConfirmPassword());
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        try {
+            String token = authService.registerUser(user);
+            return ResponseEntity.ok().body(new AuthResponse(token, user.getRole()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return result;
     }
 
+    // Login endpoint
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
-        String username = user.getUsername();
-        String password = user.getPassword();
-        
-        // Check if the user exists in the admin repository first
-        Admin validAdmin = adminService.login(username, password);
-        if (validAdmin != null) {
-            return "Admin login successful!";
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
+        try {
+            String token = authService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
+            return ResponseEntity.ok().body(new AuthResponse(token, "player"));  // Return token and user role
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        // If not an admin, check if the user exists in the player repository
-        Player validPlayer = playerService.login(username, password);
-        return validPlayer != null ? "Player login successful!" : "Invalid credentials.";
     }
 }

@@ -3,7 +3,7 @@ import Card from 'react-bootstrap/Card'; // Import Bootstrap Card component for 
 
 const AdminCards = () => {
   return (
-    <div className="flex flex-wrap gap-20 p-4 col-3">
+    <div className="flex flex-wrap gap-28 p-6 col-3">
       <Card className="max-w-sm rounded-lg shadow-lg overflow-hidden bg-gray-700 bg-opacity-80 p-12">
           <Card.Body>
             <Card.Title className="text-2xl font-bold text-white mb-6 font-press-start">ONGOING TOURNAMENTS</Card.Title>

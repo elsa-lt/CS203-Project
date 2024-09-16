@@ -50,4 +50,12 @@ class AuthResponse {
         this.role = role;
     }
     // Getters and Setters
+
+    public String getToken() {
+        return token;
+    }
+
+    public String getRole() {
+        return role;
+    }
 }

@@ -1,42 +1,24 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  const [error, setError] = useState('');
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.post('http://localhost:8080/login', {
-        email,
-        password,
-      });
-
-      const { token, role } = response.data;
-      
-      // Save JWT token in local storage
-      localStorage.setItem('token', token);
-
-      // Redirect based on the user role
-      if (role === 'player') {
-        navigate('/home');
-      } else if (role === 'admin') {
-        navigate('/dashboard');
-      }
-    } catch (error) {
-      console.error('Login failed:', error);
+      await login(email, password);
+    } catch (err) {
+      setError('Login failed. Please check your credentials.');
     }
   };
-  
+
   return (
-    <main
-      className="flex min-h-screen"
-      style={{ backgroundImage: `url('/Background/White Background.png')` }}
-    >
+    <main className="flex min-h-screen" style={{ backgroundImage: `url('/Background/White Background.png')` }}>
       <div className="flex flex-col justify-center w-1/2 p-8 bg-white bg-opacity-60">
         <div className="max-w-md mx-auto">
           <div className="mb-8 text-center">
@@ -45,6 +27,7 @@ const LoginPage = () => {
             <p className="text-gray-600">Stack your way to the top with Tetra League</p>
           </div>
           <form onSubmit={handleSubmit}>
+            {error && <p className="text-red-600">{error}</p>}
             <div className="mb-4">
               <label htmlFor="email" className="block text-gray-700">Email Address</label>
               <input
@@ -70,16 +53,10 @@ const LoginPage = () => {
             <div className="flex justify-between items-center mb-4">
               <Link to="/forgot-password" className="text-blue-600 hover:underline">Forgot your password?</Link>
             </div>
-            <button
-              type="submit"
-              className="w-full bg-black text-white font-semibold py-2 px-4 rounded-lg"
-            >
-              Login
-            </button>
+            <button type="submit" className="w-full bg-black text-white font-semibold py-2 px-4 rounded-lg">Login</button>
           </form>
           <p className="mt-4 text-center">
-            Don’t have an Account?{' '}
-            <Link to="/register" className="text-blue-600 hover:underline">Register Here</Link>
+            Don’t have an Account? <Link to="/register" className="text-blue-600 hover:underline">Register Here</Link>
           </p>
         </div>
       </div>

@@ -1,7 +1,10 @@
 package com.tetraleague.model;
 
+import lombok.Getter;
+
 public class Glicko2Player {
     private double rating;          // Player's rating (R)
+    @Getter
     private double ratingDeviation; // Rating Deviation (RD)
     private double volatility;      // Volatility (σ)
 
@@ -54,10 +57,6 @@ public class Glicko2Player {
 
     public double getRating() {
         return convertToNormalScale(rating);
-    }
-
-    public double getRatingDeviation() {
-        return ratingDeviation;
     }
 
     public double getVolatility() {

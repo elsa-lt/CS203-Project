@@ -1,62 +1,59 @@
 package com.tetraleague.controller;
 
-import com.tetraleague.model.*;
-import com.tetraleague.service.*;
+import com.tetraleague.model.User;
+import com.tetraleague.service.AuthService;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.validation.BindingResult;
+import jakarta.validation.Valid;
 
-@CrossOrigin(origins = "http://localhost:3000")
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/api/auth")
-
 public class AuthController {
 
     @Autowired
-    private AdminService adminService;
-
-    @Autowired
-    private PlayerService playerService;
-
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
-    @GetMapping("/health")
-    public String healthCheck() {
-        return "Application is up and running!";
-    }    
+    private AuthService authService;
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody User user) {
-        logger.info("Register request received: {}", user);
-        String role = user.getRole().toLowerCase();
-        String result;
-        
-        if ("admin".equals(role)) {
-        // Create Admin instance and register
-            Admin admin = new Admin(user.getId(), user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPassword(), user.getConfirmPassword());
-            result = adminService.registerAdmin(admin, user.getConfirmPassword());        
-        } else {
-            // Create Player instance and register
-            Player player = new Player(user.getId(), user.getFirstName(), user.getLastName(), user.getUsername(), user.getEmail(), user.getPassword(), user.getConfirmPassword(), 1000); // Default eloRating set to 1000
-            result = playerService.registerPlayer(player, user.getConfirmPassword());
+    public ResponseEntity<?> registerUser(@Valid @RequestBody User user, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
         }
-        return result;
+        try {
+            String token = authService.registerUser(user);
+            return ResponseEntity.ok().body(new AuthResponse(token, user.getRole()));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
-        String username = user.getUsername();
-        String password = user.getPassword();
-        
-        // Check if the user exists in the admin repository first
-        Admin validAdmin = adminService.login(username, password);
-        if (validAdmin != null) {
-            return "Admin login successful!";
+    public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
         }
+        try {
+            String token = authService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
+            return ResponseEntity.ok().body(new AuthResponse(token, "player"));  // role can be dynamically set
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+}
 
-        // If not an admin, check if the user exists in the player repository
-        Player validPlayer = playerService.login(username, password);
-        return validPlayer != null ? "Player login successful!" : "Invalid credentials.";
+
+
+@Getter
+class AuthResponse {
+    private String token;
+    private String role;
+
+    public AuthResponse(String token, String role) {
+        this.token = token;
+        this.role = role;
     }
 }

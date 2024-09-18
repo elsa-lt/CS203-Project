@@ -2,14 +2,14 @@ package com.tetraleague.controller;
 
 import com.tetraleague.model.User;
 import com.tetraleague.service.AuthService;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.validation.BindingResult;
+import jakarta.validation.Valid;
 
-import java.util.logging.Logger;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -19,7 +19,10 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody User user, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
+        }
         try {
             String token = authService.registerUser(user);
             return ResponseEntity.ok().body(new AuthResponse(token, user.getRole()));
@@ -29,10 +32,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body(Objects.requireNonNull(result.getFieldError()).getDefaultMessage());
+        }
         try {
             String token = authService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
-            // Assuming role-based redirection
             return ResponseEntity.ok().body(new AuthResponse(token, "player"));  // role can be dynamically set
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -41,6 +46,8 @@ public class AuthController {
 }
 
 
+
+@Getter
 class AuthResponse {
     private String token;
     private String role;
@@ -48,14 +55,5 @@ class AuthResponse {
     public AuthResponse(String token, String role) {
         this.token = token;
         this.role = role;
-    }
-    // Getters and Setters
-
-    public String getToken() {
-        return token;
-    }
-
-    public String getRole() {
-        return role;
     }
 }

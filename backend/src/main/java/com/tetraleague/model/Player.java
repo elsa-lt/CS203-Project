@@ -1,6 +1,12 @@
 package com.tetraleague.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class Player extends User {
+    // Getter and setter
     private int eloRating;
 
     // Constructor for registration
@@ -12,14 +18,5 @@ public class Player extends User {
     // Constructor for login
     public Player(String username, String password) {
         super(null, null, null, username, null, password, null, "player");
-    }
-
-    // Getter and setter
-    public int getEloRating() {
-        return eloRating;
-    }
-
-    public void setEloRating(int eloRating) {
-        this.eloRating = eloRating;
     }
 }

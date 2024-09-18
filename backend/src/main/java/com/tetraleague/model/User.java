@@ -4,6 +4,7 @@ import lombok.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 
 @Setter
 @Getter
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 
 public class User {
+    @Id
     private String id;
 
     @NotNull(message = "First name is required")

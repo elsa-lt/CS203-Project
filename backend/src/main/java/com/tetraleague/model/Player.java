@@ -6,7 +6,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Player extends User {
-    // Getter and setter
     private int eloRating;
 
     // Constructor for registration

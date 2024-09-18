@@ -8,6 +8,11 @@ const TournamentsPage = () => {
       style={{ backgroundImage: `url('/Background/White Background.png')` }}
     >
         <Navbar />
+        <div className="w-1/2 p-8 relative">
+        <div className="relative -top-40 -left-10 text-center">
+          <img src="/Headers/Tournaments Header.png" alt="Profile" className="w-72 md:w-6/12 -ml-80"  style={{ width: '550px' }} />
+          </div>
+          </div>
     </main>
   );
 };

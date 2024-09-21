@@ -8,4 +8,6 @@ import com.tetraleague.model.Admin;
 @Repository
 public interface AdminRepository extends MongoRepository<Admin, String> {
     Admin findByUsername(String username);
+
+    Admin findByEmail(String email);
 }

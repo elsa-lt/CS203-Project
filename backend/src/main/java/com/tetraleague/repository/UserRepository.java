@@ -1,10 +1,15 @@
 package com.tetraleague.repository;
 
-import com.tetraleague.model.User;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import com.tetraleague.model.User;
+
 public interface UserRepository extends MongoRepository<User, String> {
-    Optional<User> findByEmail(String email);
-    Optional<User> findByUsername(String username);
+  Optional<User> findByUsername(String username);
+
+  Boolean existsByUsername(String username);
+
+  Boolean existsByEmail(String email);
 }

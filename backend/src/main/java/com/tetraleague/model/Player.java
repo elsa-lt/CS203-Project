@@ -1,5 +1,6 @@
 package com.tetraleague.model;
 
+import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,15 +8,18 @@ import lombok.Setter;
 @Getter
 public class Player extends User {
     private int eloRating;
+    private Role role;  // Optional: Add a role field or any other attributes specific to players
 
-    // Constructor for registration
-    public Player(String id, String firstName, String lastName, String username, String email, String password, String confirmPassword, int eloRating) {
-        super(id, firstName, lastName, username, email, password, confirmPassword, "player");
-        this.eloRating = eloRating;
+    public Player(String username, String email, String password, Role role) {
+        super(username, email, password);  // Fix: Matching the User constructor
+        this.role = role;
     }
 
-    // Constructor for login
-    public Player(String username, String password) {
-        super(null, null, null, username, null, password, null, "player");
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

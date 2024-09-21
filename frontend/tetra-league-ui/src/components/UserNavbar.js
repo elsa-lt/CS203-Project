@@ -1,18 +1,19 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { FaSignOutAlt } from 'react-icons/fa'; 
 
 const UserNavbar = () => {
   const location = useLocation();
 
   return (
-    <nav className="bg-gray-800 p-4 fixed top-0 left-0 w-full z-50">
-      <div className="flex items-center">
+    <nav className="bg-gray-700 bg-opacity-80 p-4 fixed top-0 left-0 w-full z-50 flex items-center">
+      <div className="flex items-center flex-grow">
         <div className="text-white text-3xl font-bold mr-8">
           <Link to="/home">
             <img src="/Headers/Tetra League Logo.png" alt="Logo" className="h-16" />
           </Link>
         </div>
-        <ul className="text-white flex space-x-14 text-xl p-4">
+        <ul className="text-gray-200 flex text-xl p-4 space-x-8">
           <li>
             <Link
               to="/current-match"
@@ -54,6 +55,11 @@ const UserNavbar = () => {
             </Link>
           </li>
         </ul>
+      </div>
+      <div className="ml-auto">
+        <button className="text-gray-200 hover:text-yellow-400">
+          <FaSignOutAlt className="text-2xl" />
+        </button>
       </div>
     </nav>
   );

@@ -2,16 +2,19 @@ package com.tetraleague.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "admins")
 public class Admin extends User {
+    private Role role;  // Fix: Adding the missing role variable
 
-    // Constructor for registration
-    public Admin(String id, String firstName, String lastName, String username, String email, String password, String confirmPassword) {
-        super(id, firstName, lastName, username, email, password, confirmPassword, "admin");
+    public Admin(String username, String email, String password, Role role) {
+        super(username, email, password);  // Fix: Matching the User constructor
+        this.role = role;
     }
 
-    // Constructor for login
-    public Admin(String username, String password) {
-        super(null, null, null, username, null, password, null, "admin");
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

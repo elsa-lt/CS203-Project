@@ -10,9 +10,10 @@ public class Player extends User {
     private int eloRating;
     private Role role;  // Optional: Add a role field or any other attributes specific to players
 
-    public Player(String username, String email, String password, Role role) {
+    public Player(String username, String email, String password, Role role, int eloRating) {
         super(username, email, password);  // Fix: Matching the User constructor
         this.role = role;
+        this.eloRating = eloRating;
     }
 
     public Role getRole() {

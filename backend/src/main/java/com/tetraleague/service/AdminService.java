@@ -20,20 +20,10 @@ public class AdminService {
         if (!admin.getPassword().equals(confirmPassword)) {
             return "Passwords do not match";
         }
-
-        if (adminRepository.findByUsername(admin.getUsername()) != null) {
-            return "Username already exists";
-        }
-
-        if (adminRepository.findByEmail(admin.getEmail()) != null) {
-            return "Email already exists";
-        }
-
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-        adminRepository.save(admin);
+        adminRepository.save(admin); 
         return "Registration successful";
     }
-
 
     public Admin login(String username, String password) {
         Admin admin = adminRepository.findByUsername(username);

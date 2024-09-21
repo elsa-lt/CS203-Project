@@ -1,6 +1,8 @@
 package com.tetraleague.service;
 
+import com.tetraleague.model.Player;
 import com.tetraleague.model.Tournament;
+import com.tetraleague.repository.PlayerRepository;
 import com.tetraleague.repository.TournamentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,9 @@ public class TournamentService {
     @Autowired
     private TournamentRepository tournamentRepository;
 
+    @Autowired
+    private PlayerRepository playerRepository;
+
     // Retrieve all tournaments
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll();
@@ -20,23 +25,43 @@ public class TournamentService {
 
     // Retrieve tournament by ID
     public Tournament getTournamentById(String id) {
-        return tournamentRepository.findById(id).orElseThrow(() -> new RuntimeException("Tournament not found"));
+        return tournamentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tournament not found"));
     }
 
-    // Create a new tournament
+    // Create new tournament
     public Tournament createTournament(Tournament tournament) {
         return tournamentRepository.save(tournament);
     }
 
-    // Update an existing tournament
+    // Add a participant to the tournament
+    public Tournament addParticipant(String tournamentId, String playerId) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+
+        System.out.println("Searching for player with ID: " + playerId);
+        Player player = playerRepository.findById(playerId)
+                .orElseThrow(() -> new RuntimeException("Player not found"));
+
+        tournament.addParticipant(player);
+        return tournamentRepository.save(tournament);
+    }
+
+
+    // Update existing tournament
     public Tournament updateTournament(String id, Tournament updatedTournament) {
-        Tournament existingTournament = getTournamentById(id);
-        existingTournament.setName(updatedTournament.getName());
-        existingTournament.setDescription(updatedTournament.getDescription());
-        existingTournament.setNumParticipants(updatedTournament.getNumParticipants());
-        existingTournament.setEloRange(updatedTournament.getEloRange());
-        existingTournament.setStartDate(updatedTournament.getStartDate());
-        existingTournament.setEndDate(updatedTournament.getEndDate());
-        return tournamentRepository.save(existingTournament);
+        Tournament tournament = tournamentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+
+        // Update fields
+        tournament.setName(updatedTournament.getName());
+        tournament.setDescription(updatedTournament.getDescription());
+        tournament.setNumParticipants(updatedTournament.getNumParticipants());
+        tournament.setStartDate(updatedTournament.getStartDate());
+        tournament.setEndDate(updatedTournament.getEndDate());
+        tournament.setMinElo(updatedTournament.getMinElo());
+        tournament.setMaxElo(updatedTournament.getMaxElo());
+
+        return tournamentRepository.save(tournament);
     }
 }

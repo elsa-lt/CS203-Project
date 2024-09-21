@@ -28,8 +28,11 @@ public class Tournament {
     @NotNull(message = "Number of participants is required")
     private Integer numParticipants;
 
-    @NotNull(message = "Elo range is required")
-    private Integer eloRange;
+    @NotNull(message = "Minimum Elo range is required")
+    private Integer minElo;
+
+    @NotNull(message = "Maximum Elo range is required")
+    private Integer maxElo;
 
     @NotNull(message = "Start date is required")
     private LocalDateTime startDate;
@@ -43,12 +46,17 @@ public class Tournament {
         if (player == null) {
             throw new IllegalArgumentException("Player cannot be null");
         }
+
         if (participants.size() >= numParticipants) {
             throw new IllegalStateException("Tournament is full");
         }
-        if (player.getEloRating() > eloRange) {
+
+        if (player.getEloRating() > maxElo) {
             throw new IllegalArgumentException("Player's Elo rating is too high for this tournament");
+        } else if (player.getEloRating() < minElo) {
+            throw new IllegalArgumentException("Player's Elo rating is too low for this tournament");
         }
+
         participants.add(player);
     }
 }

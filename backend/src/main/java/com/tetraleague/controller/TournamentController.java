@@ -50,7 +50,7 @@ public class TournamentController {
     }
 
     // Add a participant to a tournament
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/participants")
     public ResponseEntity<Tournament> addParticipant(@PathVariable String id, @RequestBody String playerID) {
         Tournament updatedTournament = tournamentService.addParticipant(id, playerID);

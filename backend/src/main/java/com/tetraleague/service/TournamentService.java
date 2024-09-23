@@ -2,8 +2,9 @@ package com.tetraleague.service;
 
 import com.tetraleague.model.Player;
 import com.tetraleague.model.Tournament;
-import com.tetraleague.repository.PlayerRepository;
+import com.tetraleague.model.User;
 import com.tetraleague.repository.TournamentRepository;
+import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ public class TournamentService {
     private TournamentRepository tournamentRepository;
 
     @Autowired
-    private PlayerRepository playerRepository;
+    private UserRepository userRepository;
 
     // Retrieve all tournaments
     public List<Tournament> getAllTournaments() {
@@ -40,8 +41,14 @@ public class TournamentService {
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
         System.out.println("Searching for player with ID: " + playerId);
-        Player player = playerRepository.findById(playerId)
-                .orElseThrow(() -> new RuntimeException("Player not found"));
+        User user = userRepository.findById(playerId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!(user instanceof Player)) {
+            throw new RuntimeException("User is not a player");
+        }
+
+        Player player = (Player) user;
 
         tournament.addParticipant(player);
         return tournamentRepository.save(tournament);

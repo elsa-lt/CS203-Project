@@ -16,8 +16,6 @@
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/payload/request/SignupRequest.java
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/payload/response/JwtResponse.java
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/payload/response/MessageResponse.java
-/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/repository/AdminRepository.java
-/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/repository/PlayerRepository.java
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/repository/RoleRepository.java
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/repository/TournamentRepository.java
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/repository/UserRepository.java
@@ -27,7 +25,5 @@
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/security/jwt/JwtUtils.java
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/security/services/UserDetailsImpl.java
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/security/services/UserDetailsServiceImpl.java
-/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/service/AdminService.java
-/Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/service/PlayerService.java
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/service/TournamentService.java
 /Users/ianhoe/Documents/GitHub/CS203-Project/backend/src/main/java/com/tetraleague/service/UserService.java

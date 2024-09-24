@@ -1,17 +1,23 @@
 import React from 'react';
-import Navbar from '../../components/AdminNavbar';
+import Navbar from '../../components/UserNavbar';
+import AdminSidebar from '../../components/AdminSidebar';
 import Cards from '../../components/AdminCards';
 import Announcements from '../../components/AdminCardsAnnouncements'; 
 
 const AdminDashboardPage = () => {
   return (
-    <div className="flex">
-      <Navbar className="fixed top-0 left-0 h-full w-80 z-10" />
-      <main
-        className="flex-1 min-h-screen bg-cover bg-center p-6 ml-80" 
-        style={{ backgroundImage: `url('/Background/White Background.png')` }}
-      >
-        <div className="text-4xl font-bold font-press-start mb-4 ml-4 text-gray-700">
+    
+    <main
+      className="flex min-h-screen bg-cover bg-center p-6" 
+      style={{ backgroundImage: `url('/Background/White Background.png')` }}
+    >
+      <div className="flex">
+        <AdminSidebar className="fixed z-10" />
+        <Navbar className="fixed z-40"/>
+      </div>
+
+      <div className="flex">
+        <div className="text-4xl font-bold font-press-start mb-4 ml-60 text-gray-700">
           DASHBOARD
         </div>
         <div className="flex flex-col space-y-6">
@@ -22,8 +28,8 @@ const AdminDashboardPage = () => {
             <Announcements />
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 };
 

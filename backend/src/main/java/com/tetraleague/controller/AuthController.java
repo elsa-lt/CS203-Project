@@ -55,25 +55,26 @@ public class AuthController {
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
     Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(loginRequest.getUsernameOrEmail(), loginRequest.getPassword()));
+        new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = jwtUtils.generateJwtToken(authentication);
-    
-    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();    
+
+    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
     List<String> roles = userDetails.getAuthorities().stream()
         .map(item -> item.getAuthority())
         .collect(Collectors.toList());
 
-    return ResponseEntity.ok(new JwtResponse(jwt, 
-                         userDetails.getId(), 
-                         userDetails.getUsername(), 
-                         userDetails.getEmail(), 
-                         roles));
+    return ResponseEntity.ok(new JwtResponse(jwt,
+        userDetails.getId(),
+        userDetails.getUsername(),
+        userDetails.getEmail(),
+        roles));
   }
 
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    // Check if username or email already exists
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
       return ResponseEntity
           .badRequest()
@@ -90,40 +91,39 @@ public class AuthController {
       return ResponseEntity
           .badRequest()
           .body(new MessageResponse("Error: Passwords do not match!"));
-  }
-  
+    }
 
     // Create new user's account
-    User user = new User(signUpRequest.getUsername(), 
-               signUpRequest.getEmail(),
-               encoder.encode(signUpRequest.getPassword()));
+    User user = new User(signUpRequest.getUsername(),
+        signUpRequest.getEmail(),
+        encoder.encode(signUpRequest.getPassword()));
 
     Set<String> strRoles = signUpRequest.getRoles();
     Set<Role> roles = new HashSet<>();
 
-    if (strRoles == null) {
-      Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+    // Automatically assign ROLE_PLAYER if no roles are provided
+    if (strRoles == null || strRoles.isEmpty()) {
+      Role playerRole = roleRepository.findByName(ERole.ROLE_PLAYER)
           .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-      roles.add(userRole);
+      roles.add(playerRole);
     } else {
+      // Assign roles based on provided role(s)
       strRoles.forEach(role -> {
         switch (role) {
-        case "admin":
-          Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(adminRole);
-
-          break;
-        case "player":
-          Role modRole = roleRepository.findByName(ERole.ROLE_PLAYER)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(modRole);
-
-          break;
-        default:
-          Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(userRole);
+          case "admin":
+            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(adminRole);
+            break;
+          case "player":
+            Role playerRole = roleRepository.findByName(ERole.ROLE_PLAYER)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(playerRole);
+            break;
+          default:
+            Role defaultRole = roleRepository.findByName(ERole.ROLE_PLAYER)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(defaultRole);
         }
       });
     }
@@ -133,4 +133,5 @@ public class AuthController {
 
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
   }
+
 }

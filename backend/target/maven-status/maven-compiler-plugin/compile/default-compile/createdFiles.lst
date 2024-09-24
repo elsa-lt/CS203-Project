@@ -14,7 +14,6 @@ com/tetraleague/controller/TestController.class
 com/tetraleague/payload/response/JwtResponse.class
 com/tetraleague/security/services/UserDetailsImpl.class
 com/tetraleague/security/services/UserDetailsServiceImpl.class
-com/tetraleague/controller/LoginRequest.class
 com/tetraleague/model/ERole.class
 com/tetraleague/repository/UserRepository.class
 com/tetraleague/controller/AuthController.class

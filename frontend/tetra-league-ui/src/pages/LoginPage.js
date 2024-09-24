@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     try {
-      await login(email, password);
+      await login(username, password);
+      navigate('/home');
     } catch (err) {
       setError('Login failed. Please check your credentials.');
     }
@@ -29,14 +32,14 @@ const LoginPage = () => {
           <form onSubmit={handleSubmit}>
             {error && <p className="text-red-600">{error}</p>}
             <div className="mb-4">
-              <label htmlFor="email" className="block text-gray-700">Email Address</label>
+              <label htmlFor="username" className="block text-gray-700">Username</label>
               <input
-                id="email"
-                type="email"
+                id="username"
+                type="text" 
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                placeholder="Email Address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
             <div className="mb-4">

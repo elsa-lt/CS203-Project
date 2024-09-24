@@ -196,6 +196,27 @@ const CreateTournamentsPage = () => {
                   onChange={handleChange}
                 />
               </div>
+              
+              <label>Page Visuals</label>
+              <div className="form-group">
+                <h2>Banner Image</h2>
+                <input
+                  type="file"
+                  name="bannerImage"
+                  accept="image/*"
+                  onChange={(e) => console.log(e.target.files[0])}
+                />
+              </div>
+
+              <div className="form-group">
+                <h2>Card Image</h2>
+                <input
+                  type="file"
+                  name="cardImage"
+                  accept="image/*"
+                  onChange={(e) => console.log(e.target.files[0])}
+                />
+              </div>
               <button type="submit">Publish</button>
             </form>
           </div>

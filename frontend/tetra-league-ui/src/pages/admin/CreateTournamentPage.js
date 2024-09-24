@@ -217,7 +217,7 @@ const CreateTournamentsPage = () => {
                   onChange={(e) => console.log(e.target.files[0])}
                 />
               </div>
-              <button type="submit">Publish</button>
+              <button type="submit" className="w-full bg-black text-white font-semibold py-2 px-4 rounded-lg opacity-100">Publish</button>
             </form>
           </div>
         </div>

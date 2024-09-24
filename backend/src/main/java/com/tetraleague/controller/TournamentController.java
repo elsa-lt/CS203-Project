@@ -49,6 +49,13 @@ public class TournamentController {
         return ResponseEntity.ok(updatedTournament);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTournament(@PathVariable String id) {
+        tournamentService.deleteTournament(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/{id}/participants")
     public ResponseEntity<Tournament> addParticipant(@PathVariable String id, @RequestBody String playerID) {
         Tournament updatedTournament = tournamentService.addParticipant(id, playerID);

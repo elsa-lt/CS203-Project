@@ -42,6 +42,18 @@ public class Tournament {
 
     private List<Player> participants = new ArrayList<>();
 
+    public void validate() {
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("Start date cannot be after end date.");
+        }
+        if (minElo > maxElo) {
+            throw new IllegalArgumentException("Minimum Elo cannot be more than maximum Elo.");
+        }
+        if (numParticipants < 2) {
+            throw new IllegalArgumentException("Number of participants cannot be less than 2.");
+        }
+    }
+
     public void addParticipant(Player player) {
         if (player == null) {
             throw new IllegalArgumentException("Player cannot be null");
@@ -51,10 +63,8 @@ public class Tournament {
             throw new IllegalStateException("Tournament is full");
         }
 
-        if (player.getEloRating() > maxElo) {
-            throw new IllegalArgumentException("Player's Elo rating is too high for this tournament");
-        } else if (player.getEloRating() < minElo) {
-            throw new IllegalArgumentException("Player's Elo rating is too low for this tournament");
+        if (player.getEloRating() > maxElo || player.getEloRating() < minElo) {
+            throw new IllegalArgumentException("Player is ineligible for this tournament");
         }
 
         participants.add(player);

@@ -55,7 +55,7 @@ public class AuthController {
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
     Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        new UsernamePasswordAuthenticationToken(loginRequest.getUsernameOrEmail(), loginRequest.getPassword()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = jwtUtils.generateJwtToken(authentication);
@@ -85,6 +85,13 @@ public class AuthController {
           .badRequest()
           .body(new MessageResponse("Error: Email is already in use!"));
     }
+
+    if (!signUpRequest.getPassword().trim().equals(signUpRequest.getConfirmPassword().trim())) {
+      return ResponseEntity
+          .badRequest()
+          .body(new MessageResponse("Error: Passwords do not match!"));
+  }
+  
 
     // Create new user's account
     User user = new User(signUpRequest.getUsername(), 

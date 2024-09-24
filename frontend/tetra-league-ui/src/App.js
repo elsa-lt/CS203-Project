@@ -17,6 +17,7 @@ import ManageTournamentsPage from './pages/admin/ManageTournamentsPage';
 import ManageParticipantsPage from './pages/admin/ManageParticipantsPage';
 import ManageSchedulesPage from './pages/admin/ManageSchedulesPage';
 import ManageResultsPage from './pages/admin/ManageResultsPage';
+import CreateTournamentPage from './pages/admin/CreateTournamentPage';
 
 const ProtectedRoute = ({ element, role }) => {
   const { user } = useAuth();
@@ -48,6 +49,7 @@ function App() {
       <Route path="/manage-schedules" element={<ManageSchedulesPage />} />
       <Route path="/manage-participants" element={<ManageParticipantsPage />} />
       <Route path="/manage-results" element={<ManageResultsPage />} />
+      <Route path="/create-tournament" element={<CreateTournamentPage />} />
 
     </Routes>
   );

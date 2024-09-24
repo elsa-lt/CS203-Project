@@ -1,8 +1,6 @@
 package com.tetraleague.service;
 
-import com.tetraleague.model.Player;
-import com.tetraleague.model.Tournament;
-import com.tetraleague.model.User;
+import com.tetraleague.model.*;
 import com.tetraleague.repository.TournamentRepository;
 import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +16,8 @@ public class TournamentService {
 
     @Autowired
     private UserRepository userRepository;
+
+    private Role role;
 
     // Retrieve all tournaments
     public List<Tournament> getAllTournaments() {
@@ -40,20 +40,25 @@ public class TournamentService {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
-        System.out.println("Searching for player with ID: " + playerId);
         User user = userRepository.findById(playerId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!(user instanceof Player)) {
+        boolean isPlayer = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals(ERole.ROLE_PLAYER));
+
+        if (isPlayer) {
+            if (user instanceof Player) {
+                Player player = (Player) user;
+                tournament.addParticipant(player); // to add: elo check before adding to tournament
+            } else {
+                throw new ClassCastException("User is a player but cannot be cast to Player.");
+            }
+        } else {
             throw new RuntimeException("User is not a player");
         }
 
-        Player player = (Player) user;
-
-        tournament.addParticipant(player);
         return tournamentRepository.save(tournament);
     }
-
 
     // Update existing tournament
     public Tournament updateTournament(String id, Tournament updatedTournament) {

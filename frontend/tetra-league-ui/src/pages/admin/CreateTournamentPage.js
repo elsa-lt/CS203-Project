@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from '../../components/AdminNavbar';
+import Navbar from '../../components/AdminSidebar';
 import { useState } from 'react';
 
 const CreateTournamentsPage = () => {

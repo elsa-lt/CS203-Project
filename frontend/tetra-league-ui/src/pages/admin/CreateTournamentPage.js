@@ -1,5 +1,6 @@
 import React from 'react';
-import Navbar from '../../components/AdminSidebar';
+import Sidebar from '../../components/AdminSidebar';
+import Navbar from '../../components/UserNavbar';
 import { useState } from 'react';
 
 const CreateTournamentsPage = () => {
@@ -31,19 +32,20 @@ const CreateTournamentsPage = () => {
 
   return (
     <div className="flex">
+      <Sidebar />
       <Navbar className="fixed top-0 left-0 h-full w-80 z-10" />
       <main
         className="flex-1 min-h-screen bg-cover bg-center p-6 ml-80"
         style={{ backgroundImage: `url('/Background/White Background.png')` }}
       >
         <div className="w-1/2 p-8 relative">
-          <div className="relative top-0 left-60 text-center">
+          <div className="relative top-10 left-60 text-center">
             <img src="/Headers/Tournament Creator 1.png" alt="Profile" className="w-72 md:w-6/12 -ml-80" style={{ width: '550px' }} />
           </div>
         </div>
 
         <div className="tournament-creator ">
-          <div className="w-full max-w-6xl bg-white opacity-70 rounded-lg shadow-lg p-6 h-[600px] overflow-y-auto -ml-10">
+          <div className="w-full max-w-6xl bg-white opacity-70 rounded-lg shadow-lg p-6 h-[600px] overflow-y-auto -ml-10 mt-10">
             <form onSubmit={handleSubmit}>
               <label>Tournament Details</label>
               <div className="form-group">

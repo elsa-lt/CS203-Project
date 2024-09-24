@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from '../../components/UserNavbar';
-import TournamentCardsSmall from '../../components/TournamentCardsSmall';
+import MainTournamentSubtabs from '../../components/MainTournamentSubtabs';
 
 const TournamentsPage = () => {
   return (
@@ -21,37 +21,11 @@ const TournamentsPage = () => {
           </img>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-6 mb-6">
           <hr className="w-full border-customGray border-opacity-30"/>
         </div>
-      
-        <div className="flex justify-center mt-6 mb-10">
-          <div className="flex font-medium underline text-customGray pr-32">
-            My Events
-          </div>
-          <div className="flex font-light helvetica-neue text-customGray">
-            All Tournaments
-          </div>
-        </div>
-        
-        <div className="relative flex items-center z-0 mb-10">
-          <div className = "flex flex-grow-0 w-30 h-10">
-            <img
-              src="/Headers/Sub Title Bar.png"
-              alt="Sub Title Bar"
-              className="w-30 h-10">
-            </img>
-            <div className="absolute flex font-sans-serif text-white text-lg ml-8 mt-1">
-              MY TOURNAMENTS
-            </div>
-          </div>
-        </div>
 
-        <div className="flex flex-wrap w-full gap-6">
-          <TournamentCardsSmall />
-          <TournamentCardsSmall />
-          <TournamentCardsSmall />
-        </div>
+        <MainTournamentSubtabs />
 
       </div>
       

@@ -16,17 +16,26 @@ function TournamentButtons() {
     return (
       <div className="flex flex-col w-full gap-2 items-center justify-center">
         {/*Initial Register Button */}
-        <div 
-          className="flex justify-center items-center font-medium helvetica-neue text-white bg-customGray h-11 w-full rounded-full cursor-pointer"
-          onClick={handleRegister}>
-            {isRegistered ? "Registered" : "Register"}
-        </div>
+        {!isRegistered && (
+          <div 
+            className="flex justify-center items-center font-medium helvetica-neue bg-customGray text-white h-11 w-full rounded-full cursor-pointer"
+            onClick={handleRegister}>
+              Register
+          </div>
+        )}
+
         {/*Conditionally render 2nd Withdraw Button*/}
         {isRegistered && (
-          <div
-            className="flex justify-center items-center font-medium helvetica-neue text-white bg-customGray h-11 w-full rounded-full cursor-pointer"
-            onClick={handleWithdraw}>
-              Withdraw
+          <div className="flex flex-col w-full gap-2 items-center justify-center">
+            <div 
+              className="flex justify-center items-center font-medium helvetica-neue text-customGray border border-customGray h-11 w-full rounded-full">
+                Registered
+            </div>
+            <div
+              className="flex justify-center items-center font-medium helvetica-neue text-white bg-customRed h-11 w-full rounded-full cursor-pointer"
+              onClick={handleWithdraw}>
+                Withdraw
+            </div>
           </div>
         )}
       </div>

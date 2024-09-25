@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,7 @@ public class Tournament {
     private LocalDateTime endDate;
 
     private List<Player> participants = new ArrayList<>();
+    private String imageUrl; // Field to store the image URL
 
     public void validate() {
         if (startDate.isAfter(endDate)) {
@@ -52,14 +54,6 @@ public class Tournament {
         if (numParticipants < 2) {
             throw new IllegalArgumentException("Number of participants cannot be less than 2.");
         }
-    private String imageUrl; // Use this field to store the image URL
-
-    public String getImageUrl() {
-        return imageUrl; // Correct getter method
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl; // Correct setter method
     }
 
     public void addParticipant(Player player) {

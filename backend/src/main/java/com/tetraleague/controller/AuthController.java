@@ -83,70 +83,63 @@ public class AuthController {
   }
 
   @PostMapping("/signup")
-  public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
     // Check if username or email already exists
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-      return ResponseEntity
-              .badRequest()
-              .body(new MessageResponse("Error: Username is already taken!"));
+        return ResponseEntity
+                .badRequest()
+                .body(new MessageResponse("Error: Username is already taken!"));
     }
 
     if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-      return ResponseEntity
-              .badRequest()
-              .body(new MessageResponse("Error: Email is already in use!"));
+        return ResponseEntity
+                .badRequest()
+                .body(new MessageResponse("Error: Email is already in use!"));
     }
 
     if (!signUpRequest.getPassword().trim().equals(signUpRequest.getConfirmPassword().trim())) {
-      return ResponseEntity
-          .badRequest()
-          .body(new MessageResponse("Error: Passwords do not match!"));
+        return ResponseEntity
+                .badRequest()
+                .body(new MessageResponse("Error: Passwords do not match!"));
     }
 
+    // Create new user's account
     User user = new User(signUpRequest.getUsername(),
-        signUpRequest.getEmail(),
-        encoder.encode(signUpRequest.getPassword()));
+            signUpRequest.getEmail(),
+            encoder.encode(signUpRequest.getPassword()));
 
     Set<String> strRoles = signUpRequest.getRoles();
     Set<Role> roles = new HashSet<>();
 
+    // Automatically assign ROLE_PLAYER if no roles are provided
     if (strRoles == null || strRoles.isEmpty()) {
-      Role playerRole = roleRepository.findByName(ERole.ROLE_PLAYER)
-          .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-      roles.add(playerRole);
+        Role playerRole = roleRepository.findByName(ERole.ROLE_PLAYER)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(playerRole); // Add the player role to the roles set
     } else {
-      // Assign roles based on provided role(s)
-      strRoles.forEach(role -> {
-        switch (role) {
-          case "admin":
-            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(adminRole);
-            break;
-          case "player":
-            Role playerRole = roleRepository.findByName(ERole.ROLE_PLAYER)
-                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(playerRole);
-            break;
-          default:
-            Role defaultRole = roleRepository.findByName(ERole.ROLE_PLAYER)
-                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(defaultRole);
-        }
-      }
-    }
-
-    if (user == null) {
-      return ResponseEntity
-              .badRequest()
-              .body(new MessageResponse("Error: User could not be created due to invalid roles!"));
+        // Assign provided roles
+        strRoles.forEach(role -> {
+            switch (role) {
+                case "admin":
+                    Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(adminRole);
+                    break;
+                case "player":
+                    Role userRole = roleRepository.findByName(ERole.ROLE_PLAYER)
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    roles.add(userRole);
+                    break;
+                default:
+                    throw new RuntimeException("Error: Role is not found.");
+            }
+        });
     }
 
     user.setRoles(roles);
-
     userRepository.save(user);
 
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-  }
+}
 
 }

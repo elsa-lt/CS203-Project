@@ -5,6 +5,8 @@ import com.tetraleague.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +51,19 @@ public class UserController {
         if (userService.getUserById(id).isPresent()) {
             userService.deleteUserById(id);
             return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<User> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
+        Optional<User> optionalUser = userService.findByUsername(userDetails.getUsername());
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setPassword(null);  
+            return ResponseEntity.ok(user);
         } else {
             return ResponseEntity.notFound().build();
         }

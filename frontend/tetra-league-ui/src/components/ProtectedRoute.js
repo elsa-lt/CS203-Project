@@ -8,12 +8,11 @@ const ProtectedRoute = ({ element, role }) => {
   console.log('User:', user);
   console.log('Required Role:', role); 
 
-  if (!user || (user.role !== role && user.role !== `ROLE_${role.toUpperCase()}`)) {
+  if (!user || (user.role !== `ROLE_${role.toUpperCase()}`)) {
       return <Navigate to="/login" replace />;
   }
 
-  return element; 
+  return element; // If authorized, return the element
 };
-
 
 export default ProtectedRoute;

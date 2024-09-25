@@ -10,35 +10,44 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
       const token = Cookies.get('token');
       if (token) {
-          try {
-              const decoded = JSON.parse(atob(token.split('.')[1])); 
-              console.log('Decoded token:', decoded);
-              setUser({ ...decoded, role: decoded.roles[0] });
-          } catch (error) {
-              console.error('Failed to decode token:', error);
-          }
+          const fetchUserInfo = async () => {
+              try {
+                  const response = await axios.get('http://localhost:8080/api/user/info', {
+                      headers: {
+                          Authorization: `Bearer ${token}`,
+                      },
+                  });
+                  const userData = response.data; 
+                  console.log('User data from backend:', userData);
+                  setUser(userData); // Set user with role from backend
+              } catch (error) {
+                  console.error('Failed to fetch user info:', error);
+              }
+          };
+          fetchUserInfo();
       }
   }, []);
+  
 
     const login = async (username, password) => {
-        try {
-            const response = await axios.post('http://localhost:8080/api/auth/signin', { username, password });
-            const { accessToken } = response.data;
+      try {
+        const response = await axios.post('http://localhost:8080/api/auth/signin', { username, password });
+        const { accessToken } = response.data;
 
-            Cookies.set('token', accessToken, { expires: 7 });
-            console.log('Token saved:', Cookies.get('token'));
+        Cookies.set('token', accessToken, { expires: 7 });
+        console.log('Token saved:', Cookies.get('token'));
 
-            const userData = { ...response.data, role: response.data.roles[0] }; 
-            setUser(userData);
-            console.log('Setting user:', userData); 
-        } catch (error) {
-            console.error('Login failed', error);
-        }
-    };
-
+        const userData = { ...response.data, role: response.data.roles[0] }; 
+        setUser(userData);
+        console.log('Setting user:', userData); 
+    } catch (error) {
+        console.error('Login failed', error);
+    }
+  };
+  
     const logout = () => {
         setUser(null);
-        Cookies.remove('token'); 
+        Cookies.remove('token');
     };
 
     return (

@@ -22,8 +22,6 @@ public class TournamentService {
     @Autowired
     private UserRepository userRepository;
 
-    private Role role;
-
     // Retrieve all tournaments
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll();
@@ -64,24 +62,7 @@ public class TournamentService {
         tournament.setEndDate(updatedTournament.getEndDate());
         tournament.setMinElo(updatedTournament.getMinElo());
         tournament.setMaxElo(updatedTournament.getMaxElo());
-
-        return tournamentRepository.save(tournament);
-    }
-
-    // Update existing tournament
-    public Tournament updateTournament(String id, Tournament updatedTournament) {
-        Tournament tournament = tournamentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
-
-        // Update fields
-        tournament.setName(updatedTournament.getName());
-        tournament.setDescription(updatedTournament.getDescription());
-        tournament.setNumParticipants(updatedTournament.getNumParticipants());
-        tournament.setStartDate(updatedTournament.getStartDate());
-        tournament.setEndDate(updatedTournament.getEndDate());
-        tournament.setMinElo(updatedTournament.getMinElo());
-        tournament.setMaxElo(updatedTournament.getMaxElo());
-        tournament.setImageUrl(updatedTournament.getImageUrl()); // Use getImageUrl() instead
+        tournament.setImageUrl(updatedTournament.getImageUrl());
 
         return tournamentRepository.save(tournament);
     }
@@ -90,19 +71,17 @@ public class TournamentService {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
-        // Define the path to save the image
-        String folder = "tournament-images"; // Make sure this folder exists
+        String folder = "tournament-images";
+        Files.createDirectories(Paths.get(folder)); // Create directory if it doesn't exist
         Path path = Paths.get(folder, file.getOriginalFilename());
 
-        // Save the file locally
         Files.write(path, file.getBytes());
 
-        // Update the tournament with the image URL (local path)
-        String imageUrl = path.toString();
+        String imageUrl = "/api/images/" + file.getOriginalFilename(); // Return a more accessible URL
         tournament.setImageUrl(imageUrl);
-        tournamentRepository.save(tournament); // Save updated tournament
+        tournamentRepository.save(tournament);
 
-        return imageUrl; // Return the URL/path of the uploaded image
+        return imageUrl;
     }
 
     // Add a participant to the tournament
@@ -133,6 +112,14 @@ public class TournamentService {
     public Tournament removeParticipant(String tournamentId, String playerId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
+
+        // Assuming you have a method to fetch the player
+        Player player = userRepository.findById(playerId)
+                .filter(u -> u instanceof Player)
+                .map(u -> (Player) u)
+                .orElseThrow(() -> new RuntimeException("Player not found"));
+
+        tournament.getParticipants().remove(player);
         return tournamentRepository.save(tournament);
     }
 

@@ -55,7 +55,7 @@ const AdminSidebar = () => {
           </li>
           <li>
             <Link
-              to="/manage-schedules"
+              to="/manage-tournaments"
               className={`flex items-center space-x-4 pt-4 pb-4 pl-4 font-light font-hevetica-neue text-customGray ${location.pathname === '/manage-schedules' ? 'text-white font-medium bg-customGray bg-opacity-80' : 'hover:text-yellow-500'}`}
             >
               <LuCalendar className="text-3xl" />

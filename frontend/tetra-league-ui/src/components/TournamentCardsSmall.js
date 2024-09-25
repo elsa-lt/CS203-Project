@@ -2,8 +2,14 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card'; // Import Bootstrap Card component for styling
 import RegistrationButtons from '../components/RegistrationButtons';
+import { useNavigate } from 'react-router-dom';
 
 const TournamentCardsSmall = () => {
+  const navigate = useNavigate();
+
+  function ClickHandler() {
+    navigate('/tournament-details');
+  }
     return (
       <Card className="w-[28rem] rounded-lg overflow-hidden bg-white border border-customGray border-opacity-30 bg-opacity-80">
         <Card.Body>
@@ -22,7 +28,7 @@ const TournamentCardsSmall = () => {
 
             {/*Tournament Name & Date*/}
             <div className="flex flex-col flex-none basis-3/5 mr-6">
-              <div className="flex font-medium font-sans-serif customGray text-4xl mb-4">
+              <div className="flex font-medium font-sans-serif customGray text-4xl mb-4" onClick={ClickHandler}>
                 Puyo Puyo Tetris 2 Tournament
               </div>
               <div className="flex helvetica-neue customGray mb-4">

@@ -19,23 +19,49 @@ public class TournamentService {
 
     private Role role;
 
-    // Retrieve all tournaments
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll();
     }
 
-    // Retrieve tournament by ID
     public Tournament getTournamentById(String id) {
         return tournamentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
     }
 
-    // Create new tournament
     public Tournament createTournament(Tournament tournament) {
+        tournament.validate();
+        validateTournamentOverlap(tournament);
         return tournamentRepository.save(tournament);
     }
 
-    // Add a participant to the tournament
+    public void validateTournamentOverlap(Tournament newTournament) {
+        List<Tournament> tournaments = tournamentRepository.findAll();
+        for (Tournament existingTournament : tournaments) {
+            if (existingTournament.getName().equals(newTournament.getName()) &&
+                    (newTournament.getStartDate().isBefore(existingTournament.getEndDate()) &&
+                            newTournament.getEndDate().isAfter(existingTournament.getStartDate()))) {
+                throw new IllegalArgumentException("Another tournament with the same name overlaps in time frame");
+            }
+        }
+    }
+
+    public Tournament updateTournament(String id, Tournament updatedTournament) {
+        Tournament tournament = tournamentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+
+        updatedTournament.validate();
+
+        tournament.setName(updatedTournament.getName());
+        tournament.setDescription(updatedTournament.getDescription());
+        tournament.setNumParticipants(updatedTournament.getNumParticipants());
+        tournament.setStartDate(updatedTournament.getStartDate());
+        tournament.setEndDate(updatedTournament.getEndDate());
+        tournament.setMinElo(updatedTournament.getMinElo());
+        tournament.setMaxElo(updatedTournament.getMaxElo());
+
+        return tournamentRepository.save(tournament);
+    }
+
     public Tournament addParticipant(String tournamentId, String playerId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
@@ -49,7 +75,7 @@ public class TournamentService {
         if (isPlayer) {
             if (user instanceof Player) {
                 Player player = (Player) user;
-                tournament.addParticipant(player); // to add: elo check before adding to tournament
+                tournament.addParticipant(player);
             } else {
                 throw new ClassCastException("User is a player but cannot be cast to Player.");
             }
@@ -60,20 +86,16 @@ public class TournamentService {
         return tournamentRepository.save(tournament);
     }
 
-    // Update existing tournament
-    public Tournament updateTournament(String id, Tournament updatedTournament) {
-        Tournament tournament = tournamentRepository.findById(id)
+    public Tournament removeParticipant(String tournamentId, String playerId) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+        return tournamentRepository.save(tournament);
+    }
+
+    public void deleteTournament(String tournamentId) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
-        // Update fields
-        tournament.setName(updatedTournament.getName());
-        tournament.setDescription(updatedTournament.getDescription());
-        tournament.setNumParticipants(updatedTournament.getNumParticipants());
-        tournament.setStartDate(updatedTournament.getStartDate());
-        tournament.setEndDate(updatedTournament.getEndDate());
-        tournament.setMinElo(updatedTournament.getMinElo());
-        tournament.setMaxElo(updatedTournament.getMaxElo());
-
-        return tournamentRepository.save(tournament);
+        tournamentRepository.delete(tournament);
     }
 }

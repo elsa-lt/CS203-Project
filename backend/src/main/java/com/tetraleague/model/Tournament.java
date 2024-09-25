@@ -52,6 +52,14 @@ public class Tournament {
         if (numParticipants < 2) {
             throw new IllegalArgumentException("Number of participants cannot be less than 2.");
         }
+    private String imageUrl; // Use this field to store the image URL
+
+    public String getImageUrl() {
+        return imageUrl; // Correct getter method
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl; // Correct setter method
     }
 
     public void addParticipant(Player player) {

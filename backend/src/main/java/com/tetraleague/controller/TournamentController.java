@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -21,28 +23,28 @@ public class TournamentController {
         this.tournamentService = tournamentService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<Tournament>> getAllTournaments() {
         List<Tournament> tournaments = tournamentService.getAllTournaments();
         return ResponseEntity.ok(tournaments);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<Tournament> getTournamentById(@PathVariable String id) {
         Tournament tournament = tournamentService.getTournamentById(id);
         return ResponseEntity.ok(tournament);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Tournament> createTournament(@RequestBody Tournament tournament) {
         Tournament createdTournament = tournamentService.createTournament(tournament);
         return ResponseEntity.status(201).body(createdTournament);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Tournament> updateTournament(@PathVariable String id, @RequestBody Tournament tournament) {
         Tournament updatedTournament = tournamentService.updateTournament(id, tournament);
@@ -57,9 +59,20 @@ public class TournamentController {
     }
 
     @PostMapping("/{id}/participants")
+    //@PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/{id}/upload-image")
+    public ResponseEntity<String> uploadImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
+        try {
+            String imageUrl = tournamentService.uploadImage(id, file);
+            return ResponseEntity.ok(imageUrl);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed: " + e.getMessage());
+        }
+    }
+
+    //@PostMapping("/{id}/participants")
     public ResponseEntity<Tournament> addParticipant(@PathVariable String id, @RequestBody String playerID) {
         Tournament updatedTournament = tournamentService.addParticipant(id, playerID);
         return ResponseEntity.ok(updatedTournament);
     }
-
 }

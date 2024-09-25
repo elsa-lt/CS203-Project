@@ -42,6 +42,16 @@ public class Tournament {
 
     private List<Player> participants = new ArrayList<>();
 
+    private String imageUrl; // Use this field to store the image URL
+
+    public String getImageUrl() {
+        return imageUrl; // Correct getter method
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl; // Correct setter method
+    }
+
     public void addParticipant(Player player) {
         if (player == null) {
             throw new IllegalArgumentException("Player cannot be null");

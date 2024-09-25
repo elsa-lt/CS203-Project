@@ -12,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.tetraleague.security.jwt.AuthEntryPointJwt;
 import com.tetraleague.security.jwt.AuthTokenFilter;
@@ -23,7 +25,7 @@ import com.tetraleague.security.services.UserDetailsServiceImpl;
 //(securedEnabled = true,
 //jsr250Enabled = true,
 //prePostEnabled = true) // by default
-public class WebSecurityConfig { 
+public class WebSecurityConfig implements WebMvcConfigurer { 
   @Autowired
   UserDetailsServiceImpl userDetailsService;
 
@@ -69,4 +71,13 @@ public class WebSecurityConfig {
 
     return http.build();
   }
+
+  @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000") // Your frontend URL
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*") // Allow all headers
+                .allowCredentials(true); // Allow cookies if needed
+    }
 }

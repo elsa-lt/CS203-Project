@@ -10,6 +10,7 @@ import LeaderboardPage from './pages/player/LeaderboardPage';
 import MatchHistoryPage from './pages/player/MatchHistoryPage';
 import ProfilePage from './pages/player/ProfilePage';
 import TournamentsPage from './pages/player/TournamentsPage';
+import TournamentDetails from './pages/player/TournamentDetails';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import ManageTournamentsPage from './pages/admin/ManageTournamentsPage';
 import ManageParticipantsPage from './pages/admin/ManageParticipantsPage';

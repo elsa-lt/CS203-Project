@@ -2,8 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Your custom styles */
+@import url('https://fonts.googleapis.com/css2?family=Jaro:opsz@6..72&display=swap');
 
+/* Your custom styles */
 
 .press-start-2p-regular {
   font-family: "Press Start 2P", system-ui;
@@ -48,4 +49,8 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.customGray {
+  color: #2e2e2e;
 }

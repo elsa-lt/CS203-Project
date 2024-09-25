@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.tetraleague.model.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
-import com.tetraleague.model.ERole;
-import com.tetraleague.model.Role;
-import com.tetraleague.model.User;
 import com.tetraleague.payload.request.LoginRequest;
 import com.tetraleague.payload.request.SignupRequest;
 import com.tetraleague.payload.response.JwtResponse;
@@ -89,14 +87,14 @@ public class AuthController {
     // Check if username or email already exists
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
       return ResponseEntity
-          .badRequest()
-          .body(new MessageResponse("Error: Username is already taken!"));
+              .badRequest()
+              .body(new MessageResponse("Error: Username is already taken!"));
     }
 
     if (userRepository.existsByEmail(signUpRequest.getEmail())) {
       return ResponseEntity
-          .badRequest()
-          .body(new MessageResponse("Error: Email is already in use!"));
+              .badRequest()
+              .body(new MessageResponse("Error: Email is already in use!"));
     }
 
     if (!signUpRequest.getPassword().trim().equals(signUpRequest.getConfirmPassword().trim())) {
@@ -135,10 +133,17 @@ public class AuthController {
                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(defaultRole);
         }
-      });
+      }
+    }
+
+    if (user == null) {
+      return ResponseEntity
+              .badRequest()
+              .body(new MessageResponse("Error: User could not be created due to invalid roles!"));
     }
 
     user.setRoles(roles);
+
     userRepository.save(user);
 
     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));

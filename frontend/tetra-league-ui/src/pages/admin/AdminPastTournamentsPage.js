@@ -1,7 +1,7 @@
 import React from 'react';
 import AdminSidebar from '../../components/AdminSidebar';
 
-const ManageSchedulesPage = () => {
+const AdminPastTournamentsPage = () => {
   return (
     <div className="flex">
     <AdminSidebar className="fixed top-0 left-0 h-full w-80 z-10" />
@@ -10,11 +10,11 @@ const ManageSchedulesPage = () => {
       style={{ backgroundImage: `url('/Background/White Background.png')` }}
     >
       <div className="text-4xl font-bold font-press-start mb-4 ml-4 text-gray-700">
-        MANAGE SCHEDULES
+        MANAGE RESULTS
       </div>
     </main>
   </div>
   );
 };
 
-export default ManageSchedulesPage;
+export default AdminPastTournamentsPage;

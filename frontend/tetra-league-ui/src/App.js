@@ -14,9 +14,7 @@ import TournamentsPage from './pages/player/TournamentsPage';
 import TournamentDetails from './pages/player/TournamentDetails';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import ManageTournamentsPage from './pages/admin/ManageTournamentsPage';
-import ManageParticipantsPage from './pages/admin/ManageParticipantsPage';
-import ManageSchedulesPage from './pages/admin/ManageSchedulesPage';
-import ManageResultsPage from './pages/admin/ManageResultsPage';
+import AdminPastTournamentsPage from './pages/admin/AdminPastTournamentsPage';
 import CreateTournamentPage from './pages/admin/CreateTournamentPage';
 
 const ProtectedRoute = ({ element, role }) => {
@@ -46,9 +44,7 @@ function App() {
       <Route path="/tournament-details" element={<TournamentDetails />} />
       <Route path="/dashboard" element={<AdminDashboardPage />} />
       <Route path="/manage-tournaments" element={<ManageTournamentsPage />} />
-      <Route path="/manage-schedules" element={<ManageSchedulesPage />} />
-      <Route path="/manage-participants" element={<ManageParticipantsPage />} />
-      <Route path="/manage-results" element={<ManageResultsPage />} />
+      <Route path="/admin-past-tournaments" element={<AdminPastTournamentsPage />} />
       <Route path="/create-tournament" element={<CreateTournamentPage />} />
 
     </Routes>

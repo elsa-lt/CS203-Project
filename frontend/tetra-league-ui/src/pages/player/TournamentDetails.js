@@ -1,8 +1,12 @@
+//Need to link to backend API & fix responsiveness
+
 import React from 'react';
 import Navbar from '../../components/UserNavbar';
-import MainTournamentSubtabs from '../../components/MainTournamentSubtabs';
+import TournamentCard from '../../components/TournamentCard';
+import TournamentSubTabs from '../../components/TournamentSubTabs';
 
-const TournamentsPage = () => {
+
+const TournamentDetails = () => {
   return (
     <main
       className="flex min-h-screen bg-cover bg-center p-10"
@@ -21,16 +25,19 @@ const TournamentsPage = () => {
           </img>
         </div>
 
-        <div className="mt-6 mb-6">
+        <div className="mt-6">
           <hr className="w-full border-customGray border-opacity-30"/>
         </div>
 
-        <MainTournamentSubtabs />
+        <TournamentCard/>
+        
+        <div className="flex mt-10">
+          <TournamentSubTabs />
+        </div>
 
       </div>
-      
     </main>
   );
 };
 
-export default TournamentsPage;
+export default TournamentDetails;

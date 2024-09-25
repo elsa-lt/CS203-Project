@@ -1,4 +1,3 @@
-// src/components/ProtectedRoute.js
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -6,11 +5,15 @@ import { useAuth } from '../context/AuthContext';
 const ProtectedRoute = ({ element, role }) => {
   const { user } = useAuth();
 
-  if (!user || user.role !== role) {
-    return <Navigate to="/login" replace />;
+  console.log('User:', user);
+  console.log('Required Role:', role); 
+
+  if (!user || (user.role !== role && user.role !== `ROLE_${role.toUpperCase()}`)) {
+      return <Navigate to="/login" replace />;
   }
 
-  return element;
+  return element; 
 };
+
 
 export default ProtectedRoute;

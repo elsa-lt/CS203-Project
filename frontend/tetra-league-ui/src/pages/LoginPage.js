@@ -11,15 +11,19 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    try {
-      await login(username, password);
-      navigate('/home');
-    } catch (err) {
-      setError('Login failed. Please check your credentials.');
-    }
-  };
+    console.log('Form submitted'); 
 
+    try {
+        await login(username, password);
+        console.log('Navigating to /home');
+        navigate('/home'); 
+    } catch (error) {
+        console.error('Error:', error);
+        setError('Login failed: ' + (error.response ? error.response.data : error.message));
+    }
+};
+
+  
   return (
     <main className="flex min-h-screen" style={{ backgroundImage: `url('/Background/White Background.png')` }}>
       <div className="flex flex-col justify-center w-1/2 p-8 bg-white bg-opacity-60">
@@ -40,6 +44,7 @@ const LoginPage = () => {
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                required
               />
             </div>
             <div className="mb-4">
@@ -51,6 +56,7 @@ const LoginPage = () => {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
             <div className="flex justify-between items-center mb-4">

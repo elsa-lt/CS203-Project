@@ -80,11 +80,14 @@ public class WebSecurityConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:3000"); // Replace with your frontend URL
+        config.setAllowCredentials(true); 
+        config.addAllowedOrigin("http://localhost:3000"); 
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        config.addExposedHeader("Set-Cookie"); 
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
+    
+    
 }

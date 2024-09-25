@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.tetraleague.model.ERole;
 import com.tetraleague.model.Role;
@@ -52,13 +53,24 @@ public class AuthController {
   JwtUtils jwtUtils;
 
   @PostMapping("/signin")
-  public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
+  public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
+      HttpServletResponse response) {
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = jwtUtils.generateJwtToken(authentication);
+
+    // Create and configure the cookie
+    Cookie jwtCookie = new Cookie("JWT", jwt);
+    jwtCookie.setHttpOnly(true);
+    jwtCookie.setSecure(true);
+    jwtCookie.setPath("/");
+    jwtCookie.setMaxAge(60 * 60);
+
+    // Add the cookie to the response
+    response.addCookie(jwtCookie);
+    response.addHeader("Set-Cookie", "JWT=" + jwt + "; Path=/; HttpOnly; SameSite=Strict");
 
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
     List<String> roles = userDetails.getAuthorities().stream()
@@ -93,7 +105,6 @@ public class AuthController {
           .body(new MessageResponse("Error: Passwords do not match!"));
     }
 
-    // Create new user's account
     User user = new User(signUpRequest.getUsername(),
         signUpRequest.getEmail(),
         encoder.encode(signUpRequest.getPassword()));
@@ -101,7 +112,6 @@ public class AuthController {
     Set<String> strRoles = signUpRequest.getRoles();
     Set<Role> roles = new HashSet<>();
 
-    // Automatically assign ROLE_PLAYER if no roles are provided
     if (strRoles == null || strRoles.isEmpty()) {
       Role playerRole = roleRepository.findByName(ERole.ROLE_PLAYER)
           .orElseThrow(() -> new RuntimeException("Error: Role is not found."));

@@ -42,16 +42,6 @@ public class Tournament {
 
     private List<Player> participants = new ArrayList<>();
 
-    public void validate() {
-        if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("Start date cannot be after end date.");
-        }
-        if (minElo > maxElo) {
-            throw new IllegalArgumentException("Minimum Elo cannot be more than maximum Elo.");
-        }
-        if (numParticipants < 2) {
-            throw new IllegalArgumentException("Number of participants cannot be less than 2.");
-        }
     private String imageUrl; // Use this field to store the image URL
 
     public String getImageUrl() {

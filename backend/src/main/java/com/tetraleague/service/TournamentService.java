@@ -35,43 +35,43 @@ public class TournamentService {
     }
 
     public Tournament createTournament(Tournament tournament) {
-        tournament.validate();
-        validateTournamentOverlap(tournament);
+        validateTournament(tournament);
         return tournamentRepository.save(tournament);
     }
 
-    public void validateTournamentOverlap(Tournament newTournament) {
+    private void validateTournament(Tournament tournament) {
+        if (tournament.getNumParticipants() < 2) {
+            throw new IllegalArgumentException("Number of participants cannot be less than 2.");
+        }
+        if (!isPowerOfTwo(tournament.getNumParticipants())) {
+            throw new IllegalArgumentException("Number of participants must be a power of 2.");
+        }
+        if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
+            throw new IllegalArgumentException("Start date cannot be after end date.");
+        }
+        if (tournament.getMinElo() > tournament.getMaxElo()) {
+            throw new IllegalArgumentException("Minimum Elo cannot be greater than maximum Elo.");
+        }
         List<Tournament> tournaments = tournamentRepository.findAll();
         for (Tournament existingTournament : tournaments) {
-            if (existingTournament.getName().equals(newTournament.getName()) &&
-                    (newTournament.getStartDate().isBefore(existingTournament.getEndDate()) &&
-                            newTournament.getEndDate().isAfter(existingTournament.getStartDate()))) {
+            if (existingTournament.getName().equals(tournament.getName()) &&
+                    (tournament.getStartDate().isBefore(existingTournament.getEndDate()) &&
+                            (tournament.getStartDate().isBefore(existingTournament.getEndDate()) ||
+                                    tournament.getEndDate().isAfter(existingTournament.getStartDate())))) {
                 throw new IllegalArgumentException("Another tournament with the same name overlaps in time frame");
             }
         }
     }
 
-    public Tournament updateTournament(String id, Tournament updatedTournament) {
-        Tournament tournament = tournamentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
-
-        updatedTournament.validate();
-
-        tournament.setName(updatedTournament.getName());
-        tournament.setDescription(updatedTournament.getDescription());
-        tournament.setNumParticipants(updatedTournament.getNumParticipants());
-        tournament.setStartDate(updatedTournament.getStartDate());
-        tournament.setEndDate(updatedTournament.getEndDate());
-        tournament.setMinElo(updatedTournament.getMinElo());
-        tournament.setMaxElo(updatedTournament.getMaxElo());
-
-        return tournamentRepository.save(tournament);
+    private static boolean isPowerOfTwo(int n) {
+        return (n > 0) && ((n & (n - 1)) == 0);
     }
 
-    // Update existing tournament
     public Tournament updateTournament(String id, Tournament updatedTournament) {
         Tournament tournament = tournamentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
+
+        validateTournament(tournament);
 
         // Update fields
         tournament.setName(updatedTournament.getName());

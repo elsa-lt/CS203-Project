@@ -58,7 +58,7 @@ public class TournamentController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/participants")
+//    @PostMapping("/{id}/participants")
     //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/upload-image")
     public ResponseEntity<String> uploadImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {

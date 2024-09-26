@@ -69,10 +69,4 @@ public class TournamentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed: " + e.getMessage());
         }
     }
-
-    //@PostMapping("/{id}/participants")
-    public ResponseEntity<Tournament> addParticipant(@PathVariable String id, @RequestBody String playerID) {
-        Tournament updatedTournament = tournamentService.addParticipant(id, playerID);
-        return ResponseEntity.ok(updatedTournament);
-    }
 }

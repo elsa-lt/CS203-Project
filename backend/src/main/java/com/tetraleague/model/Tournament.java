@@ -26,7 +26,7 @@ public class Tournament {
     private String description;
 
     @NotNull(message = "Number of participants is required")
-    private Integer numParticipants;
+    private Integer maxParticipants;
 
     @NotNull(message = "Minimum Elo range is required")
     private Integer minElo;
@@ -42,29 +42,33 @@ public class Tournament {
 
     private List<Player> participants = new ArrayList<>();
 
-    private String imageUrl; // Use this field to store the image URL
+    private String imageUrl;
 
     public String getImageUrl() {
-        return imageUrl; // Correct getter method
+        return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl; // Correct setter method
+        this.imageUrl = imageUrl;
     }
 
     public void addParticipant(Player player) {
-        if (player == null) {
-            throw new IllegalArgumentException("Player cannot be null");
-        }
-
-        if (participants.size() >= numParticipants) {
-            throw new IllegalStateException("Tournament is full");
-        }
-
-        if (player.getEloRating() > maxElo || player.getEloRating() < minElo) {
-            throw new IllegalArgumentException("Player is ineligible for this tournament");
-        }
-
         participants.add(player);
+    }
+
+    public void removeParticipant(Player player) {
+        participants.remove(player);
+    }
+
+    public boolean hasEnded() {
+        return LocalDateTime.now().isAfter(endDate);
+    }
+
+    public boolean hasStarted() {
+        return LocalDateTime.now().isAfter(startDate);
+    }
+
+    public boolean isFull() {
+        return participants.size() >= maxParticipants;
     }
 }

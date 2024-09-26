@@ -138,7 +138,7 @@ public class TournamentService {
             }
 
             tournament.addParticipant(player);
-            player.getTournaments().add(tournament);
+            player.addTournament(tournament);
 
             userRepository.save(player);
             return tournamentRepository.save(tournament);
@@ -167,7 +167,7 @@ public class TournamentService {
             }
 
             tournament.removeParticipant(player);
-            player.getTournaments().remove(tournament);
+            player.removeTournament(tournament);
 
             userRepository.save(player);
             return tournamentRepository.save(tournament);

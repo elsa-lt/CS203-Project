@@ -53,9 +53,7 @@ public class Tournament {
     }
 
     public void addParticipant(Player player) {
-        if (!participants.contains(player)) {
-            participants.add(player);
-        }
+        participants.add(player);
     }
 
     public void removeParticipant(Player player) {

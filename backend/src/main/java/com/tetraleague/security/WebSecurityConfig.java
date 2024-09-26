@@ -73,12 +73,12 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     return http.build();
   }
 
-  @Override
-  public void addCorsMappings(CorsRegistry registry) {
-      registry.addMapping("/**")
-            .allowedOriginPatterns("http://localhost:3000") // Your frontend URL or pattern
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            .allowedHeaders("*") // Allow all headers
-            .allowCredentials(true); // Allow cookies if needed
-  }
+//  @Override
+//  public void addCorsMappings(CorsRegistry registry) {
+//      registry.addMapping("/**")
+//            .allowedOriginPatterns("http://localhost:3000") // Your frontend URL or pattern
+//            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+//            .allowedHeaders("*") // Allow all headers
+//            .allowCredentials(true); // Allow cookies if needed
+//  }
 }

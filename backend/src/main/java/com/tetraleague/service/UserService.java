@@ -42,12 +42,16 @@ public class UserService {
     public void joinTournament(Player player, String tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         tournamentService.addParticipant(tournamentId, player.getId());
+        if (!player.getTournaments().contains(tournament)) {
+            player.addTournament(tournament);
+        }
+
+        userRepository.save(player);
     }
 
     public void withdrawFromTournament(Player player, String tournamentId) {
         tournamentService.removeParticipant(tournamentId, player.getId());
     }
-
 
     public List<Tournament> getTournaments(String username) {
         Optional<Player> playerOptional = userRepository.findByUsername(username)

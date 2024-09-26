@@ -53,11 +53,17 @@ public class Tournament {
     }
 
     public void addParticipant(Player player) {
-        participants.add(player);
+        if (!participants.contains(player)) {
+            participants.add(player);
+            // No need to call player.addTournament(this) here
+        }
     }
 
     public void removeParticipant(Player player) {
-        participants.remove(player);
+        if (participants.contains(player)) {
+            participants.remove(player);
+            // No need to call player.removeTournament(this) here
+        }
     }
 
     public boolean hasEnded() {

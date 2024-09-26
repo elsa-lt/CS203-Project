@@ -5,6 +5,8 @@ import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -13,7 +15,7 @@ import java.util.List;
 @TypeAlias("player")
 public class Player extends User {
     private int eloRating;
-    private List<Tournament> tournaments;
+    private List<Tournament> tournaments = new ArrayList<>();
 
     public Player(String username, String email, String password, int eloRating) {
         super(username, email, password);
@@ -26,5 +28,6 @@ public class Player extends User {
 
     public void removeTournament(Tournament tournament) {
         tournaments.remove(tournament);
+
     }
 }

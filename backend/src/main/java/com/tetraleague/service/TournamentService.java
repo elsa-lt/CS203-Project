@@ -40,7 +40,7 @@ public class TournamentService {
     }
 
     private void validateTournament(Tournament tournament) {
-        if (tournament.getMaxParticipants() < 2) {
+        if (tournament.getMaxParticipants() == null || tournament.getMaxParticipants() < 2) {
             throw new IllegalArgumentException("Number of participants cannot be less than 2.");
         }
         if (!isPowerOfTwo(tournament.getMaxParticipants())) {
@@ -71,7 +71,7 @@ public class TournamentService {
         Tournament tournament = tournamentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
-        validateTournament(tournament);
+        validateTournament(updatedTournament);
 
         // Update fields
         tournament.setName(updatedTournament.getName());
@@ -129,19 +129,13 @@ public class TournamentService {
         }
 
         if (user instanceof Player player) {
-            if (tournament.getParticipants().contains(player)) {
-                throw new RuntimeException("Player is already participating in the tournament");
+            // Check both relationships separately
+            if (!tournament.getParticipants().contains(player)) {
+                tournament.addParticipant(player);  // Add player to tournament
             }
 
-            if (player.getEloRating() < tournament.getMinElo() || player.getEloRating() > tournament.getMaxElo()) {
-                throw new RuntimeException("Player's Elo rating is not within the allowed range for this tournament");
-            }
-
-            tournament.addParticipant(player);
-            player.addTournament(tournament);
-
-            userRepository.save(player);
             return tournamentRepository.save(tournament);
+
         } else {
             throw new ClassCastException("User is a player but cannot be cast to Player.");
         }

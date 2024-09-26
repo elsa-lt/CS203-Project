@@ -4,6 +4,7 @@ import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.List;
 
 @Setter
 @Getter
@@ -11,10 +12,10 @@ import lombok.Setter;
 @TypeAlias("player")
 public class Player extends User {
     private int eloRating;
+    private List<Tournament> tournaments;
 
     public Player(String username, String email, String password, int eloRating) {
         super(username, email, password);
         this.eloRating = eloRating;
     }
-
 }

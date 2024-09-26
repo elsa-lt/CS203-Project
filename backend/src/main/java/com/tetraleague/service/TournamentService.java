@@ -40,10 +40,10 @@ public class TournamentService {
     }
 
     private void validateTournament(Tournament tournament) {
-        if (tournament.getNumParticipants() < 2) {
+        if (tournament.getMaxParticipants() < 2) {
             throw new IllegalArgumentException("Number of participants cannot be less than 2.");
         }
-        if (!isPowerOfTwo(tournament.getNumParticipants())) {
+        if (!isPowerOfTwo(tournament.getMaxParticipants())) {
             throw new IllegalArgumentException("Number of participants must be a power of 2.");
         }
         if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
@@ -76,12 +76,12 @@ public class TournamentService {
         // Update fields
         tournament.setName(updatedTournament.getName());
         tournament.setDescription(updatedTournament.getDescription());
-        tournament.setNumParticipants(updatedTournament.getNumParticipants());
+        tournament.setMaxParticipants(updatedTournament.getMaxParticipants());
         tournament.setStartDate(updatedTournament.getStartDate());
         tournament.setEndDate(updatedTournament.getEndDate());
         tournament.setMinElo(updatedTournament.getMinElo());
         tournament.setMaxElo(updatedTournament.getMaxElo());
-        tournament.setImageUrl(updatedTournament.getImageUrl()); // Use getImageUrl() instead
+        tournament.setImageUrl(updatedTournament.getImageUrl());
 
         return tournamentRepository.save(tournament);
     }
@@ -90,23 +90,64 @@ public class TournamentService {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
-        // Define the path to save the image
-        String folder = "tournament-images"; // Make sure this folder exists
+        String folder = "tournament-images";
         Path path = Paths.get(folder, file.getOriginalFilename());
 
         // Save the file locally
         Files.write(path, file.getBytes());
 
-        // Update the tournament with the image URL (local path)
         String imageUrl = path.toString();
         tournament.setImageUrl(imageUrl);
-        tournamentRepository.save(tournament); // Save updated tournament
+        tournamentRepository.save(tournament);
 
-        return imageUrl; // Return the URL/path of the uploaded image
+        return imageUrl;
     }
 
-    // Add a participant to the tournament
     public Tournament addParticipant(String tournamentId, String playerId) {
+        // Fetch the tournament
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+
+        if (tournament.hasEnded()) {
+            throw new RuntimeException("Tournament has already ended");
+        }
+        if (tournament.hasStarted()) {
+            throw new RuntimeException("Tournament has already started");
+        }
+        if (tournament.isFull()) {
+            throw new RuntimeException("Tournament is full");
+        }
+
+        User user = userRepository.findById(playerId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        boolean isPlayer = user.getRoles().stream()
+                .anyMatch(role -> role.getName().equals(ERole.ROLE_PLAYER));
+
+        if (!isPlayer) {
+            throw new RuntimeException("User is not a player");
+        }
+
+        if (user instanceof Player player) {
+            if (tournament.getParticipants().contains(player)) {
+                throw new RuntimeException("Player is already participating in the tournament");
+            }
+
+            if (player.getEloRating() < tournament.getMinElo() || player.getEloRating() > tournament.getMaxElo()) {
+                throw new RuntimeException("Player's Elo rating is not within the allowed range for this tournament");
+            }
+
+            tournament.addParticipant(player);
+            player.getTournaments().add(tournament);
+
+            userRepository.save(player);
+            return tournamentRepository.save(tournament);
+        } else {
+            throw new ClassCastException("User is a player but cannot be cast to Player.");
+        }
+    }
+
+    public Tournament removeParticipant(String tournamentId, String playerId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
@@ -116,24 +157,23 @@ public class TournamentService {
         boolean isPlayer = user.getRoles().stream()
                 .anyMatch(role -> role.getName().equals(ERole.ROLE_PLAYER));
 
-        if (isPlayer) {
-            if (user instanceof Player) {
-                Player player = (Player) user;
-                tournament.addParticipant(player);
-            } else {
-                throw new ClassCastException("User is a player but cannot be cast to Player.");
-            }
-        } else {
+        if (!isPlayer) {
             throw new RuntimeException("User is not a player");
         }
 
-        return tournamentRepository.save(tournament);
-    }
+        if (user instanceof Player player) {
+            if (!tournament.getParticipants().contains(player)) {
+                throw new RuntimeException("Player is not participating in the tournament");
+            }
 
-    public Tournament removeParticipant(String tournamentId, String playerId) {
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
-        return tournamentRepository.save(tournament);
+            tournament.removeParticipant(player);
+            player.getTournaments().remove(tournament);
+
+            userRepository.save(player);
+            return tournamentRepository.save(tournament);
+        } else {
+            throw new ClassCastException("User is a player but cannot be cast to Player.");
+        }
     }
 
     public void deleteTournament(String tournamentId) {

@@ -1,6 +1,6 @@
 import Navbar from '../../components/UserNavbar';
 import React, { useState } from 'react';
-import './ProfilePage.css'; //styling the profile page
+import '../../styles/ProfilePage.css'; //styling the profile page
 
 const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);

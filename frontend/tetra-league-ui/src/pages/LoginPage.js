@@ -11,19 +11,28 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted'); 
+    console.log('Form submitted');
 
     try {
-        await login(username, password);
-        console.log('Navigating to /home');
-        navigate('/home'); 
-    } catch (error) {
-        console.error('Error:', error);
-        setError('Login failed: ' + (error.response ? error.response.data : error.message));
-    }
-};
+      const user = await login(username, password); // Get user info with roles
+      console.log('User roles:', user.roles); // Debug roles
 
-  
+      if (user.roles.includes('ROLE_ADMIN')) {
+        console.log('Navigating to /dashboard');
+        navigate('/dashboard');
+      } else if (user.roles.includes('ROLE_PLAYER')) {
+        console.log('Navigating to /home');
+        navigate('/home');
+      } else {
+        navigate('/login');
+        setError('User role not recognized');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setError('Invalid login. Please try again.');
+    }
+  };
+
   return (
     <main className="flex min-h-screen" style={{ backgroundImage: `url('/Background/White Background.png')` }}>
       <div className="flex flex-col justify-center w-1/2 p-8 bg-white bg-opacity-60">
@@ -39,7 +48,7 @@ const LoginPage = () => {
               <label htmlFor="username" className="block text-gray-700">Username</label>
               <input
                 id="username"
-                type="text" 
+                type="text"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 placeholder="Username"
                 value={username}

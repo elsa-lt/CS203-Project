@@ -1,6 +1,6 @@
 import React from 'react';
 import Sidebar from '../../components/AdminSidebar';
-import Navbar from '../../components/UserNavbar';
+import AdminNavbar from '../../components/AdminNavbar';
 import { useState } from 'react';
 
 const CreateTournamentsPage = () => {
@@ -33,7 +33,7 @@ const CreateTournamentsPage = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <Navbar className="fixed top-0 left-0 h-full w-80 z-10" />
+      <AdminNavbar className="fixed top-0 left-0 h-full w-80 z-10" />
       <main
         className="flex-1 min-h-screen bg-cover bg-center p-6 ml-80"
         style={{ backgroundImage: `url('/Background/White Background.png')` }}

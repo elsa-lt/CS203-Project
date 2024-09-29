@@ -1,6 +1,6 @@
 import React from 'react';
 import AdminSidebar from '../../components/AdminSidebar';
-import Navbar from '../../components/UserNavbar';
+import AdminNavbar from '../../components/AdminNavbar';
 import AdminTournamentSubtabs from '../../components/AdminTournamentSubtabs';
 
 const ManageTournamentsPage = () => {
@@ -11,7 +11,7 @@ const ManageTournamentsPage = () => {
     >
       
       <div className="fixed">
-        <Navbar />
+        <AdminNavbar />
         <AdminSidebar />
       </div>
 

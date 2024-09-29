@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from '../../components/UserNavbar';
+import AdminNavbar from '../../components/AdminNavbar';
 import AdminSidebar from '../../components/AdminSidebar';
 import Cards from '../../components/AdminCards';
 import Announcements from '../../components/AdminCardsAnnouncements'; 
@@ -13,7 +13,7 @@ const AdminDashboardPage = () => {
     >
       <div className="flex">
         <AdminSidebar className="fixed z-10" />
-        <Navbar className="fixed z-40"/>
+        <AdminNavbar className="fixed z-40"/>
       </div>
 
       <div className="flex flex-col min-h-screen w-full mt-14 ml-60 mr-0">

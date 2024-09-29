@@ -40,7 +40,7 @@ const CreateTournamentsPage = () => {
       >
         <div className="w-1/2 p-8 relative">
           <div className="relative top-10 left-60 text-center">
-            <img src="/Headers/Tournament Creator 1.png" alt="Profile" className="w-72 md:w-6/12 -ml-80" style={{ width: '550px' }} />
+            <img src="/Headers/Tournament Creator 1.png" alt="Profile" className="w-72 md:w-6/12 -ml-80" style={{ width: '320px' }} />
           </div>
         </div>
 

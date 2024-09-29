@@ -3,8 +3,13 @@ import React from 'react';
 import Card from 'react-bootstrap/Card';
 import StartButtons from '../components/StartButtons'
 import { FiEdit } from "react-icons/fi";
+import { useNavigate } from 'react-router-dom';
 
 const TournamentCardsSmall = () => {
+  const editnavigate= useNavigate();
+  function HandleEdit(){
+    editnavigate('/edit-tournament');
+  }
     return (
       <Card className="w-[28rem] rounded-lg overflow-hidden bg-white border border-customGray border-opacity-30 bg-opacity-80">
         <Card.Body>
@@ -42,7 +47,7 @@ const TournamentCardsSmall = () => {
             </div>
       
             <div className="flex flex-col w-full justify-between">
-                <div className="flex justify-end items-center">
+                <div className="flex justify-end items-center" on onClick={HandleEdit}>
                   <div className="flex mr-2">Edit</div>
                   <FiEdit className="text-2xl" />
                 </div>

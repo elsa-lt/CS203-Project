@@ -14,11 +14,11 @@ const TournamentCardsSmall = () => {
       <Card className="w-[28rem] rounded-lg overflow-hidden bg-white border border-customGray border-opacity-30 bg-opacity-80">
         <Card.Body>
           {/*Header Image*/}
-          <div className="relative flex h-72">
+          <div className="relative h-72">
             <img
               src="/Online Images/Puyo Tournament Pic.jpg"
               alt="Tournaments Header Pic"
-              className="object-cover w-full h-full justify-center">
+              className="object-cover w-[28rem] h-72 justify-center">
             </img>
           </div>
 
@@ -47,7 +47,7 @@ const TournamentCardsSmall = () => {
             </div>
       
             <div className="flex flex-col w-full justify-between">
-                <div className="flex justify-end items-center" on onClick={HandleEdit}>
+                <div className="flex justify-end items-center cursor-pointer" on onClick={HandleEdit}>
                   <div className="flex mr-2">Edit</div>
                   <FiEdit className="text-2xl" />
                 </div>

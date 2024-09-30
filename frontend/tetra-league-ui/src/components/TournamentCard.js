@@ -2,7 +2,7 @@ import React from 'react';
 import Card from 'react-bootstrap/Card'; 
 import RegistrationButtons from '../components/RegistrationButtons';
 
-const TournamentCard = ({ name, startDate, endDate, prizePool, minElo }) => {
+const TournamentCard = ({ name, startDate, endDate, prizePool, minElo, imageUrl }) => {
     const formatDateRange = (start, end) => {
         const startFormatted = new Date(start).toLocaleDateString();
         const endFormatted = new Date(end).toLocaleDateString();
@@ -16,7 +16,7 @@ const TournamentCard = ({ name, startDate, endDate, prizePool, minElo }) => {
             {/* Header Image */}
             <div className="flex h-72 justify-center">
               <img
-                src="/Online Images/Puyo Tournament Pic.jpg"
+                src={imageUrl} 
                 alt="Tournaments Header Pic"
                 className="object-cover w-full h-full justify-center"
               />

@@ -69,6 +69,7 @@ const TournamentDetails = () => {
           endDate={tournament.endDate} 
           prizePool={tournament.prizePool} 
           minElo={tournament.minElo} 
+          imageUrl={tournament.imageUrl}
       />
         </div>
       </div>

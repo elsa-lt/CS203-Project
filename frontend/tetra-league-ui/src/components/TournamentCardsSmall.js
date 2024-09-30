@@ -13,8 +13,9 @@ const TournamentCardsSmall = ({ tournament }) => {
     <Card className="w-[28rem] rounded-lg overflow-hidden bg-white border border-customGray border-opacity-30 bg-opacity-80">
       <Card.Body>
         <div className="flex h-72 justify-center">
+          {/* Use imageUrl from the tournament object */}
           <img
-            src="/Online Images/Puyo Tournament Pic.jpg"
+            src={tournament.imageUrl}  
             alt="Tournaments Header Pic"
             className="object-cover w-full h-full justify-center"
             onClick={ClickHandler} 

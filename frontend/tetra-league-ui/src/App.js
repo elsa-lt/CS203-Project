@@ -10,12 +10,12 @@ import LeaderboardPage from './pages/player/LeaderboardPage';
 import MatchHistoryPage from './pages/player/MatchHistoryPage';
 import ProfilePage from './pages/player/ProfilePage';
 import TournamentsPage from './pages/player/TournamentsPage';
-import TournamentDetails from './pages/player/TournamentDetails';
+import TournamentDetailsPage from './pages/player/TournamentDetails';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import ManageTournamentsPage from './pages/admin/ManageTournamentsPage';
-import ManageParticipantsPage from './pages/admin/ManageParticipantsPage';
-import ManageSchedulesPage from './pages/admin/ManageSchedulesPage';
-import ManageResultsPage from './pages/admin/ManageResultsPage';
+import AdminPastTournamentsPage from './pages/admin/AdminPastTournamentsPage';
+import CreateTournamentPage from './pages/admin/CreateTournamentPage';
+import EditTournament from './pages/admin/EditTournament';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -30,11 +30,12 @@ function App() {
       <Route path="/match-history" element={<ProtectedRoute element={<MatchHistoryPage />} role="player" />} />
       <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} role="player" />} />
       <Route path="/tournaments" element={<ProtectedRoute element={<TournamentsPage />} role="player" />} />
+      <Route path="/tournament-details" element={<ProtectedRoute element={<TournamentDetailsPage />} role="player" />} />
       <Route path="/dashboard" element={<ProtectedRoute element={<AdminDashboardPage />} role="admin" />} />
       <Route path="/manage-tournaments" element={<ProtectedRoute element={<ManageTournamentsPage />} role="admin" />} />
-      <Route path="/manage-schedules" element={<ProtectedRoute element={<ManageSchedulesPage />} role="admin" />} />
-      <Route path="/manage-participants" element={<ProtectedRoute element={<ManageParticipantsPage />} role="admin" />} />
-      <Route path="/manage-results" element={<ProtectedRoute element={<ManageResultsPage />} role="admin" />} />
+      <Route path="/admin-past-tournaments" element={<ProtectedRoute element={<AdminPastTournamentsPage />} role="admin" />} />
+      <Route path="/create-tournament" element={<ProtectedRoute element={<CreateTournamentPage />} role="admin" />} />
+      <Route path="/edit-tournament" element={<ProtectedRoute element={<EditTournament />} role="admin" />} />
     </Routes>
   );
 }

@@ -3,6 +3,8 @@ import { useParams } from 'react-router-dom';
 import Navbar from '../../components/UserNavbar';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import TournamentCard from '../../components/TournamentCard';
+
 
 const TournamentDetails = () => {
   const { id } = useParams();
@@ -61,11 +63,13 @@ const TournamentDetails = () => {
         </div>
 
         <div className="flex flex-col p-6">
-          <h1 className="text-4xl font-semibold">{tournament.name}</h1>
-          <p className="mt-4 text-lg">Date: {formatDateRange(tournament.startDate, tournament.endDate)}</p>
-          <p className="mt-2 text-lg">Minimum Rank: {tournament.minElo}</p>
-          <p className="mt-2 text-lg">Maximum Rank: {tournament.maxElo}</p>
-          <p className="mt-2 text-lg">Prize Pool: ${tournament.prizePool}</p>
+        <TournamentCard 
+          name={tournament.name} 
+          startDate={tournament.startDate} 
+          endDate={tournament.endDate} 
+          prizePool={tournament.prizePool} 
+          minElo={tournament.minElo} 
+      />
         </div>
       </div>
     </main>

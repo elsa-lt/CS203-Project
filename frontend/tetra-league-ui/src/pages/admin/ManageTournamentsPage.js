@@ -1,20 +1,42 @@
 import React from 'react';
-import Navbar from '../../components/AdminNavbar';
+import AdminSidebar from '../../components/AdminSidebar';
+import AdminNavbar from '../../components/AdminNavbar';
+import AdminTournamentSubtabs from '../../components/AdminTournamentSubtabs';
 
 const ManageTournamentsPage = () => {
   return (
-    <div className="flex">
-    <Navbar className="fixed top-0 left-0 h-full w-80 z-10" />
     <main
-      className="flex-1 min-h-screen bg-cover bg-center p-6 ml-80" 
+      className="flex min-h-screen w-full bg-cover bg-center p-6" 
       style={{ backgroundImage: `url('/Background/White Background.png')` }}
     >
-      <div className="text-4xl font-bold font-press-start mb-4 ml-4 text-gray-700">
-        MANAGE TOURNAMENTS
+      
+      <div className="fixed">
+        <AdminNavbar />
+        <AdminSidebar />
       </div>
+
+      <div className = "flex flex-col min-h-screen w-full mt-20 ml-72 mr-12">
+        <div className = "flex flex-grow-0 w-30 h-10">
+          <img 
+            src="/Headers/Tournaments Header.png"
+            alt="Tournaments Header"
+            className="w-30 h-10">
+          </img>
+        </div>
+
+        <div className="mt-6 mb-6">
+          <hr className="w-full border-customGray border-opacity-30"/>
+        </div>
+      
+        <div className = "flex w-full justify-center items-center">
+          <AdminTournamentSubtabs />
+        </div>
+
+      </div>
+      
     </main>
-  </div>
   );
 };
 
 export default ManageTournamentsPage;
+

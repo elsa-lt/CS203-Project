@@ -1,6 +1,7 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
 import RegistrationButtons from '../components/RegistrationButtons';
+import { useNavigate } from 'react-router-dom';
 
 const TournamentCardsSmall = ({ tournament }) => {
   return (

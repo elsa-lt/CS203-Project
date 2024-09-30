@@ -12,20 +12,21 @@ const AdminCardsAnnouncements = () => {
 
   return (
     <div className="p-4">
-      <div className="relative bg-gray-700 bg-opacity-80 p-10 rounded-lg shadow-md h-96">
-        <div className="absolute top-0 left-0 w-full bg-gray-700 p-4 rounded-t-lg shadow-md z-10">
-          <h2 className="text-2xl text-gray-100 font-bold mb-4 font-press-start">
-            Announcements
+      <h2 className="text-2xl text-black font-bold mb-4 font-press-start ml-7">
+      Announcements </h2>
+      <div className="relative bg-white bg-opacity-80 p-10 rounded-lg shadow-md h-96">
+        
+          
             <button
               onClick={() => setIsModalOpen(true)}
-              className="absolute top-4 right-10 text-gray-100 hover:text-yellow-400 flex items-center space-x-1"
+              className="absolute top-4 right-10 text-black hover:text-yellow-400 flex items-center space-x-1"
               aria-label="Add Announcement"
             >
               <FaPlus className="text-xl" />
               <span className="text-sm">Add Announcement</span> 
             </button>
-          </h2>
-        </div>
+          
+        
         <AnnouncementModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

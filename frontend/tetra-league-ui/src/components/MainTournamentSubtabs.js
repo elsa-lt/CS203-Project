@@ -1,14 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TournamentCardsSmall from '../components/TournamentCardsSmall';
-import TournamentBar from '../components/TournamentBar';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const MainTournamentSubtabs = () => {
-  // State to keep track of the active tab
   const [activeTab, setActiveTab] = useState('My-Events');
+  const [tournaments, setTournaments] = useState([]);
+  
+  useEffect(() => {
+    const fetchTournaments = async () => {
+      try {
+          const token = Cookies.get('token');
+          console.log("Authorization Token:", token); 
+  
+          const response = await axios.get("http://localhost:8080/api/tournaments", {
+              headers: {
+                  Authorization: `Bearer ${token}`,
+              }
+          });
+          
+          setTournaments(response.data);
+      } catch (error) {
+          console.error("Error fetching tournaments:", error);
+      }
+  };
+  
+    fetchTournaments();
+  }, []);
 
-  // Function to handle tab click
-  const handleTabClick = (tabName) => {
-    setActiveTab(tabName);
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
   };
 
   return (
@@ -16,18 +37,13 @@ const MainTournamentSubtabs = () => {
       {/* Tab navigation */}
       <div className="flex justify-around">
         <button
-          className={`py-2 px-4
-            ${activeTab === 'My-Events' ? 'border-b-2 border-blue-500' : ''}
-            cursor-pointer hover:text-yellow-500`}
+          className={`py-2 px-4 ${activeTab === 'My-Events' ? 'border-b-2 border-blue-500' : ''} cursor-pointer hover:text-yellow-500`}
           onClick={() => handleTabClick('My-Events')}
         >
           My Events
         </button>
         <button
-          className={
-            `py-2 px-4 
-            ${activeTab === 'All-Tournaments' ? 'border-b-2 border-blue-500' : ''}
-            cursor-pointer hover:text-yellow-500`}
+          className={`py-2 px-4 ${activeTab === 'All-Tournaments' ? 'border-b-2 border-blue-500' : ''} cursor-pointer hover:text-yellow-500`}
           onClick={() => handleTabClick('All-Tournaments')}
         >
           All Tournaments
@@ -40,72 +56,48 @@ const MainTournamentSubtabs = () => {
           <div>
             <div className="flex flex-col w-full justify-between">
               <div className="relative flex items-center z-0 mb-10">
-                <div className = "flex flex-grow-0 w-30 h-10">
+                <div className="flex flex-grow-0 w-30 h-10">
                   <img
                     src="/Headers/Sub Title Bar.png"
                     alt="Sub Title Bar"
-                    className="w-30 h-10">
-                  </img>
+                    className="w-30 h-10"
+                  />
                   <div className="absolute flex font-sans-serif text-white text-lg ml-8 mt-1">
                     MY TOURNAMENTS
                   </div>
                 </div>
               </div>
 
+              {/* Display tournaments */}
               <div className="flex flex-wrap w-full gap-6">
-                <TournamentCardsSmall />
-                <TournamentCardsSmall />
-                <TournamentCardsSmall />
+                {tournaments.map((tournament) => (
+                  <TournamentCardsSmall key={tournament.id} tournament={tournament} />
+                ))}
               </div>
-
             </div>
           </div>
         )}
 
         {activeTab === 'All-Tournaments' && (
           <div>
-
-            <div className="flex flex-col w-full justify-between">
-
-              <div className="relative flex items-center z-0 mb-10">
-                <div className = "flex flex-grow-0 w-30 h-10">
-                  <img
-                    src="/Headers/Sub Title Bar.png"
-                    alt="Sub Title Bar"
-                    className="w-30 h-10">
-                  </img>
-                  <div className="absolute flex font-sans-serif text-white text-lg ml-8 mt-1">
-                    FEATURED TOURNAMENTS
-                  </div>
+            <div className="relative flex items-center z-0 mb-10">
+              <div className="flex flex-grow-0 w-30 h-10">
+                <img
+                  src="/Headers/Sub Title Bar.png"
+                  alt="Sub Title Bar"
+                  className="w-30 h-10"
+                />
+                <div className="absolute flex font-sans-serif text-white text-lg ml-8 mt-1">
+                  FEATURED TOURNAMENTS
                 </div>
               </div>
+            </div>
 
-              <div className="flex flex-wrap w-full gap-6">
-                <TournamentCardsSmall />
-                <TournamentCardsSmall />
-                <TournamentCardsSmall />
-              </div>
-
-              <div className="relative flex items-center z-0 mt-10 mb-10">
-                <div className = "flex flex-grow-0 w-30 h-10">
-                  <img
-                    src="/Headers/Sub Title Bar.png"
-                    alt="Sub Title Bar"
-                    className="w-30 h-10">
-                  </img>
-                  <div className="absolute flex font-sans-serif text-white text-lg ml-8 mt-1">
-                    ALL TOURNAMENTS
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col w-full gap-6">
-                <TournamentBar />
-                <TournamentBar />
-                <TournamentBar />
-                <TournamentBar />
-                <TournamentBar />
-              </div>
+            {/* Display tournaments */}
+            <div className="flex flex-wrap w-full gap-6">
+              {tournaments.map((tournament) => (
+                <TournamentCardsSmall key={tournament.id} tournament={tournament} />
+              ))}
             </div>
           </div>
         )}

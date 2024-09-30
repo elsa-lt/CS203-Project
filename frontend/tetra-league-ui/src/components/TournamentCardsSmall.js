@@ -1,9 +1,30 @@
 //Need to connect to backend API
-import React from 'react';
+import React,{ useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card'; // Import Bootstrap Card component for styling
 import RegistrationButtons from '../components/RegistrationButtons';
+import axios from 'axios';
+
 
 const TournamentCardsSmall = () => {
+
+  const [tournament, setTournament] = useState(null); // State to store tournament data
+  const id = '23'; // Replace with actual tournament ID or prop if necessary
+  
+  useEffect(() => {
+    // Fetch tournament data from the backend API
+    axios.get(`/api/admin/tournaments/${id}`)
+        .then(response => {
+            setTournament(response.data); // Store fetched data in state
+        })
+        .catch(error => {
+            console.error("Error fetching tournament:", error); // Handle any errors
+        });
+}, [id]); 
+
+if (!tournament) {
+  return <div>Loading...</div>;
+}
+
     return (
       <Card className="w-[28rem] rounded-lg overflow-hidden bg-white border border-customGray border-opacity-30 bg-opacity-80">
         <Card.Body>
@@ -23,7 +44,8 @@ const TournamentCardsSmall = () => {
             {/*Tournament Name & Date*/}
             <div className="flex flex-col flex-none basis-3/5 mr-6">
               <div className="flex font-medium font-sans-serif customGray text-4xl mb-4">
-                Puyo Puyo Tetris 2 Tournament
+                {/*tournament.name */}
+                Puyo
               </div>
               <div className="flex helvetica-neue customGray mb-4">
                 7 Sept, 2024 19:00

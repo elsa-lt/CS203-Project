@@ -18,6 +18,7 @@ import ManageParticipantsPage from './pages/admin/ManageParticipantsPage';
 import ManageSchedulesPage from './pages/admin/ManageSchedulesPage';
 import ManageResultsPage from './pages/admin/ManageResultsPage';
 
+
 const ProtectedRoute = ({ element, role }) => {
   const { user } = useAuth();
 
@@ -32,6 +33,7 @@ function App() {
   const { user } = useAuth();
 
   return (
+    
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />

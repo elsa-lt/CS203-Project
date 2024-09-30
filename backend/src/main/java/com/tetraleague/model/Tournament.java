@@ -42,7 +42,10 @@ public class Tournament {
     private LocalDateTime endDate;
 
     private List<Player> participants = new ArrayList<>();
-    private String imageUrl; // Field to store the image URL
+    private String imageUrl;
+
+    @NotNull(message = "Prize pool is required")
+    private Double prizePool;
 
     public void validate() {
         if (startDate.isAfter(endDate)) {

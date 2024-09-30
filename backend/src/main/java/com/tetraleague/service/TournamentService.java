@@ -63,6 +63,7 @@ public class TournamentService {
         tournament.setMinElo(updatedTournament.getMinElo());
         tournament.setMaxElo(updatedTournament.getMaxElo());
         tournament.setImageUrl(updatedTournament.getImageUrl());
+        tournament.setPrizePool(updatedTournament.getPrizePool());
 
         return tournamentRepository.save(tournament);
     }

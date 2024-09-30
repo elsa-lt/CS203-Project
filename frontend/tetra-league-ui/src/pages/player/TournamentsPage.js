@@ -1,8 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/UserNavbar';
 import MainTournamentSubtabs from '../../components/MainTournamentSubtabs';
+import Cookies from 'js-cookie';
+import axios from 'axios';
 
 const TournamentsPage = () => {
+  const [tournaments, setTournaments] = useState([]);
+
+  useEffect(() => {
+      const fetchTournaments = async () => {
+          try {
+              const token = Cookies.get('token');
+              console.log("Authorization Token:", token); 
+
+              const response = await axios.get("http://localhost:8080/api/tournaments", {
+                  headers: {
+                      Authorization: `Bearer ${token}`,
+                  }
+              });
+              
+              setTournaments(response.data);
+          } catch (error) {
+              console.error("Error fetching tournaments:", error);
+          }
+      };
+
+      fetchTournaments();
+  }, []);
+
   return (
     <main
       className="flex min-h-screen bg-cover bg-center p-10"
@@ -25,7 +50,7 @@ const TournamentsPage = () => {
           <hr className="w-full border-customGray border-opacity-30"/>
         </div>
 
-        <MainTournamentSubtabs />
+        <MainTournamentSubtabs tournaments={tournaments} />
 
       </div>
       

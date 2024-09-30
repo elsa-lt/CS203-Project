@@ -1,32 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import TournamentCardsSmall from '../components/TournamentCardsSmall';
-import axios from 'axios';
-import Cookies from 'js-cookie';
 
-const MainTournamentSubtabs = () => {
+const MainTournamentSubtabs = ({ tournaments }) => {
   const [activeTab, setActiveTab] = useState('My-Events');
-  const [tournaments, setTournaments] = useState([]);
-  
-  useEffect(() => {
-    const fetchTournaments = async () => {
-      try {
-          const token = Cookies.get('token');
-          console.log("Authorization Token:", token); 
-  
-          const response = await axios.get("http://localhost:8080/api/tournaments", {
-              headers: {
-                  Authorization: `Bearer ${token}`,
-              }
-          });
-          
-          setTournaments(response.data);
-      } catch (error) {
-          console.error("Error fetching tournaments:", error);
-      }
-  };
-  
-    fetchTournaments();
-  }, []);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);

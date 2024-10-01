@@ -1,52 +1,83 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate();
+    const [user, setUser] = useState(undefined);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setUser({ token });
-    }
-  }, []);
+    const fetchUserInfo = async () => {
+        const token = Cookies.get('token');
+        if (!token) {
+            setUser(null);
+            return;
+        }
+        try {
+            const response = await axios.get('http://localhost:8080/api/users/info', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const userData = response.data;
+            console.log('User data from backend:', userData);
+            setUser(userData); 
+        } catch (error) {
+            console.error('Failed to fetch user info:', error);
+            setUser(null);
+        }
+    };
 
-  const login = async (email, password) => {
-    try {
-      const response = await axios.post('http://localhost:8080/login', { email, password });
-      const { token, role } = response.data;
+    useEffect(() => {
+        fetchUserInfo().catch(console.error);
+    }, [])
 
-      localStorage.setItem('token', token);
-      setUser({ token, role });
-
-      if (role === 'player') {
-        navigate('/home');
-      } else if (role === 'admin') {
-        navigate('/dashboard');
+    const login = async (username, password) => {
+      try {
+        const response = await axios.post('http://localhost:8080/api/auth/signin', { username, password });
+        const { accessToken, roles } = response.data;
+    
+        Cookies.set('token', accessToken, { expires: 7 });
+        await fetchUserInfo();
+    
+        return { roles };
+      } catch (error) {
+        console.error('Login failed:', error);
+        throw new Error('Login failed');
       }
-    } catch (error) {
-      console.error('Login failed', error);
-      throw error;
-    }
-  };
+    };
+    
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-    navigate('/login');
-  };
+    const logout = () => {
+        setUser(null);
+        Cookies.remove('token');
+    };
 
-  console.log('AuthProvider user:', user); // Debugging line
+    const isAuthenticated = () => {
+        return !!user;
+    };
 
-  return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+    const hasRole = (role) => {
+        if (!isAuthenticated()) {
+            return false;
+        }
+        console.log("Roles:", user.roles);
+        for (const userRole of user.roles) {
+            if (userRole.name.toUpperCase() === role.toUpperCase() 
+                || userRole.name.toUpperCase() === `ROLE_${role.toUpperCase()}`) {
+                return true;
+            }
+        }
+        return false;
+    };
+
+    return (
+        <AuthContext.Provider value={{ user, login, logout, isAuthenticated, hasRole }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+    return useContext(AuthContext);
+};

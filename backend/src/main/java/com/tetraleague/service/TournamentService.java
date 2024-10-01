@@ -22,8 +22,6 @@ public class TournamentService {
     @Autowired
     private UserRepository userRepository;
 
-    private Role role;
-
     // Retrieve all tournaments
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll();
@@ -63,20 +61,15 @@ public class TournamentService {
         }
     }
 
-    private static boolean isPowerOfTwo(int n) {
-        return (n > 0) && ((n & (n - 1)) == 0);
-    }
-
     public Tournament updateTournament(String id, Tournament updatedTournament) {
         Tournament tournament = tournamentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
-        validateTournament(updatedTournament);
+        updatedTournament.validate();
 
-        // Update fields
         tournament.setName(updatedTournament.getName());
         tournament.setDescription(updatedTournament.getDescription());
-        tournament.setMaxParticipants(updatedTournament.getMaxParticipants());
+        tournament.setNumParticipants(updatedTournament.getNumParticipants());
         tournament.setStartDate(updatedTournament.getStartDate());
         tournament.setEndDate(updatedTournament.getEndDate());
         tournament.setMinElo(updatedTournament.getMinElo());
@@ -91,12 +84,12 @@ public class TournamentService {
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
         String folder = "tournament-images";
+        Files.createDirectories(Paths.get(folder)); // Create directory if it doesn't exist
         Path path = Paths.get(folder, file.getOriginalFilename());
 
-        // Save the file locally
         Files.write(path, file.getBytes());
 
-        String imageUrl = path.toString();
+        String imageUrl = "/api/images/" + file.getOriginalFilename(); // Return a more accessible URL
         tournament.setImageUrl(imageUrl);
         tournamentRepository.save(tournament);
 
@@ -145,29 +138,14 @@ public class TournamentService {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
-        User user = userRepository.findById(playerId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        // Assuming you have a method to fetch the player
+        Player player = userRepository.findById(playerId)
+                .filter(u -> u instanceof Player)
+                .map(u -> (Player) u)
+                .orElseThrow(() -> new RuntimeException("Player not found"));
 
-        boolean isPlayer = user.getRoles().stream()
-                .anyMatch(role -> role.getName().equals(ERole.ROLE_PLAYER));
-
-        if (!isPlayer) {
-            throw new RuntimeException("User is not a player");
-        }
-
-        if (user instanceof Player player) {
-            if (!tournament.getParticipants().contains(player)) {
-                throw new RuntimeException("Player is not participating in the tournament");
-            }
-
-            tournament.removeParticipant(player);
-            player.removeTournament(tournament);
-
-            userRepository.save(player);
-            return tournamentRepository.save(tournament);
-        } else {
-            throw new ClassCastException("User is a player but cannot be cast to Player.");
-        }
+        tournament.getParticipants().remove(player);
+        return tournamentRepository.save(tournament);
     }
 
     public void deleteTournament(String tournamentId) {

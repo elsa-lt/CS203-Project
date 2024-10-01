@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { CgProfile } from "react-icons/cg";
+import { useAuth } from '../context/AuthContext'; 
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { logout } = useAuth(); 
 
   const toggleDropdown = () => {
     setIsOpen((prev) => !prev);
@@ -12,6 +14,11 @@ const ProfileDropdown = () => {
 
   const closeDropdown = () => {
     setIsOpen(false);
+  };
+
+  const handleLogout = () => {
+    closeDropdown();  
+    logout();     
   };
 
   return (
@@ -43,7 +50,7 @@ const ProfileDropdown = () => {
             <li>
               <Link
                 className="flex w-full justify-center pt-4 pb-4 font-light text-sm text-gray-700 hover:bg-gray-100"
-                onClick={closeDropdown} // Close dropdown on click
+                onClick={closeDropdown}
               >
                 Account Details
               </Link>
@@ -54,7 +61,7 @@ const ProfileDropdown = () => {
             <li>
               <Link
                 className="flex w-full justify-center pt-4 pb-4 font-light text-sm text-gray-700 hover:bg-gray-100"
-                onClick={closeDropdown} // Close dropdown on click
+                onClick={closeDropdown}
               >
                 Settings
               </Link>
@@ -63,13 +70,12 @@ const ProfileDropdown = () => {
             <hr className="flex w-full border-customGray border-opacity-30"/>
 
             <li>
-              <Link
-                to="/login"
+              <button
                 className="flex w-full justify-center rounded-bl-lg rounded-br-lg pt-4 pb-4 font-light text-sm text-gray-700 hover:bg-gray-100"
-                onClick={closeDropdown} // Close dropdown on click
+                onClick={handleLogout}  
               >
                 Logout
-              </Link>
+              </button>
             </li>
           </ul>
         </div>

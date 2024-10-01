@@ -7,6 +7,8 @@ import com.tetraleague.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,42 +58,16 @@ public class UserController {
         }
     }
 
-    @PostMapping("/{username}/joinTournament")
-    public ResponseEntity<String> joinTournament(@PathVariable String username, @RequestBody String tournamentId) {
-        Optional<Player> player = userService.findByUsername(username)
-                .filter(user -> user instanceof Player)
-                .map(user -> (Player) user);
+    @GetMapping("/info")
+    public ResponseEntity<User> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
+        Optional<User> optionalUser = userService.findByUsername(userDetails.getUsername());
 
-        if (player.isPresent()) {
-            try {
-                userService.joinTournament(player.get(), tournamentId);
-                return ResponseEntity.ok("Player joined the tournament successfully!");
-            } catch (RuntimeException e) {
-                return ResponseEntity.badRequest().body(e.getMessage());
-            }
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setPassword(null);  
+            return ResponseEntity.ok(user);
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    @PostMapping("/{username}/withdrawTournament")
-    public ResponseEntity<String> withdrawFromTournament(@PathVariable String username, @RequestBody String tournamentId) {
-        try {
-            Player player = (Player) userService.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("Player not found!"));
-
-            userService.withdrawFromTournament(player, tournamentId);
-
-            return ResponseEntity.ok("Player withdrew from the tournament successfully!");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-
-    @GetMapping("/{username}/tournaments")
-    public ResponseEntity<List<Tournament>> getTournaments(@PathVariable String username) {
-        List<Tournament> tournaments = userService.getTournaments(username);
-        return ResponseEntity.ok(tournaments);
     }
 }

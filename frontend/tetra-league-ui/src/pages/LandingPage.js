@@ -12,7 +12,7 @@ const LandingPage = () => {
           <img 
             src="/Headers/Tetra League Logo.png" 
             alt="Tetra League Logo"
-            className="w-72 md:w-6/12 ml-80" //Need to fix responsiveness
+            className="w-72 md:w-6/12 ml-80" 
           />
           <p className="text-xl md:text-2xl text-gray-700 leading-relaxed mt-4">
             Sign Up for Tournaments, Compete Against Others in Ranked Leaderboards, View your Past Match Results and More

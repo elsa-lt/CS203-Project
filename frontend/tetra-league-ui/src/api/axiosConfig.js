@@ -1,5 +1,7 @@
 import axios from "axios";
 
-export default axios.create({
-    baseURL: "http://localhost:8000/tetraleague",
-});
+const instance = axios.create({
+    baseURL: 'http://localhost:8080'
+  });
+  
+  //instance.defaults.headers.common['Authorization'] = AUTH_TOKEN;

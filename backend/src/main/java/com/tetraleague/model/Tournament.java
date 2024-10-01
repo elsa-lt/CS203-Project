@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,15 +42,18 @@ public class Tournament {
     private LocalDateTime endDate;
 
     private List<Player> participants = new ArrayList<>();
+    private String imageUrl; // Field to store the image URL
 
-    private String imageUrl;
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void validate() {
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("Start date cannot be after end date.");
+        }
+        if (minElo > maxElo) {
+            throw new IllegalArgumentException("Minimum Elo cannot be more than maximum Elo.");
+        }
+        if (numParticipants < 2) {
+            throw new IllegalArgumentException("Number of participants cannot be less than 2.");
+        }
     }
 
     public void addParticipant(Player player) {

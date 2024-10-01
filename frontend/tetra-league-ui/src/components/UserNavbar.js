@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { IoNotificationsOutline } from "react-icons/io5";
+import { BiBell } from "react-icons/bi";
 import ProfileDropDown from '../components/ProfileDropDown';
 
 const UserNavbar = () => {
@@ -22,14 +22,14 @@ const UserNavbar = () => {
           <li>
             <Link
               to="/current-match"
-              className={`font-light helvetica-neue customGray ${location.pathname === '/current-match' ? 'font-medium text-yellow-400' : 'hover:text-yellow-400'}`} >
+              className={`helvetica-neue customGray ${location.pathname === '/current-match' ? 'font-medium text-yellow-400' : 'hover:text-yellow-400'}`} >
               Current Match
             </Link>
           </li>
           <li>
             <Link
               to="/tournaments"
-              className={`font-light helvetica-eue customGray ${location.pathname === '/tournaments' ? 'font-medium text-yellow-400' : 'hover:text-yellow-400'}`}
+              className={`helvetica-eue customGray ${location.pathname === '/tournaments' ? 'font-medium text-yellow-400' : 'hover:text-yellow-400'}`}
             >
               Tournaments
             </Link>
@@ -37,7 +37,7 @@ const UserNavbar = () => {
           <li>
             <Link
               to="/leaderboard"
-              className={`font-light helvetica-neue customGray ${location.pathname === '/leaderboard' ? 'font-medium text-yellow-400' : 'hover:text-yellow-400'}`}
+              className={`helvetica-neue customGray ${location.pathname === '/leaderboard' ? 'font-medium text-yellow-400' : 'hover:text-yellow-400'}`}
             >
               Leaderboard
             </Link>
@@ -45,7 +45,7 @@ const UserNavbar = () => {
           <li>
             <Link
               to="/match-history"
-              className={`font-light helvetica-neue customGray ${location.pathname === '/match-history' ? 'font-medium text-yellow-400' : 'hover:text-yellow-400'}`}
+              className={`helvetica-neue customGray ${location.pathname === '/match-history' ? 'font-medium text-yellow-400' : 'hover:text-yellow-400'}`}
             >
               Match History
             </Link>
@@ -53,7 +53,7 @@ const UserNavbar = () => {
           <li>
             <Link
               to="/profile"
-              className={`font-light helvetica-neue customGray ${location.pathname === '/profile' ? 'font-medium text-yellow-400' : 'hover:text-yellow-400'}`}
+              className={`helvetica-neue customGray ${location.pathname === '/profile' ? 'font-medium text-yellow-400' : 'hover:text-yellow-400'}`}
             >
               Profile
             </Link>
@@ -62,7 +62,7 @@ const UserNavbar = () => {
 
         <div className="flex ml-6 mr-6">
           <button className="text-Custom-Gray hover:text-yellow-400 cursor-pointer">
-            <IoNotificationsOutline className="text-2xl" />
+            <BiBell className="text-2xl" />
           </button>
         </div>
 

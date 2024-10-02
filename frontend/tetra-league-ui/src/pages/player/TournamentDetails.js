@@ -4,7 +4,7 @@ import Navbar from '../../components/UserNavbar';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import TournamentCard from '../../components/TournamentCard';
-
+import TournamentSubTabs from '../../components/TournamentSubTabs';
 
 const TournamentDetails = () => {
   const { id } = useParams();
@@ -71,6 +71,7 @@ const TournamentDetails = () => {
           minElo={tournament.minElo} 
           imageUrl={tournament.imageUrl}
       />
+      <TournamentSubTabs />
         </div>
       </div>
     </main>

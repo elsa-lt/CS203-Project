@@ -23,7 +23,12 @@ const TournamentBar = () => {
               <div className="flex helvetica-neue customGray mb-4">7 Sept, 2024 19:00</div>
 
               <div className="flex items-center mb-4">
-                <div className="flex helvetica-neue text-center">Organised by:</div>
+                <div className="flex helvetica-neue text-center mr-2">Organised by:</div>
+                <img 
+                  src="Online Images/nintendo-switch.png"
+                  alt="Organiser Profile Pic"
+                  className="w-8 h-8"
+                ></img>
                 <div className="flex helvetica-neue text-center text-customGray pl-2">Nintendo Of America</div>
               </div>
 

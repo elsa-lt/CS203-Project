@@ -16,7 +16,7 @@ const AdminSidebar = () => {
           {/*link to Tournament Page*/}
           <li>
             <Link
-              to="/tournaments"
+              to="/manage-tournaments"
               className="flex items-center bg-customRed bg-opacity-30 pt-4 pb-4 pl-4 pr-4">
                 <div className="w-12 h-12 mr-4 rounded-full overflow-hidden flex-shrink-0">
                   <img

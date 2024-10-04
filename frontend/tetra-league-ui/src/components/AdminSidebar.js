@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LuHome, LuPlusCircle, LuCalendar, LuArchive } from "react-icons/lu";
 
-const AdminSidebar = () => {
+const AdminSidebar = ({ name, imageUrl }) => {
   const location = useLocation();
 
   return (
@@ -20,12 +20,12 @@ const AdminSidebar = () => {
               className="flex items-center bg-customRed bg-opacity-30 pt-4 pb-4 pl-4 pr-4">
                 <div className="w-12 h-12 mr-4 rounded-full overflow-hidden flex-shrink-0">
                   <img
-                    src="/Online Images/Puyo Tournament Pic.jpg" // Update with your image path
+                    src={imageUrl} // Update with your image path
                     alt="Tournament Icon"
                     className="w-full h-full object-cover justify-center items-center" // Adjust size as needed
                   />
                 </div>
-                Puyo Puyo Tetris 2 Tournament
+                {name}
             </Link>
           </li>
         </ul>

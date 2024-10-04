@@ -5,7 +5,7 @@ import StartButtons from '../components/StartButtons'
 import { FiEdit } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
 
-const TournamentCardsSmall = () => {
+const TournamentCardsSmall = ({ name, startDate, endDate, prizePool, minElo, imageUrl }) => {
   const editnavigate= useNavigate();
   function HandleEdit(){
     editnavigate('/edit-tournament');
@@ -16,7 +16,7 @@ const TournamentCardsSmall = () => {
           {/*Header Image*/}
           <div className="relative h-72">
             <img
-              src="/Online Images/Puyo Tournament Pic.jpg"
+              src={imageUrl}
               alt="Tournaments Header Pic"
               className="object-cover w-[28rem] h-72 justify-center">
             </img>
@@ -28,19 +28,19 @@ const TournamentCardsSmall = () => {
             {/*Tournament Name & Date*/}
             <div className="flex flex-col flex-none basis-3/5 mr-6">
               <div className="flex font-medium font-sans-serif customGray text-4xl mb-4">
-                Puyo Puyo Tetris 2 Tournament
+                {name}
               </div>
               <div className="flex helvetica-neue customGray mb-4">
-                7 Sept, 2024 19:00
+                {startDate}
               </div>
 
               <div className ="flex">
                 <div className="flex items-center">
                   <div className="flex helvetica-neue text-center">
-                    Mimimum Rank:
+                    Minimum Rank:
                   </div>
                   <div className="flex font-sans-serif text-center text-xl text-customBronze pl-2">
-                    BRONZE 
+                    {minElo} 
                   </div>
                 </div>
               </div>

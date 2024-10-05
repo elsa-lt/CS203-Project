@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/tournaments")
+@RequestMapping("/api/tournaments")
 public class TournamentController {
 
     private final TournamentService tournamentService;

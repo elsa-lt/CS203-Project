@@ -1,20 +1,44 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Navbar from '../../components/UserNavbar';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import TournamentCard from '../../components/TournamentCard';
 import TournamentSubTabs from '../../components/TournamentSubTabs';
-import { useParams } from 'react-router-dom'; 
-import axios from 'axios';
 
 const TournamentDetails = () => {
-  const { id } = useParams(); // Get the tournament ID from the URL
-  const [tournament, setTournament] = useState(null); // State to hold tournament details
+  const { id } = useParams();
+  const [tournament, setTournament] = useState(null);
 
   useEffect(() => {
-    // Fetch the tournament details from the backend API
-    axios.get(`/api/tournaments/${id}`)
-      .then(response => setTournament(response.data)) // Set the tournament state with the fetched data
-      .catch(error => console.error("Error fetching tournament:", error));
+    const token = Cookies.get('token');
+    console.log("Authorization Token:", token);
+
+    const fetchTournamentDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/api/tournaments/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setTournament(response.data);
+      } catch (error) {
+        console.error('Error fetching tournament details:', error);
+      }
+    };
+
+    fetchTournamentDetails();
   }, [id]);
+
+  if (!tournament) {
+    return <div>Loading...</div>;
+  }
+
+  const formatDateRange = (startDate, endDate) => {
+    const start = new Date(startDate).toLocaleDateString();
+    const end = new Date(endDate).toLocaleDateString();
+    return `${start} - ${end}`;
+  };
 
   return (
     <main
@@ -38,14 +62,16 @@ const TournamentDetails = () => {
           <hr className="w-full border-customGray border-opacity-30"/>
         </div>
 
-        {tournament ? ( // Check if tournament data is available
-          <TournamentCard tournament={tournament} />
-        ) : (
-          <div>Loading tournament details...</div> // Show a loading message while fetching
-        )}
-
-        <div className="flex mt-10">
-          <TournamentSubTabs />
+        <div className="flex flex-col p-6">
+        <TournamentCard 
+          name={tournament.name} 
+          startDate={tournament.startDate} 
+          endDate={tournament.endDate} 
+          prizePool={tournament.prizePool} 
+          minElo={tournament.minElo} 
+          imageUrl={tournament.imageUrl}
+      />
+      <TournamentSubTabs />
         </div>
       </div>
     </main>

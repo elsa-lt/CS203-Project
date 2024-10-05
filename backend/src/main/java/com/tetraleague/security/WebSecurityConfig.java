@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.http.HttpMethod;
 
 import com.tetraleague.security.jwt.AuthEntryPointJwt;
 import com.tetraleague.security.jwt.AuthTokenFilter;
@@ -68,6 +69,7 @@ public class WebSecurityConfig {
                 // Role-based routes
                 .requestMatchers("/home/**").hasRole("PLAYER")
                 .requestMatchers("/dashboard/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/tournaments/**").hasAnyRole("ADMIN", "PLAYER")
                 // Other routes need authentication
                 .anyRequest().authenticated());
 

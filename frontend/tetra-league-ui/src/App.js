@@ -31,7 +31,7 @@ function App() {
       <Route path="/match-history" element={<ProtectedRoute element={<MatchHistoryPage />} role="player" />} />
       <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} role="player" />} />
       <Route path="/tournaments" element={<ProtectedRoute element={<TournamentsPage />} role="player" />} />
-      <Route path="/tournament-details" element={<ProtectedRoute element={<TournamentDetailsPage />} role="player" />} />
+      <Route path="/tournament-details/:id" element={<ProtectedRoute element={<TournamentDetailsPage />} role="player" />} />
       <Route path="/dashboard" element={<ProtectedRoute element={<AdminDashboardPage />} role="admin" />} />
       <Route path="/manage-tournaments" element={<ProtectedRoute element={<ManageTournamentsPage />} role="admin" />} />
       <Route path="/admin-past-tournaments" element={<ProtectedRoute element={<AdminPastTournamentsPage />} role="admin" />} />

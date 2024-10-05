@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import AdminTournamentCards from '../components/AdminTournamentCards';
 import { BsPlusCircleDotted } from "react-icons/bs";
 
@@ -14,10 +15,10 @@ const AdminTournamentSubtabs = () => {
   return (
     <div className="w-full mx-auto">
       {/* Tab navigation */}
-      <div className="flex justify-around">
+      <div className="flex justify-around pb-6">
         <button
           className={`py-2 px-4
-            ${activeTab === 'My-Events' ? 'border-b-2 border-blue-500' : ''}
+            ${activeTab === 'ongoing-tournaments' ? 'border-b-2 border-blue-500' : ''}
             cursor-pointer hover:text-yellow-500`}
           onClick={() => handleTabClick('ongoing-tournaments')}
         >
@@ -38,59 +39,37 @@ const AdminTournamentSubtabs = () => {
       <div className="mt-10">
         {activeTab === 'ongoing-tournaments' && (
           <div>
-            <div className="flex flex-col w-full justify-between">
-
-              <div className="flex flex-wrap items-center justify-center w-full gap-6">
+            <div className="flex flex-col justify-center ml-20">
+              <div className="flex flex-wrap w-full gap-6">
                 <AdminTournamentCards />
                 <AdminTournamentCards />
                 <AdminTournamentCards />
               </div>
-
             </div>
           </div>
         )}
 
         {activeTab === 'All-Tournaments' && (
           <div>
+            <div className="flex flex-col w-full">
 
-            <div className="flex flex-col w-full justify-between">
+              <div className="flex w-full ml-20 items-center justify-center">
+                <div className="flex flex-wrap gap-6">
 
-              <div className="relative flex items-center z-0 mb-10">
-                <div className = "flex flex-grow-0 w-30 h-10">
-                  <img
-                    src="/Headers/Sub Title Bar.png"
-                    alt="Sub Title Bar"
-                    className="w-30 h-10">
-                  </img>
-                  <div className="absolute flex font-sans-serif text-white text-lg ml-8 mt-1">
-                    FEATURED TOURNAMENTS
-                  </div>
-                </div>
-              </div>
+                  <AdminTournamentCards />
+                  <AdminTournamentCards />
+                  <AdminTournamentCards />
 
-              <div className="flex flex-wrap items-center justify-center w-full gap-6">
-                <AdminTournamentCards />
-                <AdminTournamentCards />
-                <AdminTournamentCards />
+                  {/*Create Tournament Box*/}
+                  <Link to="/create-tournament">
+                    <div className="flex justify-center items-center w-[28rem] h-[31.5rem] rounded-lg bg-transparent border border-customGray border-opacity-40 border-dashed bg-opacity-30">
+                      <div className="flex flex-col w-[28rem] justify-center items-center gap-6">
+                        <BsPlusCircleDotted className="flex text-6xl text-customGray"/>
+                        <div className="font-light helvetica-neue text-customGray text-xl">Create New Tournament</div>
+                      </div>
+                    </div>
+                  </Link>
 
-                {/*Create Tournament Box*/}
-                <div className="w-[28rem] h-[31.5rem] rounded-lg overflow-hidden bg-white border border-customGray border-opacity-40 border-dashed bg-opacity-30">
-                  <div className="flex justify-center items-center">
-                    <BsPlusCircleDotted className="text-6xl text-customGray text-opacity-30"/>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative flex items-center z-0 mt-10 mb-10">
-                <div className = "flex flex-grow-0 w-30 h-10">
-                  <img
-                    src="/Headers/Sub Title Bar.png"
-                    alt="Sub Title Bar"
-                    className="w-30 h-10">
-                  </img>
-                  <div className="absolute flex font-sans-serif text-white text-lg ml-8 mt-1">
-                    ALL TOURNAMENTS
-                  </div>
                 </div>
               </div>
 

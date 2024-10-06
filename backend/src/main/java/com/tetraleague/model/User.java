@@ -1,5 +1,6 @@
 package com.tetraleague.model;
 
+import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,6 +22,18 @@ public class User {
     private String username;
 
     @NotBlank
+    @Size(max = 20)
+    private String name;
+
+    @NotBlank
+    @Size(max = 20)
+    private String location;
+
+    @NotBlank
+    @Size(max = 20)
+    private Date dateofbirth;
+
+    @NotBlank
     @Size(max = 50)
     @Email
     private String email;
@@ -35,10 +48,13 @@ public class User {
     public User() {
     }
 
-    public User(String username, String email, String password) {
+    public User(String username,String name, String email, String password, Date dateofbirth, String location) {
         this.username = username;
+        this.name = name;
         this.email = email;
         this.password = password;
+        this.dateofbirth=dateofbirth;
+        this.location=location;
     }
 
     public String getId() {
@@ -55,6 +71,30 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Date getDOB() {
+        return dateofbirth;
+    }
+
+    public void setDOB(Date dateofbirth) {
+        this.dateofbirth = dateofbirth;
     }
 
     public String getEmail() {

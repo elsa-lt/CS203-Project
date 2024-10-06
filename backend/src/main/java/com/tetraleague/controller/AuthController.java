@@ -104,9 +104,9 @@ public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRe
     }
 
     // Create new user's account
-    User user = new User(signUpRequest.getUsername(),
+    User user = new User(signUpRequest.getUsername(), signUpRequest.getName(),
             signUpRequest.getEmail(),
-            encoder.encode(signUpRequest.getPassword()));
+            encoder.encode(signUpRequest.getPassword()), signUpRequest.getDOB(),signUpRequest.getLocation());
 
     Set<String> strRoles = signUpRequest.getRoles();
     Set<Role> roles = new HashSet<>();

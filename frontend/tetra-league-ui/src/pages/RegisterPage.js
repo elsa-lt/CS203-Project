@@ -4,9 +4,12 @@ import axios from 'axios';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [dateofbirth, setDOB] = useState('');
+  const [location, setLocation] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -21,9 +24,12 @@ const RegisterPage = () => {
     try {
       const response = await axios.post('http://localhost:8080/api/auth/signup', {
           username,
+          name,
           email,
           password,
-          confirmPassword
+          confirmPassword,
+          dateofbirth,
+          location
       });
   
       // Log the response
@@ -79,6 +85,17 @@ const RegisterPage = () => {
             />
           </div>
           <div className="mb-4">
+            <label htmlFor="name" className="block text-gray-700">Name</label>
+            <input
+              id="name"
+              type="text"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
             <label htmlFor="email" className="block text-gray-700">Email Address</label>
             <input
               id="email"
@@ -109,6 +126,28 @@ const RegisterPage = () => {
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="dateofbirth" className="block text-gray-700">Date of Birth</label>
+            <input
+              id="dateofbirth"
+              type="dateofbirth"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              placeholder="Date of Birth"
+              value={dateofbirth}
+              onChange={(e) => setDOB(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="location" className="block text-gray-700">Location</label>
+            <input
+              id="location"
+              type="location"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              placeholder="Location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
             />
           </div>
           <button

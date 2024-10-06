@@ -1,4 +1,5 @@
 package com.tetraleague.payload.request;
+import java.sql.Date;
 import java.util.Set;
 
 import jakarta.validation.constraints.*;
@@ -7,6 +8,18 @@ public class SignupRequest {
     @NotBlank
     @Size(min = 3, max = 20)
     private String username;
+
+     @NotBlank
+    @Size(max = 20)
+    private String name;
+
+    @NotBlank
+    @Size(max = 20)
+    private String location;
+
+    @NotBlank
+    @Size(max = 20)
+    private Date dateofbirth;
  
     @NotBlank
     @Size(max = 50)
@@ -31,6 +44,30 @@ public class SignupRequest {
         this.username = username;
     }
  
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Date getDOB() {
+        return dateofbirth;
+    }
+
+    public void setDOB(Date dateofbirth) {
+        this.dateofbirth = dateofbirth;
+    }
+
     public String getEmail() {
         return email;
     }

@@ -1,27 +1,78 @@
 import Navbar from '../../components/UserNavbar';
-import React, { useState } from 'react';
-import '../../styles/ProfilePage.css'; //styling the profile page
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';  // Ensure you're using js-cookie for token management
+import '../../styles/ProfilePage.css'; // Styling the profile page
+import { useParams } from 'react-router-dom';  // For dynamic route parameter
 
 const ProfilePage = () => {
+
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    username: 'Player username',
-    name: 'Player name',
-    email: 'Player email',
-    playerId: '01487234',
-    dateOfBirth: '03/09/1989',
-    location: 'SINGAPORE',
-    password: '************',
+    username: '',
+    name: '',
+    email: '',
+    playerId: '',  
+    dateOfBirth: '',
+    location: '',
+    password: '',
   });
 
-  //input
+  //const { userId } = useParams();  
+  const userId = '66f261f85d07104dfa628195';  
+  
+  useEffect(() => {
+    const token = Cookies.get('token');  // Get token from cookies
+    console.log("Authorization Token:", token);
+    console.log("userID:", userId);
+    console.log('Fetching user data...');
+    
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/api/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setFormData(response.data);  // Set the fetched data to formData state
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+    if (userId && token) {
+      fetchUserDetails();  // Fetch user data only if both userId and token exist
+    } else {
+      console.error("User ID or Token is missing");
+    }
+  }, [userId]);  // Re-fetch data when userId changes
+
+  // Handle input changes in the form fields
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
- //editing mode
+  // Save profile data when exiting edit mode
   const toggleEdit = () => {
     setIsEditing(!isEditing);
+
+    if (isEditing && userId) {
+      console.log('Saving profile data...', formData);
+
+      const token = Cookies.get('token');  // Get token from cookies for consistency
+
+      axios.put(`http://localhost:8080/api/users/${userId}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`  // Include token in the headers
+        }
+      })
+      .then(response => {
+        console.log('Profile updated successfully:', response.data);
+      })
+      .catch(error => {
+        console.error('Error updating profile:', error);
+      });
+    }
   };
 
   return (
@@ -38,7 +89,7 @@ const ProfilePage = () => {
       </div>
 
       <div className="p-8 bg-white rounded-lg shadow-md style={{ width: '1000px' }} mt-28">
-        <form className='space-y-4'>
+        <form className="space-y-4">
           <div className="flex flex-col w-full">
             <label>
               Username:
@@ -77,7 +128,7 @@ const ProfilePage = () => {
                 name="playerId"
                 value={formData.playerId}
                 onChange={handleChange}
-                disabled={!isEditing}
+                disabled={true}  
               />
             </label>
             <label>
@@ -115,10 +166,9 @@ const ProfilePage = () => {
 
         <div className="mt-10">
           <button className="w-full bg-black text-white font-semibold py-2 px-4 rounded-lg" onClick={toggleEdit}>
-            Edit
+            {isEditing ? 'Save' : 'Edit'}
           </button>
         </div>
-
       </div>
     </main>
   );

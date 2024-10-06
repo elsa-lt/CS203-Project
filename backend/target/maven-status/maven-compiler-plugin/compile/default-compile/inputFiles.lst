@@ -1,5 +1,6 @@
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/TetraLeagueApplication.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/controller/AuthController.java
+/Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/controller/LoginRequest.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/controller/TestController.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/controller/TournamentController.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/controller/UserController.java

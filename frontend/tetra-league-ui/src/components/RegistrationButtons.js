@@ -33,10 +33,11 @@ function RegistrationButtons({ tournamentId, username }) {
         if (confirmRegistration) {
             const token = Cookies.get('token');
             try {
-                await axios.post(`http://localhost:8080/api/users/${username}/joinTournament`, { tournamentId }, {
+                console.log("Join tournament for:", tournamentId, username);
+                await axios.post(`http://localhost:8080/api/users/${username}/joinTournament`, tournamentId, {
                     headers: {
                         Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'text/plain',
                     },
                 });
                 setIsRegistered(true);

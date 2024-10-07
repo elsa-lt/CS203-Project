@@ -6,7 +6,8 @@ import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 public class TournamentService {
+    private static final Logger logger = LoggerFactory.getLogger(TournamentService.class);
 
     @Autowired
     private TournamentRepository tournamentRepository;
@@ -24,15 +26,16 @@ public class TournamentService {
 
     private Role role;
 
-    // Retrieve all tournaments
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll();
     }
 
     public Tournament getTournamentById(String id) {
+        logger.info("Fetching tournament with ID: {}", id);
         return tournamentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+            .orElseThrow(() -> new RuntimeException("Tournament not found"));
     }
+    
 
     public Tournament createTournament(Tournament tournament) {
         validateTournament(tournament);

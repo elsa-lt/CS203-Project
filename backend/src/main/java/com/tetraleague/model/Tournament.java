@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ public class Tournament {
     private String description;
 
     @NotNull(message = "Number of participants is required")
-    private Integer numParticipants;
+    private Integer maxParticipants;
 
     @NotNull(message = "Minimum Elo range is required")
     private Integer minElo;
@@ -42,33 +41,25 @@ public class Tournament {
     private LocalDateTime endDate;
 
     private List<Player> participants = new ArrayList<>();
-    private String imageUrl; // Field to store the image URL
 
-    public void validate() {
-        if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("Start date cannot be after end date.");
-        }
-        if (minElo > maxElo) {
-            throw new IllegalArgumentException("Minimum Elo cannot be more than maximum Elo.");
-        }
-        if (numParticipants < 2) {
-            throw new IllegalArgumentException("Number of participants cannot be less than 2.");
-        }
+    private String imageUrl;
+
+    @NotNull(message = "Prize pool is required")
+    private Double prizePool;
+
+    public void addParticipant(Player player) { participants.add(player); }
+
+    public void removeParticipant(Player player) { participants.remove(player); }
+
+    public boolean hasEnded() {
+        return LocalDateTime.now().isAfter(endDate);
     }
 
-    public void addParticipant(Player player) {
-        if (player == null) {
-            throw new IllegalArgumentException("Player cannot be null");
-        }
+    public boolean hasStarted() {
+        return LocalDateTime.now().isAfter(startDate);
+    }
 
-        if (participants.size() >= numParticipants) {
-            throw new IllegalStateException("Tournament is full");
-        }
-
-        if (player.getEloRating() > maxElo || player.getEloRating() < minElo) {
-            throw new IllegalArgumentException("Player is ineligible for this tournament");
-        }
-
-        participants.add(player);
+    public boolean isFull() {
+        return participants.size() >= maxParticipants;
     }
 }

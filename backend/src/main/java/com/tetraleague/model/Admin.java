@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("users")
 @TypeAlias("admin")
 public class Admin extends User {
-
     public Admin(String username, String email, String password, Role role) {
         super(username, email, password);
     }

@@ -1,5 +1,6 @@
 package com.tetraleague.model;
 
+import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,7 +18,6 @@ public class User {
     private String id;
 
     @NotBlank
-    @Size(max = 20)
     private String username;
 
     @NotBlank

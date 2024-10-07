@@ -1,11 +1,12 @@
 package com.tetraleague.service;
 
+import com.tetraleague.model.Player;
+import com.tetraleague.model.Tournament;
 import com.tetraleague.model.User;
 import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.sql.Date; 
-import java.text.SimpleDateFormat;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -15,8 +16,19 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private TournamentService tournamentService;
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+    
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 
     public Optional<User> getUserById(String id) {
@@ -35,16 +47,35 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    // Check if username already exists
-    public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
+    public void joinTournament(Player player, String tournamentId) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        tournamentService.addParticipant(tournamentId, player.getId());
+        if (!player.getTournaments().contains(tournament)) {
+            player.addTournament(tournament);
+        }
+
+        userRepository.save(player);
     }
 
-    // Check if email already exists
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+    public void withdrawFromTournament(Player player, String tournamentId) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        tournamentService.removeParticipant(tournamentId, player.getId());
+        if (player.getTournaments().contains(tournament)) {
+            player.removeTournament(tournament);
+        }
     }
 
+    public List<Tournament> getRegisteredTournaments(String username) {
+        Optional<Player> playerOptional = userRepository.findByUsername(username)
+                .filter(user -> user instanceof Player)
+                .map(user -> (Player) user);
+
+        if (playerOptional.isPresent()) {
+            return playerOptional.get().getTournaments();
+        } else {
+            throw new RuntimeException("Player not found!");
+        }
+    }
     public Optional<User> updateUser(String id, User updatedUser) {
         Optional<User> existingUserOpt = userRepository.findById(id);
         

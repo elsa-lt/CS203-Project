@@ -18,7 +18,7 @@ public class Player extends User {
     private int eloRating;
     private List<Tournament> tournaments = new ArrayList<>();
 
-    public Player(String username, String email, String password, String name,
+    public Player(String username,String name, String email, String password,
             int eloRating) {
         super(username, name, email, password);
         this.eloRating = eloRating;

@@ -1,11 +1,12 @@
 package com.tetraleague.controller;
 
+import com.tetraleague.model.User; 
+import com.tetraleague.repository.UserRepository;
 import com.tetraleague.model.Player;
 import com.tetraleague.model.Tournament;
 import com.tetraleague.service.TournamentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.HttpStatus;
@@ -14,13 +15,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tournaments")
+@CrossOrigin(origins = "http://localhost:3000") 
 public class TournamentController {
 
+    private final UserRepository userRepository;
     private final TournamentService tournamentService;
 
     @Autowired
-    public TournamentController(TournamentService tournamentService) {
+    public TournamentController(TournamentService tournamentService, UserRepository userRepository) {
         this.tournamentService = tournamentService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -60,6 +64,32 @@ public class TournamentController {
             return ResponseEntity.ok(imageUrl);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{tournamentId}/participants/{username}")
+    public ResponseEntity<Boolean> checkRegistrationStatus(@PathVariable String tournamentId, @PathVariable String username) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        User player = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Player not found"));
+        
+        boolean isRegistered = tournament.getParticipants().contains(player);
+        return ResponseEntity.ok(isRegistered);
+    }
+
+    public static class RegistrationStatusResponse {
+        private boolean isRegistered;
+
+        public RegistrationStatusResponse(boolean isRegistered) {
+            this.isRegistered = isRegistered;
+        }
+
+        public boolean isRegistered() {
+            return isRegistered;
+        }
+
+        public void setRegistered(boolean registered) {
+            isRegistered = registered;
         }
     }
 }

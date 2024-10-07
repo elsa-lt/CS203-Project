@@ -6,26 +6,41 @@ import axios from 'axios';
 
 const TournamentsPage = () => {
   const [tournaments, setTournaments] = useState([]);
+  const [username, setUsername] = useState(''); // State for username
 
   useEffect(() => {
-      const fetchTournaments = async () => {
-          try {
-              const token = Cookies.get('token');
-              console.log("Authorization Token:", token); 
+      const token = Cookies.get('token');
 
-              const response = await axios.get("http://localhost:8080/api/tournaments", {
+      const fetchTournamentsAndUsername = async () => {
+          try {
+              // Fetch user information (username)
+              const userInfoResponse = await axios.get('http://localhost:8080/api/users/info', {
+                  headers: {
+                      Authorization: `Bearer ${token}`,
+                  },
+              });
+
+              const { username: fetchedUsername } = userInfoResponse.data;
+              setUsername(fetchedUsername); // Set username
+
+              // Fetch tournaments
+              const tournamentsResponse = await axios.get("http://localhost:8080/api/tournaments", {
                   headers: {
                       Authorization: `Bearer ${token}`,
                   }
               });
-              
-              setTournaments(response.data);
+
+              setTournaments(tournamentsResponse.data);
           } catch (error) {
-              console.error("Error fetching tournaments:", error);
+              console.error("Error fetching tournaments or username:", error);
           }
       };
 
-      fetchTournaments();
+      if (token) {
+          fetchTournamentsAndUsername();
+      } else {
+          console.error("Token is missing");
+      }
   }, []);
 
   return (
@@ -37,23 +52,22 @@ const TournamentsPage = () => {
         <Navbar />
       </div>
 
-      <div className = "flex flex-col min-h-screen w-full mt-14 ml-5 mr-5">
-        <div className = "flex flex-grow-0 w-30 h-10">
+      <div className="flex flex-col min-h-screen w-full mt-14 ml-5 mr-5">
+        <div className="flex flex-grow-0 w-30 h-10">
           <img 
             src="/Headers/Tournaments Header.png"
             alt="Tournaments Header"
-            className="w-30 h-10">
-          </img>
+            className="w-30 h-10"
+          />
         </div>
 
         <div className="mt-6 mb-6">
           <hr className="w-full border-customGray border-opacity-30"/>
         </div>
 
-        <MainTournamentSubtabs tournaments={tournaments} />
-
+        {/* Pass the username to MainTournamentSubtabs */}
+        <MainTournamentSubtabs username={username} tournaments={tournaments} />
       </div>
-      
     </main>
   );
 };

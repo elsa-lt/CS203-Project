@@ -12,13 +12,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.http.HttpStatus;
 import com.tetraleague.model.UserExistsResponse;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
@@ -96,7 +98,10 @@ public class UserController {
     @GetMapping("/info")
     public ResponseEntity<User> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
         Optional<User> optionalUser = userService.findByUsername(userDetails.getUsername());
+        return optionalUser.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
     
     @PostMapping("/{username}/joinTournament")
     public ResponseEntity<String> joinTournament(@PathVariable String username, @RequestBody String tournamentId) {
@@ -109,9 +114,11 @@ public class UserController {
                 userService.joinTournament(player.get(), tournamentId);
                 return ResponseEntity.ok("Player joined the tournament successfully!");
             } catch (RuntimeException e) {
+                logger.error("Error while joining tournament: {}", e.getMessage());
                 return ResponseEntity.badRequest().body(e.getMessage());
             }
         } else {
+            logger.warn("Player with username '{}' not found", username);
             return ResponseEntity.notFound().build();
         }
     }
@@ -131,8 +138,8 @@ public class UserController {
     }
 
     @GetMapping("/{username}/tournaments")
-    public ResponseEntity<List<Tournament>> getTournaments(@PathVariable String username) {
-        List<Tournament> tournaments = userService.getTournaments(username);
+    public ResponseEntity<List<Tournament>> getRegisteredTournaments(@PathVariable String username) {
+        List<Tournament> tournaments = userService.getRegisteredTournaments(username);
         return ResponseEntity.ok(tournaments);
     }
 }

@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 const TournamentCardsSmall = ({ tournament }) => {
   const navigate = useNavigate();
+  
+  const defaultImageUrl = '/Misc Design/tetrisdefault.jpg';
 
   function ClickHandler() {
     navigate(`/tournament-details/${tournament.id}`); 
@@ -13,9 +15,8 @@ const TournamentCardsSmall = ({ tournament }) => {
     <Card className="w-[28rem] rounded-lg overflow-hidden bg-white border border-customGray border-opacity-30 bg-opacity-80">
       <Card.Body>
         <div className="flex h-72 justify-center">
-          {/* Use imageUrl from the tournament object */}
           <img
-            src={tournament.imageUrl}  
+            src={tournament.imageUrl || defaultImageUrl}  
             alt="Tournaments Header Pic"
             className="object-cover w-full h-full justify-center"
             onClick={ClickHandler} 
@@ -31,7 +32,7 @@ const TournamentCardsSmall = ({ tournament }) => {
               {tournament.name}
             </div>
             <div className="flex helvetica-neue customGray mb-4">
-              {new Date(tournament.date).toLocaleDateString()} {tournament.time}
+              {new Date(tournament.startDate).toLocaleDateString()} {new Date(tournament.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
 
             <div className="flex items-center">
@@ -39,7 +40,7 @@ const TournamentCardsSmall = ({ tournament }) => {
                 Minimum Rank:
               </div>
               <div className="flex font-sans-serif text-center text-xl text-customBronze pl-2">
-                {tournament.rank}
+                {tournament.minElo ? tournament.minElo : 'No minimum rank'}
               </div>
             </div>
           </div>

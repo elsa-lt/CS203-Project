@@ -142,9 +142,6 @@ public class TournamentService {
             }
 
             tournament.addParticipant(player);
-            player.addTournament(tournament);
-
-            userRepository.save(player);
             return tournamentRepository.save(tournament);
 
         } else {
@@ -152,6 +149,15 @@ public class TournamentService {
         }
     }
 
+    public boolean isUserRegistered(String tournamentId, String username) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+
+        return tournament.getParticipants().stream()
+                .filter(player -> player instanceof Player)
+                .map(Player.class::cast) 
+                .anyMatch(player -> player.getUsername().equals(username));
+    }
 
     public Tournament removeParticipant (String tournamentId, String playerId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
@@ -173,9 +179,6 @@ public class TournamentService {
             }
 
             tournament.removeParticipant(player);
-            player.removeTournament(tournament);
-
-            userRepository.save(player);
             return tournamentRepository.save(tournament);
         } else {
             throw new ClassCastException("User is a player but cannot be cast to Player.");

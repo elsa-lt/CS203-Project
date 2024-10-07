@@ -36,7 +36,7 @@ const ProfilePage = () => {
         });
 
         setFormData(userDetailsResponse.data);
-        setOriginalData(userDetailsResponse.data); // Set original data here
+        setOriginalData(userDetailsResponse.data); 
       } catch (error) {
         console.error('Error fetching user details:', error);
         setError('Failed to fetch user details.');

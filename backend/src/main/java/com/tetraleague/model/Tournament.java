@@ -27,7 +27,7 @@ public class Tournament {
 
     @NotNull(message = "Number of participants is required")
     private Integer maxParticipants;
-
+    
     @NotNull(message = "Minimum Elo range is required")
     private Integer minElo;
 
@@ -42,7 +42,7 @@ public class Tournament {
 
     private List<Player> participants = new ArrayList<>();
     private String imageUrl;
-    
+
     @NotNull(message = "Prize pool is required")
     private Double prizePool;
 

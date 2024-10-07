@@ -84,11 +84,14 @@ public class AuthController {
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
 
-    // Create new user's account
-         User user = new User(signUpRequest.getUsername(), signUpRequest.getName(),
-            signUpRequest.getEmail(),
-            encoder.encode(signUpRequest.getPassword()));
-
+        Set<String> strRoles = signUpRequest.getRoles();
+        Set<Role> roles = new HashSet<>();
+        
+        if (strRoles == null) {
+            strRoles = new HashSet<>(); // Set to empty if null
+            strRoles.add("player"); // You might set a default role here
+        }
+        User user = null;
 
         for (String role : strRoles) {
                 switch (role) {
@@ -97,16 +100,14 @@ public class AuthController {
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(adminRole);
 
-                        user = new Admin(signUpRequest.getUsername(), signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()), adminRole);
+                        user = new Admin(signUpRequest.getUsername(), signUpRequest.getName(), signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()), adminRole);
                         break;
-
-                    case "player":
+                        case "player":
                         Role playerRole = roleRepository.findByName(ERole.ROLE_PLAYER)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(playerRole);
 
-                        user = new Player(signUpRequest.getUsername(), signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()), 1500);
-                        user = new Player(signUpRequest.getUsername(), signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()), 400);
+                        user = new Player(signUpRequest.getUsername(), signUpRequest.getName(), signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()), 400);
                         break;
                 }
             }

@@ -62,16 +62,4 @@ public class TournamentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed: " + e.getMessage());
         }
     }
-
-    @PostMapping("/{id}/participants")
-    public ResponseEntity<Tournament> addParticipant(@PathVariable String id, @RequestBody String playerId) {
-        Tournament updatedTournament = tournamentService.addParticipant(id, playerId);
-        return ResponseEntity.ok(updatedTournament);
-    }
-
-    @DeleteMapping("/{id}/participants/{playerId}")
-    public ResponseEntity<Tournament> removeParticipant(@PathVariable String id, @PathVariable String playerId) {
-        Tournament updatedTournament = tournamentService.removeParticipant(id, playerId);
-        return ResponseEntity.ok(updatedTournament);
-    }
 }

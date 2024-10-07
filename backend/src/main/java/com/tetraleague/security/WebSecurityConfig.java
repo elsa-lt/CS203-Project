@@ -69,6 +69,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/home/**").hasRole("PLAYER")
                 .requestMatchers("/dashboard/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/tournaments/**").hasAnyRole("ADMIN", "PLAYER")
+                .requestMatchers(HttpMethod.GET, "/api/users/info/**").hasAnyRole("PLAYER")
                 // Other routes need authentication
                 .anyRequest().authenticated());
 

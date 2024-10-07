@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @TypeAlias("admin")
 public class Admin extends User {
 
-    public Admin(String username, String name, String email, String password, Date dateofbirth, String location, Role role) {
-        super(username, name, email, password, dateofbirth,location);
+    public Admin(String username, String name, String email, String password) {
+        super(username, name, email, password);
     }
 }

@@ -14,14 +14,6 @@ public class SignupRequest {
     private String name;
 
     @NotBlank
-    @Size(max = 20)
-    private String location;
-
-    @NotBlank
-    @Size(max = 20)
-    private Date dateofbirth;
- 
-    @NotBlank
     @Size(max = 50)
     @Email
     private String email;
@@ -50,22 +42,6 @@ public class SignupRequest {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public Date getDOB() {
-        return dateofbirth;
-    }
-
-    public void setDOB(Date dateofbirth) {
-        this.dateofbirth = dateofbirth;
     }
 
     public String getEmail() {

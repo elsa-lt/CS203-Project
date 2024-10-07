@@ -18,20 +18,12 @@ public class User {
     private String id;
 
     @NotBlank
-    @Size(max = 20)
+    @Size(max = 40)
     private String username;
 
     @NotBlank
     @Size(max = 20)
     private String name;
-
-    @NotBlank
-    @Size(max = 20)
-    private String location;
-
-    @NotBlank
-    @Size(max = 20)
-    private Date dateofbirth;
 
     @NotBlank
     @Size(max = 50)
@@ -48,13 +40,11 @@ public class User {
     public User() {
     }
 
-    public User(String username,String name, String email, String password, Date dateofbirth, String location) {
+    public User(String username,String name, String email, String password) {
         this.username = username;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.dateofbirth=dateofbirth;
-        this.location=location;
     }
 
     public String getId() {
@@ -79,22 +69,6 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public Date getDOB() {
-        return dateofbirth;
-    }
-
-    public void setDOB(Date dateofbirth) {
-        this.dateofbirth = dateofbirth;
     }
 
     public String getEmail() {

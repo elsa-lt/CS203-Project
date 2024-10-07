@@ -50,14 +50,6 @@ const UserNavbar = () => {
               Match History
             </Link>
           </li>
-          <li>
-            <Link
-              to="/profile"
-              className={`helvetica-neue customGray ${location.pathname === '/profile' ? 'font-medium text-yellow-400' : 'hover:text-yellow-400'}`}
-            >
-              Profile
-            </Link>
-          </li>
         </ul>
 
         <div className="flex ml-6 mr-6">

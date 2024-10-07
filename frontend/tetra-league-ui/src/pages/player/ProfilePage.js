@@ -1,78 +1,122 @@
 import Navbar from '../../components/UserNavbar';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Cookies from 'js-cookie';  // Ensure you're using js-cookie for token management
-import '../../styles/ProfilePage.css'; // Styling the profile page
-import { useParams } from 'react-router-dom';  // For dynamic route parameter
+import Cookies from 'js-cookie';
+import '../../styles/ProfilePage.css';
 
 const ProfilePage = () => {
-
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     name: '',
-    email: '',
-    playerId: '',  
-    dateOfBirth: '',
-    location: '',
-    password: '',
+    email: ''
   });
+  const [originalData, setOriginalData] = useState(formData); 
+  const [userId, setUserId] = useState(null);
+  const [error, setError] = useState('');
 
-  //const { userId } = useParams();  
-  const userId = '66f261f85d07104dfa628195';  
-  
   useEffect(() => {
-    const token = Cookies.get('token');  // Get token from cookies
-    console.log("Authorization Token:", token);
-    console.log("userID:", userId);
-    console.log('Fetching user data...');
-    
-    const fetchUserDetails = async () => {
+    const token = Cookies.get('token');
+
+    const fetchUserIdAndDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/users/${userId}`, {
+        const userInfoResponse = await axios.get('http://localhost:8080/api/users/info', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setFormData(response.data);  // Set the fetched data to formData state
+
+        const { id } = userInfoResponse.data;
+        setUserId(id);
+
+        const userDetailsResponse = await axios.get(`http://localhost:8080/api/users/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setFormData(userDetailsResponse.data);
+        setOriginalData(userDetailsResponse.data); // Set original data here
       } catch (error) {
         console.error('Error fetching user details:', error);
+        setError('Failed to fetch user details.');
       }
     };
 
-    if (userId && token) {
-      fetchUserDetails();  // Fetch user data only if both userId and token exist
+    if (token) {
+      fetchUserIdAndDetails();
     } else {
-      console.error("User ID or Token is missing");
+      console.error("Token is missing");
     }
-  }, [userId]);  // Re-fetch data when userId changes
+  }, []);
 
-  // Handle input changes in the form fields
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Save profile data when exiting edit mode
-  const toggleEdit = () => {
-    setIsEditing(!isEditing);
-
-    if (isEditing && userId) {
-      console.log('Saving profile data...', formData);
-
-      const token = Cookies.get('token');  // Get token from cookies for consistency
-
-      axios.put(`http://localhost:8080/api/users/${userId}`, formData, {
+  const checkIfUserExists = async (username, email) => {
+    const token = Cookies.get('token');
+    try {
+      const response = await axios.get(`http://localhost:8080/api/users/check?username=${username}&email=${email}`, {
         headers: {
-          Authorization: `Bearer ${token}`  // Include token in the headers
+          Authorization: `Bearer ${token}`
         }
-      })
-      .then(response => {
-        console.log('Profile updated successfully:', response.data);
-      })
-      .catch(error => {
-        console.error('Error updating profile:', error);
       });
+      return response.data.exists; 
+    } catch (error) {
+      console.error('Error checking user existence:', error);
+      return false; 
     }
+  };
+
+  const toggleEdit = async () => {
+    if (isEditing) {
+      const { username, email } = formData;
+      const userExists = await checkIfUserExists(username, email);
+      
+      if (userExists) {
+        setError('Username or email already exists');
+        setFormData(originalData);
+        return; 
+      }
+
+      if (userId) {
+        const updatedData = { ...formData }; 
+
+        try {
+          const token = Cookies.get('token');
+          await axios.put(`http://localhost:8080/api/users/${userId}`, updatedData, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          setError('');
+
+          window.location.reload();
+        } catch (error) {
+          if (error.response) {
+            switch (error.response.status) {
+              case 401:
+                window.location.href = '/login'; 
+                break;
+              case 409:
+                setError('Username or email already exists');
+                setFormData(originalData); 
+                break;
+              default:
+                setError('An unexpected error occurred. Please try again later.');
+                setFormData(originalData);
+            }
+          } else {
+            setError('Network error: Please check your connection.');
+            setFormData(originalData);
+          }
+        }
+      }
+    }
+
+    setIsEditing(!isEditing);
   };
 
   return (
@@ -81,92 +125,59 @@ const ProfilePage = () => {
       style={{ backgroundImage: `url('/Background/White Background.png')` }}
     >
       <Navbar />
-      <div className="w-1/2 p-8 relative">
-        <div className="absolute -top-80 left-0">
-          <img src="/Headers/Profile Header.png" alt="Profile" className="w-72 md:w-6/12 mb-8" style={{ width: '350px' }} />
-          <img src="/Misc Design/profile pic.png" alt="Profile" className="w-72 md:w-6/12 mt-8" style={{ width: '350px' }} />
-        </div>
-      </div>
-
-      <div className="p-8 bg-white rounded-lg shadow-md style={{ width: '1000px' }} mt-28">
-        <form className="space-y-4">
-          <div className="flex flex-col w-full">
-            <label>
-              Username:
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
-            </label>
-            <label>
+      <div className="p-8 bg-white rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-semibold text-center mb-6">{isEditing ? 'Edit Profile' : 'Profile Details'}</h2>
+        <form className="space-y-5">
+          {error && <p className="text-red-600">{error}</p>}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-700">
               Name:
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
+              {isEditing ? (
+                <input
+                  type="text"
+                  name="name"
+                  className="mt-1 p-2 border border-gray-300 rounded-md"
+                  value={formData.name}
+                  onChange={handleChange}
+                />
+              ) : (
+                <span className="block mt-1 text-gray-900">{formData.name}</span>
+              )}
             </label>
-            <label>
+            <label className="text-sm font-medium text-gray-700">
+              Username:
+              {isEditing ? (
+                <input
+                  type="text"
+                  name="username"
+                  className="mt-1 p-2 border border-gray-300 rounded-md"
+                  value={formData.username}
+                  onChange={handleChange}
+                />
+              ) : (
+                <span className="block mt-1 text-gray-900">{formData.username}</span>
+              )}
+            </label>
+            <label className="text-sm font-medium text-gray-700">
               Email:
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
-            </label>
-            <label>
-              Player ID:
-              <input
-                type="text"
-                name="playerId"
-                value={formData.playerId}
-                onChange={handleChange}
-                disabled={true}  
-              />
-            </label>
-            <label>
-              Date of Birth:
-              <input
-                type="text"
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
-            </label>
-            <label>
-              Location:
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
-            </label>
-            <label>
-              Password:
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                disabled={!isEditing}
-              />
+              {isEditing ? (
+                <input
+                  type="email"
+                  name="email"
+                  className="mt-1 p-2 border border-gray-300 rounded-md"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              ) : (
+                <span className="block mt-1 text-gray-900">{formData.email}</span>
+              )}
             </label>
           </div>
         </form>
 
-        <div className="mt-10">
-          <button className="w-full bg-black text-white font-semibold py-2 px-4 rounded-lg" onClick={toggleEdit}>
-            {isEditing ? 'Save' : 'Edit'}
+        <div className="mt-8">
+          <button className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow hover:bg-blue-700 transition duration-200" onClick={toggleEdit}>
+            {isEditing ? 'Save Changes' : 'Edit Profile'}
           </button>
         </div>
       </div>

@@ -14,9 +14,9 @@ import lombok.Setter;
 public class Player extends User {
     private int eloRating;
 
-    public Player(String username, String email, String password, String name, String location, Date dateofbirth,
+    public Player(String username, String email, String password, String name,
             int eloRating) {
-        super(username, name, email, password, dateofbirth, location);
+        super(username, name, email, password);
         this.eloRating = eloRating;
     }
 

@@ -3,26 +3,24 @@ import AdminSidebar from '../../components/AdminSidebar';
 import AdminNavbar from '../../components/AdminNavbar';
 import AdminTournamentSubtabs from '../../components/AdminTournamentSubtabs';
 import Cookies from 'js-cookie';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
 
 const ManageTournamentsPage = () => {
   const [tournaments, setTournaments] = useState([]);
 
-  // Retrieve the token from cookies using js-cookie
-  const token = Cookies.get('token'); // Assuming the token is stored with key 'token'
+  const token = Cookies.get('token'); 
 
-  // Fetch tournaments from the backend API with Bearer token
   useEffect(() => {
     const fetchTournaments = async () => {
       if (token) {
         try {
           const response = await axios.get('http://localhost:8080/api/tournaments', {
             headers: {
-              'Authorization': `Bearer ${token}`, // Attach the Bearer token from cookies
+              'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
           });
-          setTournaments(response.data); // Set the fetched tournaments to state
+          setTournaments(response.data); 
         } catch (error) {
           console.error('Error fetching tournaments:', error);
         }

@@ -1,21 +1,17 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
-import StartButtons from '../components/StartButtons';
+import StartButtons from './StartButtons'; 
 import { FiEdit } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
 
-const AdminTournamentCards = ({ tournament }) => {
-  const editNavigate = useNavigate(); // Always called at the top level
+const AdminTournamentCard = ({ tournament }) => {
+  const editNavigate = useNavigate();
 
-  // Early return if tournament is not defined
-  if (!tournament) {
-    return null; // or render a fallback UI
-  }
 
   const { name, startDate, endDate, minElo, imageUrl } = tournament;
 
   const handleEdit = () => {
-    editNavigate('/edit-tournament');
+    editNavigate(`/edit-tournament/${tournament._id}`); 
   };
 
   return (
@@ -24,7 +20,7 @@ const AdminTournamentCards = ({ tournament }) => {
         {/* Header Image */}
         <div className="relative h-72">
           <img
-            src={imageUrl || '/Misc Design/tetrisdefault.jpg'} // Use a default image if imageUrl is undefined
+            src={imageUrl || '/Misc Design/tetrisdefault.jpg'} 
             alt={name || 'Tournament'}
             className="object-cover w-[28rem] h-72 justify-center"
           />
@@ -70,4 +66,4 @@ const AdminTournamentCards = ({ tournament }) => {
   );
 };
 
-export default AdminTournamentCards;
+export default AdminTournamentCard;

@@ -41,7 +41,7 @@ const AdminSidebar = ({ name, imageUrl }) => {
               <span>My Tournaments</span>
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link
               to="/admin-past-tournaments"
               className={`flex items-center space-x-4 pt-4 pb-4 pl-4 font-light font-hevetica-neue text-customGray ${location.pathname === '/admin-past-tournaments' ? 'text-white font-medium bg-customGray bg-opacity-80' : 'hover:text-yellow-500'}`}
@@ -49,7 +49,7 @@ const AdminSidebar = ({ name, imageUrl }) => {
               <LuArchive className="text-3xl" />
               <span>Past Tournaments</span>
             </Link>
-          </li>
+          </li> */}
         </ul>
       </div>
     </nav>

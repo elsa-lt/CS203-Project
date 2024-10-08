@@ -13,7 +13,7 @@ import TournamentsPage from './pages/player/TournamentsPage';
 import TournamentDetailsPage from './pages/player/TournamentDetails';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import ManageTournamentsPage from './pages/admin/ManageTournamentsPage';
-import AdminPastTournamentsPage from './pages/admin/AdminPastTournamentsPage';
+// import AdminPastTournamentsPage from './pages/admin/AdminPastTournamentsPage';
 import CreateTournamentPage from './pages/admin/CreateTournamentPage';
 import EditTournament from './pages/admin/EditTournament';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -33,7 +33,7 @@ function App() {
       <Route path="/tournament-details/:id" element={<ProtectedRoute element={<TournamentDetailsPage />} role="player" />} />
       <Route path="/dashboard" element={<ProtectedRoute element={<AdminDashboardPage />} role="admin" />} />
       <Route path="/manage-tournaments" element={<ProtectedRoute element={<ManageTournamentsPage />} role="admin" />} />
-      <Route path="/admin-past-tournaments" element={<ProtectedRoute element={<AdminPastTournamentsPage />} role="admin" />} />
+      {/* <Route path="/admin-past-tournaments" element={<ProtectedRoute element={<AdminPastTournamentsPage />} role="admin" />} /> */}
       <Route path="/create-tournament" element={<ProtectedRoute element={<CreateTournamentPage />} role="admin" />} />
       <Route path="/edit-tournament/:id" element={<ProtectedRoute element={<EditTournament />} role="admin" />} />
     </Routes>

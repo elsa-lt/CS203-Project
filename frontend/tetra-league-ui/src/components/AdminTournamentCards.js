@@ -11,7 +11,7 @@ const AdminTournamentCard = ({ tournament }) => {
   const { name, startDate, endDate, minElo, imageUrl } = tournament;
 
   const handleEdit = () => {
-    editNavigate(`/edit-tournament/${tournament._id}`); 
+    editNavigate(`/edit-tournament/${tournament.id}`); 
   };
 
   return (

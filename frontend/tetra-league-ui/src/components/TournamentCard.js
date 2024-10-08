@@ -1,9 +1,11 @@
 //Need to connect to backend API & fix responsiveness
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card'; // Import Bootstrap Card component for styling
 import RegistrationButtons from '../components/RegistrationButtons';
+import { useParams } from 'react-router-dom'; // Assumes you're using react-router for routing
+import axios from 'axios';
 
-const TournamentCard = () => {
+const TournamentCard = ({ tournament }) => {
     return (
       <div className="flex mt-10">
         <Card className="w-full rounded-lg overflow-hidden bg-white border border-customGray border-opacity-30 bg-opacity-80">
@@ -23,10 +25,10 @@ const TournamentCard = () => {
               {/*Tournament Name & Date*/}
               <div className="flex flex-col flex-none basis-1/2 mr-6">
                 <div className="flex font-medium font-sans-serif customGray text-4xl mb-4">
-                  Puyo Puyo Tetris 2 Tournament
+                {tournament.name}
                 </div>
                 <div className="flex font-normal helvetica-neue customGray text-lg">
-                  7 Sept, 2024 19:00
+                {new Date(tournament.date).toLocaleString()}
                 </div>
               </div>
 

@@ -15,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Tournament {
-
     @Id
     private String id;
 
@@ -41,6 +40,7 @@ public class Tournament {
     private LocalDateTime endDate;
 
     private List<Player> participants = new ArrayList<>();
+    private List<Match> matches = new ArrayList<>();
 
     private String imageUrl;
 
@@ -51,15 +51,13 @@ public class Tournament {
 
     public void removeParticipant(Player player) { participants.remove(player); }
 
-    public boolean hasEnded() {
-        return LocalDateTime.now().isAfter(endDate);
-    }
+    public void addMatch(Match match) { matches.add(match); }
 
-    public boolean hasStarted() {
-        return LocalDateTime.now().isAfter(startDate);
-    }
+    public void removeMatch(Match match) { matches.remove(match); }
 
-    public boolean isFull() {
-        return participants.size() >= maxParticipants;
-    }
+    public boolean hasEnded() { return LocalDateTime.now().isAfter(endDate); }
+
+    public boolean hasStarted() { return LocalDateTime.now().isAfter(startDate); }
+
+    public boolean isFull() { return participants.size() >= maxParticipants; }
 }

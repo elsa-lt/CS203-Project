@@ -35,7 +35,7 @@ function App() {
       <Route path="/manage-tournaments" element={<ProtectedRoute element={<ManageTournamentsPage />} role="admin" />} />
       <Route path="/admin-past-tournaments" element={<ProtectedRoute element={<AdminPastTournamentsPage />} role="admin" />} />
       <Route path="/create-tournament" element={<ProtectedRoute element={<CreateTournamentPage />} role="admin" />} />
-      <Route path="/edit-tournament" element={<ProtectedRoute element={<EditTournament />} role="admin" />} />
+      <Route path="/edit-tournament/:id" element={<ProtectedRoute element={<EditTournament />} role="admin" />} />
     </Routes>
   );
 }

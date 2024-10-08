@@ -1,11 +1,11 @@
 package com.tetraleague.controller;
 
-import com.tetraleague.model.Player;
 import com.tetraleague.model.Tournament;
 import com.tetraleague.service.TournamentService;
+import com.tetraleague.model.Match;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.HttpStatus;
@@ -16,6 +16,7 @@ import java.util.List;
 @RequestMapping("/api/admin/tournaments")
 public class TournamentController {
 
+    @Autowired
     private final TournamentService tournamentService;
 
     @Autowired
@@ -61,5 +62,29 @@ public class TournamentController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/{tournamentId}/start")
+    public ResponseEntity<Void> startTournament(@PathVariable String tournamentId) {
+        tournamentService.startTournament(tournamentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{tournamentId}/advance")
+    public ResponseEntity<Void> advanceTournament(@PathVariable String tournamentId) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        tournamentService.advanceTournament(tournament);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{tournamentId}/brackets")
+    public List<String> getCurrentBrackets(@PathVariable String tournamentId) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        List<Match> currentBrackets = tournamentService.getCurrentBrackets(tournament);
+
+        // Format the bracket information for display
+        return currentBrackets.stream()
+                .map(match -> match.getMatchup() + " - " + (match.isCompleted() ? "Winner: " + match.getWinner().getUsername() : "In progress"))
+                .toList();
     }
 }

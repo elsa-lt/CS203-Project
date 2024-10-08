@@ -2,14 +2,11 @@ package com.tetraleague.model;
 
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-@Setter
-@Getter
+@Data
 @Document("users")
 @TypeAlias("player")
 public class Player extends User {

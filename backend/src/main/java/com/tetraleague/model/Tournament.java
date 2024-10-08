@@ -15,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Tournament {
-
     @Id
     private String id;
 
@@ -41,25 +40,59 @@ public class Tournament {
     private LocalDateTime endDate;
 
     private List<Player> participants = new ArrayList<>();
+    private List<Round> rounds = new ArrayList<>();
 
     private String imageUrl;
 
     @NotNull(message = "Prize pool is required")
     private Double prizePool;
 
-    public void addParticipant(Player player) { participants.add(player); }
+    private Player winner;
+    private boolean started = false;
+    private boolean ended = false;
 
-    public void removeParticipant(Player player) { participants.remove(player); }
-
-    public boolean hasEnded() {
-        return LocalDateTime.now().isAfter(endDate);
+    public void addParticipant(Player player) {
+        participants.add(player);
     }
 
-    public boolean hasStarted() {
-        return LocalDateTime.now().isAfter(startDate);
+    public void removeParticipant(Player player) {
+        participants.remove(player);
     }
 
     public boolean isFull() {
         return participants.size() >= maxParticipants;
+    }
+
+    public boolean hasEnded() {
+        return ended || LocalDateTime.now().isAfter(endDate);
+    }
+
+    public boolean hasStarted() {
+        return started || LocalDateTime.now().isAfter(startDate);
+    }
+
+    public void startTournament() {
+        this.started = true;
+    }
+
+    public void addRound(Round round) {
+        rounds.add(round);
+    }
+
+    public Round getCurrentRound() {
+        return rounds.get(rounds.size() - 1);
+    }
+
+    public void setWinner(Player winner) {
+        this.winner = winner;
+        this.ended = true;
+    }
+
+    public int getCurrentRoundNumber() {
+        return rounds.size();
+    }
+
+    public boolean hasRounds() {
+        return !rounds.isEmpty();
     }
 }

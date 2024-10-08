@@ -22,9 +22,9 @@ public class TournamentService {
     @Autowired
     private UserRepository userRepository;
 
-    private Role role;
+    @Autowired
+    private RoundService roundService;
 
-    // Retrieve all tournaments
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll();
     }
@@ -70,13 +70,11 @@ public class TournamentService {
     }
 
     public Tournament updateTournament(String id, Tournament updatedTournament) {
-        Tournament tournament = tournamentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+        Tournament tournament = getTournamentById(id);
 
         validateTournament(tournament);
         validateTournament(updatedTournament);
 
-        // Update fields
         tournament.setName(updatedTournament.getName());
         tournament.setDescription(updatedTournament.getDescription());
         tournament.setMaxParticipants(updatedTournament.getMaxParticipants());
@@ -90,8 +88,7 @@ public class TournamentService {
     }
 
     public String uploadImage(String tournamentId, MultipartFile file) throws IOException {
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+        Tournament tournament = getTournamentById(tournamentId);
 
         String folder = "tournament-images";
         Path path = Paths.get(folder, file.getOriginalFilename());
@@ -123,8 +120,7 @@ public class TournamentService {
     }
     
     public Tournament addParticipant(String tournamentId, String playerId) {
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+        Tournament tournament = getTournamentById(tournamentId);
 
         if (tournament.hasEnded()) {
             throw new RuntimeException("Tournament has already ended");
@@ -151,8 +147,7 @@ public class TournamentService {
     }
 
     public Tournament removeParticipant (String tournamentId, String playerId) {
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+        Tournament tournament = getTournamentById(tournamentId);
 
         Player player = validateAndGetPlayer(playerId);
 
@@ -167,7 +162,45 @@ public class TournamentService {
     public void deleteTournament (String tournamentId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
-
         tournamentRepository.delete(tournament);
+    }
+
+    public void startTournament(String tournamentId) {
+        Tournament tournament = getTournamentById(tournamentId);
+
+        if (tournament.hasStarted()) {
+            throw new RuntimeException("Tournament has already started");
+        }
+
+        Round firstRound = roundService.createFirstRound(tournament.getParticipants());
+        tournament.addRound(firstRound);
+
+        tournament.setStarted(true);
+        tournamentRepository.save(tournament);
+    }
+
+    public void advanceTournament(Tournament tournament) {
+        List<Round> rounds = tournament.getRounds();
+        Round currentRound = rounds.get(rounds.size() - 1);
+
+        if (roundService.isRoundComplete(currentRound)) {
+            List<Player> winners = currentRound.getWinners();
+
+            if (winners.size() == 1) {
+                tournament.setWinner(winners.get(0));
+                tournament.setEnded(true);
+                tournamentRepository.save(tournament);
+                return;
+            }
+
+            Round nextRound = roundService.createNextRound(winners, currentRound.getRoundNumber() + 1);
+            tournament.addRound(nextRound);
+            tournamentRepository.save(tournament);
+        }
+    }
+
+    public List<Match> getCurrentBrackets(Tournament tournament) {
+        Round currentRound = tournament.getCurrentRound();
+        return currentRound.getMatches();
     }
 }

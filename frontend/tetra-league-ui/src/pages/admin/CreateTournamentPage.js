@@ -1,21 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import Sidebar from '../../components/AdminSidebar';
 import AdminNavbar from '../../components/AdminNavbar';
-import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 const CreateTournamentsPage = () => {
   const [tournamentDetails, setTournamentDetails] = useState({
     name: '',
     description: '',
-    dateTime: '',
-    venue: '',
-    matchFormat: '',
-    timeLimit: '',
+    maxParticipants: 0,
+    minElo: 0,
+    maxElo: 0,
+    startDate: '',
+    endDate: '',
     conduct: '',
-    prizePool: '',
+    prizePool: 0.0,
     firstPlace: '',
     secondPlace: '',
     thirdPlace: '',
+    registrationStart: '',
+    registrationEnd: '',
   });
 
   const handleChange = (e) => {
@@ -25,9 +30,23 @@ const CreateTournamentsPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Tournament Details:', tournamentDetails);
+
+    try {
+      const response = await axios.post('http://localhost:8080/api/tournaments', tournamentDetails, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Cookies.get('token')}`
+        }
+      });
+
+      if (response.status === 200) {
+        console.log('Tournament created successfully', response.data);
+      }
+    } catch (error) {
+      console.error('Error creating tournament:', error.response ? error.response.data : error.message);
+    }
   };
 
   return (
@@ -46,7 +65,7 @@ const CreateTournamentsPage = () => {
 
         <div className="tournament-creator ">
           <div className="w-full max-w-6xl bg-white opacity-70 rounded-lg shadow-lg p-6 h-[600px] overflow-y-auto -ml-10 mt-10">
-            <form onSubmit={handleSubmit}>
+            <form>
               <label>Tournament Details</label>
               <div className="form-group">
                 <h2>Name of Tournament</h2>
@@ -69,41 +88,51 @@ const CreateTournamentsPage = () => {
               </div>
 
               <div className="form-group">
-                <h2>Date & Time</h2>
+                <h2>Start Date</h2>
                 <input
                   type="datetime-local"
-                  name="dateTime"
-                  value={tournamentDetails.dateTime}
+                  name="startDate"
+                  value={tournamentDetails.startDate}
                   onChange={handleChange}
                 />
               </div>
 
               <div className="form-group">
-                <h2>Venue</h2>
+                <h2>End Date</h2>
                 <input
-                  type="text"
-                  name="venue"
-                  value={tournamentDetails.venue}
+                  type="datetime-local"
+                  name="endDate"
+                  value={tournamentDetails.endDate}
                   onChange={handleChange}
                 />
               </div>
 
               <div className="form-group">
-                <h2>Match Format</h2>
+                <h2>Max Participants</h2>
                 <input
-                  type="text"
-                  name="matchFormat"
-                  value={tournamentDetails.matchFormat}
+                  type="number"
+                  name="maxParticipants"
+                  value={tournamentDetails.maxParticipants}
                   onChange={handleChange}
                 />
               </div>
 
               <div className="form-group">
-                <h2>Time Limit</h2>
+                <h2>Minimum Elo</h2>
                 <input
-                  type="text"
-                  name="timeLimit"
-                  value={tournamentDetails.timeLimit}
+                  type="number"
+                  name="minElo"
+                  value={tournamentDetails.minElo}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <h2>Maximum Elo</h2>
+                <input
+                  type="number"
+                  name="maxElo"
+                  value={tournamentDetails.maxElo}
                   onChange={handleChange}
                 />
               </div>
@@ -160,26 +189,6 @@ const CreateTournamentsPage = () => {
 
               <label>Player Registration Settings</label>
               <div className="form-group">
-                <h2>Maximum Number of Participants</h2>
-                <input
-                  type="number"
-                  name="maxParticipants"
-                  value={tournamentDetails.maxParticipants}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <h2>Minimum Rank Eligibility</h2>
-                <input
-                  type="text"
-                  name="minRank"
-                  value={tournamentDetails.minRank}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
                 <h2>Registration Start Date & Time</h2>
                 <input
                   type="datetime-local"
@@ -198,7 +207,7 @@ const CreateTournamentsPage = () => {
                   onChange={handleChange}
                 />
               </div>
-              
+
               <label>Page Visuals</label>
               <div className="form-group">
                 <h2>Banner Image</h2>
@@ -219,7 +228,8 @@ const CreateTournamentsPage = () => {
                   onChange={(e) => console.log(e.target.files[0])}
                 />
               </div>
-              <button type="submit" className="w-full bg-black text-white font-semibold py-2 px-4 rounded-lg opacity-100">Publish</button>
+
+              <button type="submit" className="w-full bg-black text-white font-semibold py-2 px-4 rounded-lg opacity-100" onClick={handleSubmit}>Publish</button>
             </form>
           </div>
         </div>

@@ -1,5 +1,10 @@
 package com.tetraleague.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class PlayerRankingDTO {
     private String username;
     private int eloRating;
@@ -30,74 +35,14 @@ public class PlayerRankingDTO {
         this.globalRank = globalRank;
     }
 
-    // Getters and Setters for all the fields
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public int getEloRating() {
-        return eloRating;
-    }
-
-    public void setEloRating(int eloRating) {
-        this.eloRating = eloRating;
-    }
-
-    public int getGamesWon() {
-        return gamesWon;
-    }
-
-    public void setGamesWon(int gamesWon) {
-        this.gamesWon = gamesWon;
-    }
-
-    public int getGamesLost() {
-        return gamesLost;
-    }
-
-    public void setGamesLost(int gamesLost) {
-        this.gamesLost = gamesLost;
-    }
-
-    public Rank getRank() {
-        return rank;
-    }
-
-    public void setRank(Rank rank) {
-        this.rank = rank;
-    }
-
-    public int getGlobalRank() {
-        return globalRank;
-    }
-
-    public void setGlobalRank(int globalRank) {
-        this.globalRank = globalRank;
-    }
-
     //needed as player class does not calculate this
     public double getWinRate() {
         if((gamesLost + gamesWon) == 0) {
-            return 0.0;
+            winRate = 0.0;
+        } else {
+            winRate = (gamesWon / (gamesLost + gamesWon)) * 100.0;
         }
-        return gamesWon / (gamesLost + gamesWon) * 100.0;
-    }
-
-    //testing - not needed
-    @Override
-    public String toString() {
-        return "PlayerRankingDTO{" +
-                "username='" + username + '\'' +
-                ", eloRating=" + eloRating +
-                ", gamesWon=" + gamesWon +
-                ", gamesLost=" + gamesLost +
-                ", winRate=" + winRate + 
-                ", rank=" + rank +
-                ", globalRank=" + globalRank +
-                '}';
+    
+        return winRate;
     }
 }

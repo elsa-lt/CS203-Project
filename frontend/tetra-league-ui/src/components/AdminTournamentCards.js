@@ -1,12 +1,14 @@
-import React from 'react';
+import {React,useState} from 'react';
 import Card from 'react-bootstrap/Card';
 import StartButtons from './StartButtons'; 
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiX } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
+import CancelModal from './CancelModal';
 
 const AdminTournamentCard = ({ tournament }) => {
   const editNavigate = useNavigate();
-
+  const [isCancelModalOpen, setCancelModalOpen] = useState(false);
+  const [tournamentId, setTournamentId] = useState(null);
 
   const { name, startDate, endDate, minElo, imageUrl } = tournament;
 
@@ -14,11 +16,31 @@ const AdminTournamentCard = ({ tournament }) => {
     editNavigate(`/edit-tournament/${tournament.id}`); 
   };
 
+  const handleOpenModal = (id) => {
+    setTournamentId(id); 
+    setCancelModalOpen(true); 
+  };
+
+
   return (
     <Card className="w-[28rem] rounded-lg overflow-hidden bg-white border border-customGray border-opacity-30 bg-opacity-80">
       <Card.Body>
         {/* Header Image */}
         <div className="relative h-72">
+        <button
+              onClick={() => setCancelModalOpen(true)}
+              className="absolute top-3 right-5 text-black hover:text-yellow-400 flex items-center space-x-1"
+              aria-label="Delete Tournament"
+            >
+              <FiX className="text-2xl text-red-500 font-bold ml-auto" onClick={() => handleOpenModal(tournament.id)}/>
+            </button>
+          
+        
+        <CancelModal
+          isOpen={isCancelModalOpen}
+          onClose={() => setCancelModalOpen(false)}
+          tournamentId={tournamentId}
+        />
           <img
             src={imageUrl || '/Misc Design/tetrisdefault.jpg'} 
             alt={name || 'Tournament'}

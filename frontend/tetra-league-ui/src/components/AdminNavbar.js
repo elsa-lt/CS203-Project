@@ -20,15 +20,6 @@ const AdminNavbar = () => {
         {/*Header Container*/}
         <ul className="flex text-l text-center text-customGray space-x-2">
             
-          <li>
-            <Link
-              to="/tournaments"
-              className={`helvetica-neue customGray ${location.pathname === '/tournaments' ? 'font-medium text-yellow-400' : 'hover:text-yellow-400'}`}
-            >
-              All Tournaments
-            </Link>
-          </li>
-
         </ul>
 
         <div className="flex ml-6 mr-6">
@@ -36,8 +27,7 @@ const AdminNavbar = () => {
             <BiBell className="text-2xl" />
           </button>
         </div>
-
-        <ProfileDropDown />
+        
       </div>
     </nav>
   );

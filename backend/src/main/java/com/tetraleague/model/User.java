@@ -18,7 +18,6 @@ public class User {
     private String id;
 
     @NotBlank
-    @Size(max = 20)
     private String username;
 
     @NotBlank

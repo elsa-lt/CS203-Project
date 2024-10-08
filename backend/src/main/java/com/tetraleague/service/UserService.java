@@ -22,6 +22,14 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+    
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
     public Optional<User> getUserById(String id) {
         return userRepository.findById(id);
@@ -66,6 +74,22 @@ public class UserService {
             return playerOptional.get().getTournaments();
         } else {
             throw new RuntimeException("Player not found!");
+        }
+    }
+}
+    public Optional<User> updateUser(String id, User updatedUser) {
+        Optional<User> existingUserOpt = userRepository.findById(id);
+        
+        if (existingUserOpt.isPresent()) {
+            User existingUser = existingUserOpt.get();
+    
+            if (updatedUser.getUsername() != null) existingUser.setUsername(updatedUser.getUsername());
+            if (updatedUser.getName() != null) existingUser.setName(updatedUser.getName());
+            if (updatedUser.getEmail() != null) existingUser.setEmail(updatedUser.getEmail());
+            
+            return Optional.of(userRepository.save(existingUser)); 
+        } else {
+            return Optional.empty();  
         }
     }
 }

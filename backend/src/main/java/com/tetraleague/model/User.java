@@ -19,6 +19,7 @@ public class User {
     private String id;
 
     @NotBlank
+    @Size(max = 40)
     private String username;
 
     @NotBlank
@@ -37,7 +38,7 @@ public class User {
     @DBRef
     private Set<Role> roles = new HashSet<>();
 
-    public User(String username, String email, String password) {
+    public User(String username,String name, String email, String password) {
         this.username = username;
         this.name = name;
         this.email = email;

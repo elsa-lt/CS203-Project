@@ -16,10 +16,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.http.HttpMethod;
 
 import com.tetraleague.security.jwt.AuthEntryPointJwt;
 import com.tetraleague.security.jwt.AuthTokenFilter;
 import com.tetraleague.security.services.UserDetailsServiceImpl;
+import java.util.Arrays; 
 
 @Configuration
 @EnableMethodSecurity
@@ -67,6 +69,10 @@ public class WebSecurityConfig {
                 // Role-based routes
                 .requestMatchers("/home/**").hasRole("PLAYER")
                 .requestMatchers("/dashboard/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/tournaments/**").hasAnyRole("ADMIN", "PLAYER")
+                .requestMatchers(HttpMethod.POST, "/api/tournaments/**").hasAnyRole("ADMIN", "PLAYER")
+                .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "PLAYER")
+                .requestMatchers(HttpMethod.GET, "/api/users/info/**").hasAnyRole("PLAYER")
                 // Other routes need authentication
                 .anyRequest().authenticated());
 
@@ -76,18 +82,17 @@ public class WebSecurityConfig {
         return http.build();
     }
 
+    
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true); 
-        config.addAllowedOrigin("http://localhost:3000"); 
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.addExposedHeader("Set-Cookie"); 
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Allow specific origin
+        config.setAllowedHeaders(Arrays.asList("*")); // Allow all headers
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow specific methods
+        config.setExposedHeaders(Arrays.asList("Set-Cookie")); // Expose Set-Cookie header
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
-    
-    
 }

@@ -4,6 +4,7 @@ import axios from 'axios';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -11,42 +12,49 @@ const RegisterPage = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+      e.preventDefault();
 
-    if (password !== confirmPassword) {
-        setError('Passwords do not match');
-        return;
-    }
+      // Validate that required fields are not empty
+      if (!username || !name || !email || !confirmPassword) {
+          setError('All fields are required');
+          return;
+      }
 
-    try {
-      const response = await axios.post('http://localhost:8080/api/auth/signup', {
-          username,
-          email,
-          password,
-          confirmPassword
-      });
-  
-      // Log the response
-      console.log('Response:', response);
-  
-      if (response.status === 200) {
-          navigate('/login');
-      } else {
-          // Log response if error
-          console.log('Response data:', response.data);
-          setError(response.data.message || 'Sign up failed RESPONSE. Please try again.');
+      if (password !== confirmPassword) {
+          setError('Passwords do not match');
+          return;
       }
-  } catch (error) {
-      // Log the error response if available
-      if (error.response) {
-          console.error('Error response:', error.response.data);
-      } else {
-          console.error('Sign up failed:', error.message);
+
+      try {
+          const response = await axios.post('http://localhost:8080/api/auth/signup', {
+              username,
+              name,
+              email,
+              password,
+              confirmPassword // Include confirmPassword
+          });
+
+          // Log the response
+          console.log('Response:', response);
+
+          if (response.status === 200) {
+              navigate('/login');
+          } else {
+              // Log response if error
+              console.log('Response data:', response.data);
+              setError(response.data.message || 'Sign up failed. Please try again.');
+          }
+      } catch (error) {
+          // Handle the error response from the backend
+          if (error.response) {
+              console.error('Error response:', error.response.data);
+              setError(error.response.data.message || 'Sign up failed. Please try again.');
+          } else {
+              console.error('Sign up failed:', error.message);
+              setError('Sign up failed. Please try again.');
+          }
       }
-      setError('Sign up failed. Please try again.');
-  }
-  
-};
+  };
 
 
   return (
@@ -76,6 +84,19 @@ const RegisterPage = () => {
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-gray-700">Name</label>
+            <input
+              id="name"
+              type="text"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
             />
           </div>
           <div className="mb-4">
@@ -87,6 +108,7 @@ const RegisterPage = () => {
               placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
           <div className="mb-4">
@@ -98,6 +120,7 @@ const RegisterPage = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
           <div className="mb-4">
@@ -109,6 +132,7 @@ const RegisterPage = () => {
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              required
             />
           </div>
           <button

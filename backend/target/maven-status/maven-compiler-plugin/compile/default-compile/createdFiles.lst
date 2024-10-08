@@ -28,3 +28,5 @@ com/tetraleague/model/Role.class
 com/tetraleague/model/Admin.class
 com/tetraleague/security/jwt/AuthTokenFilter.class
 com/tetraleague/controller/UserController.class
+com/tetraleague/model/UserExistsResponse.class
+com/tetraleague/controller/TournamentController$RegistrationStatusResponse.class

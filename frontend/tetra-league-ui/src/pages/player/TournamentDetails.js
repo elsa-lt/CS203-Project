@@ -1,20 +1,61 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import Navbar from '../../components/UserNavbar';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import TournamentCard from '../../components/TournamentCard';
 import TournamentSubTabs from '../../components/TournamentSubTabs';
-import { useParams } from 'react-router-dom'; 
-import axios from 'axios';
 
 const TournamentDetails = () => {
-  const { id } = useParams(); // Get the tournament ID from the URL
-  const [tournament, setTournament] = useState(null); // State to hold tournament details
+  const { id } = useParams();
+  const [tournament, setTournament] = useState(null);
+  const [username, setUsername] = useState(''); // State for username
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // Fetch the tournament details from the backend API
-    axios.get(`/api/tournaments/${id}`)
-      .then(response => setTournament(response.data)) // Set the tournament state with the fetched data
-      .catch(error => console.error("Error fetching tournament:", error));
+    const token = Cookies.get('token');
+
+    const fetchUserIdAndTournamentDetails = async () => {
+      try {
+        // Fetch user ID and username
+        const userInfoResponse = await axios.get('http://localhost:8080/api/users/info', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const { id: fetchedUserId, username: fetchedUsername } = userInfoResponse.data; // Fetch username
+        setUsername(fetchedUsername); // Set username state
+
+        // Fetch tournament details
+        const tournamentResponse = await axios.get(`http://localhost:8080/api/tournaments/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log('Fetched tournament:', tournamentResponse.data); // Log the fetched tournament
+        setTournament(tournamentResponse.data);
+      } catch (error) {
+        console.error('Error fetching tournament details:', error);
+        setError('Failed to fetch tournament details.');
+      }
+    };
+
+    if (token) {
+      fetchUserIdAndTournamentDetails();
+    } else {
+      console.error("Token is missing");
+    }
   }, [id]);
+
+  if (error) {
+    return <div className="text-red-600">{error}</div>; // Display error message if any
+  }
+
+  if (!tournament) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <main
@@ -38,15 +79,21 @@ const TournamentDetails = () => {
           <hr className="w-full border-customGray border-opacity-30"/>
         </div>
 
-        {tournament ? ( // Check if tournament data is available
-          <TournamentCard tournament={tournament} />
-        ) : (
-          <div>Loading tournament details...</div> // Show a loading message while fetching
-        )}
-
-        <div className="flex mt-10">
-          <TournamentSubTabs />
-        </div>
+        <TournamentCard 
+          id={tournament.id} 
+          name={tournament.name} 
+          startDate={tournament.startDate} 
+          endDate={tournament.endDate} 
+          prizePool={tournament.prizePool} 
+          minElo={tournament.minElo} 
+          imageUrl={tournament.imageUrl}
+          username={username} // Pass the username to the TournamentCard
+          showRegistrationButtons={true} 
+        />
+        
+        <TournamentSubTabs 
+          tournamentId={tournament.id}
+        />
       </div>
     </main>
   );

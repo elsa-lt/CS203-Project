@@ -6,7 +6,8 @@ import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 public class TournamentService {
+    private static final Logger logger = LoggerFactory.getLogger(TournamentService.class);
 
     @Autowired
     private TournamentRepository tournamentRepository;
@@ -30,9 +32,11 @@ public class TournamentService {
     }
 
     public Tournament getTournamentById(String id) {
+        logger.info("Fetching tournament with ID: {}", id);
         return tournamentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+            .orElseThrow(() -> new RuntimeException("Tournament not found"));
     }
+    
 
     public Tournament createTournament(Tournament tournament) {
         validateTournament(tournament);
@@ -83,6 +87,7 @@ public class TournamentService {
         tournament.setMinElo(updatedTournament.getMinElo());
         tournament.setMaxElo(updatedTournament.getMaxElo());
         tournament.setImageUrl(updatedTournament.getImageUrl());
+        tournament.setPrizePool(updatedTournament.getPrizePool());
 
         return tournamentRepository.save(tournament);
     }
@@ -144,6 +149,16 @@ public class TournamentService {
 
         tournament.addParticipant(player);
         return tournamentRepository.save(tournament);
+    }
+
+    public boolean isUserRegistered(String tournamentId, String username) {
+        Tournament tournament = tournamentRepository.findById(tournamentId)
+                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+
+        return tournament.getParticipants().stream()
+                .filter(player -> player instanceof Player)
+                .map(Player.class::cast) 
+                .anyMatch(player -> player.getUsername().equals(username));
     }
 
     public Tournament removeParticipant (String tournamentId, String playerId) {

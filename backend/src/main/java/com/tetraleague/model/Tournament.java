@@ -26,7 +26,7 @@ public class Tournament {
 
     @NotNull(message = "Number of participants is required")
     private Integer maxParticipants;
-
+    
     @NotNull(message = "Minimum Elo range is required")
     private Integer minElo;
 

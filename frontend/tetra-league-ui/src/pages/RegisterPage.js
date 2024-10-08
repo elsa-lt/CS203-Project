@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const SignUpPage = () => {
-  const [name, setName] = useState('');
+const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,28 +13,41 @@ const SignUpPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if passwords match
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
+        setError('Passwords do not match');
+        return;
     }
 
     try {
-      // Send sign-up request to backend
-      const response = await axios.post('http://localhost:8080/register', {
-        name,
-        username,
-        email,
-        password,
+      const response = await axios.post('http://localhost:8080/api/auth/signup', {
+          username,
+          email,
+          password,
+          confirmPassword
       });
-
-      // Handle response (e.g., redirect to login or automatically log in the user)
-      navigate('/login');
-    } catch (error) {
-      console.error('Sign up failed:', error);
+  
+      // Log the response
+      console.log('Response:', response);
+  
+      if (response.status === 200) {
+          navigate('/login');
+      } else {
+          // Log response if error
+          console.log('Response data:', response.data);
+          setError(response.data.message || 'Sign up failed RESPONSE. Please try again.');
+      }
+  } catch (error) {
+      // Log the error response if available
+      if (error.response) {
+          console.error('Error response:', error.response.data);
+      } else {
+          console.error('Sign up failed:', error.message);
+      }
       setError('Sign up failed. Please try again.');
-    }
-  };
+  }
+  
+};
+
 
   return (
     <main
@@ -55,17 +67,6 @@ const SignUpPage = () => {
         </div>
         <form onSubmit={handleSubmit}>
           {error && <p className="text-red-600">{error}</p>}
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-gray-700">Name</label>
-            <input
-              id="name"
-              type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
           <div className="mb-4">
             <label htmlFor="username" className="block text-gray-700">Username</label>
             <input
@@ -126,4 +127,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default RegisterPage;

@@ -40,30 +40,32 @@ public class TournamentService {
     }
 
     private void validateTournament(Tournament tournament) {
-        if (tournament.getMaxParticipants() == null || tournament.getMaxParticipants() < 2) {
-            throw new IllegalArgumentException("Number of participants cannot be less than 2.");
-        }
-        if (!isPowerOfTwo(tournament.getMaxParticipants())) {
-            throw new IllegalArgumentException("Number of participants must be a power of 2.");
-        }
-        if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
-            throw new IllegalArgumentException("Start date cannot be after end date.");
-        }
-        if (tournament.getMinElo() > tournament.getMaxElo()) {
-            throw new IllegalArgumentException("Minimum Elo cannot be greater than maximum Elo.");
-        }
-        List<Tournament> tournaments = tournamentRepository.findAll();
-        for (Tournament existingTournament : tournaments) {
-            if (existingTournament.getName().equals(tournament.getName()) &&
-                    (tournament.getStartDate().isBefore(existingTournament.getEndDate()) &&
-                            (tournament.getStartDate().isBefore(existingTournament.getEndDate()) ||
-                                    tournament.getEndDate().isAfter(existingTournament.getStartDate())))) {
-                throw new IllegalArgumentException("Another tournament with the same name overlaps in time frame");
+        if (tournament.getMaxParticipants() < 2) {
+            if (tournament.getMaxParticipants() == null || tournament.getMaxParticipants() < 2) {
+                throw new IllegalArgumentException("Number of participants cannot be less than 2.");
+            }
+            if (!isPowerOfTwo(tournament.getMaxParticipants())) {
+                throw new IllegalArgumentException("Number of participants must be a power of 2.");
+            }
+            if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
+                throw new IllegalArgumentException("Start date cannot be after end date.");
+            }
+            if (tournament.getMinElo() > tournament.getMaxElo()) {
+                throw new IllegalArgumentException("Minimum Elo cannot be greater than maximum Elo.");
+            }
+            List<Tournament> tournaments = tournamentRepository.findAll();
+            for (Tournament existingTournament : tournaments) {
+                if (existingTournament.getName().equals(tournament.getName()) &&
+                        (tournament.getStartDate().isBefore(existingTournament.getEndDate()) &&
+                                (tournament.getStartDate().isBefore(existingTournament.getEndDate()) ||
+                                        tournament.getEndDate().isAfter(existingTournament.getStartDate())))) {
+                    throw new IllegalArgumentException("Another tournament with the same name overlaps in time frame");
+                }
             }
         }
     }
 
-    private static boolean isPowerOfTwo(int n) {
+    private boolean isPowerOfTwo(int n) {
         return (n > 0) && ((n & (n - 1)) == 0);
     }
 
@@ -71,6 +73,7 @@ public class TournamentService {
         Tournament tournament = tournamentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
+        validateTournament(tournament);
         validateTournament(updatedTournament);
 
         // Update fields
@@ -104,7 +107,6 @@ public class TournamentService {
     }
 
     public Tournament addParticipant(String tournamentId, String playerId) {
-        // Fetch the tournament
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
@@ -120,7 +122,7 @@ public class TournamentService {
 
         User user = userRepository.findById(playerId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
+        
         boolean isPlayer = user.getRoles().stream()
                 .anyMatch(role -> role.getName().equals(ERole.ROLE_PLAYER));
 
@@ -129,19 +131,25 @@ public class TournamentService {
         }
 
         if (user instanceof Player player) {
-            // Check both relationships separately
-            if (!tournament.getParticipants().contains(player)) {
-                tournament.addParticipant(player);  // Add player to tournament
+
+            if (tournament.getParticipants().contains(player)) {
+                throw new RuntimeException("Player is already participating in the tournament");
             }
 
+            if (player.getEloRating() < tournament.getMinElo() || player.getEloRating() > tournament.getMaxElo()) {
+                throw new RuntimeException("Player's Elo rating is not within the allowed range for this tournament");
+            }
+
+            tournament.addParticipant(player);
             return tournamentRepository.save(tournament);
 
         } else {
-            throw new ClassCastException("User is a player but cannot be cast to Player.");
+            throw new RuntimeException("User is not a valid player.");
         }
     }
 
-    public Tournament removeParticipant(String tournamentId, String playerId) {
+
+    public Tournament removeParticipant (String tournamentId, String playerId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 
@@ -161,16 +169,14 @@ public class TournamentService {
             }
 
             tournament.removeParticipant(player);
-            player.removeTournament(tournament);
-
-            userRepository.save(player);
             return tournamentRepository.save(tournament);
+
         } else {
             throw new ClassCastException("User is a player but cannot be cast to Player.");
         }
     }
 
-    public void deleteTournament(String tournamentId) {
+    public void deleteTournament (String tournamentId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
 

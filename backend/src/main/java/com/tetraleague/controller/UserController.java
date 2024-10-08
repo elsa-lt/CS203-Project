@@ -88,7 +88,6 @@ public class UserController {
         }
     }
 
-
     @GetMapping("/{username}/tournaments")
     public ResponseEntity<List<Tournament>> getTournaments(@PathVariable String username) {
         List<Tournament> tournaments = userService.getTournaments(username);

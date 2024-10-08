@@ -1,19 +1,35 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Form submitted');
+
     try {
-      await login(email, password);
-    } catch (err) {
-      setError('Login failed. Please check your credentials.');
+      const user = await login(username, password); // Get user info with roles
+      console.log('User roles:', user.roles); // Debug roles
+
+      if (user.roles.includes('ROLE_ADMIN')) {
+        console.log('Navigating to /dashboard');
+        navigate('/dashboard');
+      } else if (user.roles.includes('ROLE_PLAYER')) {
+        console.log('Navigating to /home');
+        navigate('/home');
+      } else {
+        navigate('/login');
+        setError('User role not recognized');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setError('Invalid login. Please try again.');
     }
   };
 
@@ -29,14 +45,15 @@ const LoginPage = () => {
           <form onSubmit={handleSubmit}>
             {error && <p className="text-red-600">{error}</p>}
             <div className="mb-4">
-              <label htmlFor="email" className="block text-gray-700">Email Address</label>
+              <label htmlFor="username" className="block text-gray-700">Username</label>
               <input
-                id="email"
-                type="email"
+                id="username"
+                type="text"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                placeholder="Email Address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
               />
             </div>
             <div className="mb-4">
@@ -48,6 +65,7 @@ const LoginPage = () => {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
               />
             </div>
             <div className="flex justify-between items-center mb-4">

@@ -23,43 +23,36 @@ public class TournamentController {
         this.tournamentService = tournamentService;
     }
 
-    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<Tournament>> getAllTournaments() {
         List<Tournament> tournaments = tournamentService.getAllTournaments();
         return ResponseEntity.ok(tournaments);
     }
 
-    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<Tournament> getTournamentById(@PathVariable String id) {
         Tournament tournament = tournamentService.getTournamentById(id);
         return ResponseEntity.ok(tournament);
     }
 
-    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Tournament> createTournament(@RequestBody Tournament tournament) {
         Tournament createdTournament = tournamentService.createTournament(tournament);
         return ResponseEntity.status(201).body(createdTournament);
     }
 
-    //@PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Tournament> updateTournament(@PathVariable String id, @RequestBody Tournament tournament) {
         Tournament updatedTournament = tournamentService.updateTournament(id, tournament);
         return ResponseEntity.ok(updatedTournament);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTournament(@PathVariable String id) {
         tournamentService.deleteTournament(id);
         return ResponseEntity.noContent().build();
     }
 
-//    @PostMapping("/{id}/participants")
-    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/upload-image")
     public ResponseEntity<String> uploadImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
         try {

@@ -33,7 +33,7 @@ public class JwtUtils {
                 .setSubject(userPrincipal.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(SignatureAlgorithm.HS256, key()) // Adjusted line
+                .signWith(SignatureAlgorithm.HS256, key()) 
                 .compact();
     }
   

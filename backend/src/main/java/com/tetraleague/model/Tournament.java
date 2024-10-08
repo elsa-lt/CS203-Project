@@ -44,27 +44,12 @@ public class Tournament {
 
     private String imageUrl;
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
+    @NotNull(message = "Prize pool is required")
+    private Double prizePool;
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
+    public void addParticipant(Player player) { participants.add(player); }
 
-    public void addParticipant(Player player) {
-        if (!participants.contains(player)) {
-            participants.add(player);
-            // No need to call player.addTournament(this) here
-        }
-    }
-
-    public void removeParticipant(Player player) {
-        if (participants.contains(player)) {
-            participants.remove(player);
-            // No need to call player.removeTournament(this) here
-        }
-    }
+    public void removeParticipant(Player player) { participants.remove(player); }
 
     public boolean hasEnded() {
         return LocalDateTime.now().isAfter(endDate);

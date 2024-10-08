@@ -50,7 +50,11 @@ public class UserService {
     }
 
     public void withdrawFromTournament(Player player, String tournamentId) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
         tournamentService.removeParticipant(tournamentId, player.getId());
+        if (player.getTournaments().contains(tournament)) {
+            player.removeTournament(tournament);
+        }
     }
 
     public List<Tournament> getTournaments(String username) {

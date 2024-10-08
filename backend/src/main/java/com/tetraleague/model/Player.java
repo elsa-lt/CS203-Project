@@ -1,6 +1,5 @@
 package com.tetraleague.model;
 
-import com.tetraleague.service.TournamentService;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Getter;
@@ -28,6 +27,5 @@ public class Player extends User {
 
     public void removeTournament(Tournament tournament) {
         tournaments.remove(tournament);
-
     }
 }

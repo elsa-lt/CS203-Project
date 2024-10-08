@@ -9,7 +9,7 @@ import TournamentSubTabs from '../../components/TournamentSubTabs';
 const TournamentDetails = () => {
   const { id } = useParams();
   const [tournament, setTournament] = useState(null);
-  const [username, setUsername] = useState(''); // State for username
+  const [username, setUsername] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -24,17 +24,15 @@ const TournamentDetails = () => {
           },
         });
 
-        const { id: fetchedUserId, username: fetchedUsername } = userInfoResponse.data; // Fetch username
-        setUsername(fetchedUsername); // Set username state
+        const { id: fetchedUserId, username: fetchedUsername } = userInfoResponse.data; 
+        setUsername(fetchedUsername); 
 
-        // Fetch tournament details
         const tournamentResponse = await axios.get(`http://localhost:8080/api/tournaments/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        console.log('Fetched tournament:', tournamentResponse.data); // Log the fetched tournament
         setTournament(tournamentResponse.data);
       } catch (error) {
         console.error('Error fetching tournament details:', error);
@@ -50,7 +48,7 @@ const TournamentDetails = () => {
   }, [id]);
 
   if (error) {
-    return <div className="text-red-600">{error}</div>; // Display error message if any
+    return <div className="text-red-600">{error}</div>; 
   }
 
   if (!tournament) {

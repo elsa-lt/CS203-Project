@@ -1,46 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
 function RegistrationButtons({ tournamentId, username }) {
-    const [isRegistered, setIsRegistered] = useState(false);
-
-    useEffect(() => {
-        const checkRegistrationStatus = async () => {
-            const token = Cookies.get('token');
-            try {
-                console.log("Checking registration status for:", tournamentId, username);
-                const response = await axios.get(`http://localhost:8080/api/tournaments/${tournamentId}/participants/${username}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                console.log("API Response:", response.data);
-                setIsRegistered(response.data.isRegistered);
-            } catch (error) {
-                console.error('Error checking registration status:', error);
-            }
-        };
-
-        if (username && tournamentId) {
-            checkRegistrationStatus();
-        }
-    }, [tournamentId, username]);
+    const [isRegistered, setIsRegistered] = useState(false); // State to track registration status
 
     const handleRegister = async () => {
         const confirmRegistration = window.confirm("Are you sure you want to register?");
         if (confirmRegistration) {
             const token = Cookies.get('token');
             try {
-                console.log("Join tournament for:", tournamentId, username);
-                await axios.post(`http://localhost:8080/api/users/${username}/joinTournament`, tournamentId, {
+                await axios.post(`http://localhost:8080/api/users/${username}/joinTournament`, { tournamentId }, {
                     headers: {
                         Authorization: `Bearer ${token}`,
-                        'Content-Type': 'text/plain',
+                        'Content-Type': 'application/json', // Use JSON for the request body
                     },
                 });
-                setIsRegistered(true);
+                alert("Successfully registered for the tournament!");
+                setIsRegistered(true); // Update state after successful registration
             } catch (error) {
                 console.error('Error registering for tournament:', error);
                 alert("Failed to register for the tournament. Please try again.");
@@ -60,7 +37,7 @@ function RegistrationButtons({ tournamentId, username }) {
                     },
                 });
                 alert(response.data); // Show success message from server
-                setIsRegistered(false);
+                setIsRegistered(false); // Update state after successful withdrawal
             } catch (error) {
                 console.error('Error withdrawing from tournament:', error);
                 alert("Failed to withdraw from the tournament. Please try again.");

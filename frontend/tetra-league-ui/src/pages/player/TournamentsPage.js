@@ -6,14 +6,13 @@ import axios from 'axios';
 
 const TournamentsPage = () => {
   const [tournaments, setTournaments] = useState([]);
-  const [username, setUsername] = useState(''); // State for username
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
       const token = Cookies.get('token');
 
       const fetchTournamentsAndUsername = async () => {
           try {
-              // Fetch user information (username)
               const userInfoResponse = await axios.get('http://localhost:8080/api/users/info', {
                   headers: {
                       Authorization: `Bearer ${token}`,
@@ -21,9 +20,8 @@ const TournamentsPage = () => {
               });
 
               const { username: fetchedUsername } = userInfoResponse.data;
-              setUsername(fetchedUsername); // Set username
+              setUsername(fetchedUsername);
 
-              // Fetch tournaments
               const tournamentsResponse = await axios.get("http://localhost:8080/api/tournaments", {
                   headers: {
                       Authorization: `Bearer ${token}`,

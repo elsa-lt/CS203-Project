@@ -1,11 +1,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { BiBell } from "react-icons/bi";
-import ProfileDropDown from '../components/ProfileDropDown';
 
 const AdminNavbar = () => {
-  const location = useLocation();
-
   return (
     <nav className="bg-white p-1 fixed top-0 left-0 w-full z-50 flex justify-between items-center">
       <div className="flex flex-shrink-0">

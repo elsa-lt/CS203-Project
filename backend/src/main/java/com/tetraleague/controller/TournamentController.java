@@ -1,11 +1,11 @@
 package com.tetraleague.controller;
 
-import com.tetraleague.model.Player;
 import com.tetraleague.model.Tournament;
 import com.tetraleague.service.TournamentService;
+import com.tetraleague.model.Match;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.HttpStatus;
@@ -16,6 +16,7 @@ import java.util.List;
 @RequestMapping("/api/admin/tournaments")
 public class TournamentController {
 
+    @Autowired
     private final TournamentService tournamentService;
 
     @Autowired
@@ -61,5 +62,12 @@ public class TournamentController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/{id}/matches")
+    public ResponseEntity<List<Match>> getMatches(@PathVariable String id) {
+        Tournament tournament = tournamentService.getTournamentById(id);
+        List<Match> matches = tournament.getMatches();
+        return ResponseEntity.ok(matches);
     }
 }

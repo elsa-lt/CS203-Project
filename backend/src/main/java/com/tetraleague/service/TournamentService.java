@@ -22,9 +22,9 @@ public class TournamentService {
     @Autowired
     private UserRepository userRepository;
 
-    private Role role;
+    @Autowired
+    private MatchmakingService matchmakingService;
 
-    // Retrieve all tournaments
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll();
     }
@@ -70,13 +70,11 @@ public class TournamentService {
     }
 
     public Tournament updateTournament(String id, Tournament updatedTournament) {
-        Tournament tournament = tournamentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+        Tournament tournament = getTournamentById(id);
 
         validateTournament(tournament);
         validateTournament(updatedTournament);
 
-        // Update fields
         tournament.setName(updatedTournament.getName());
         tournament.setDescription(updatedTournament.getDescription());
         tournament.setMaxParticipants(updatedTournament.getMaxParticipants());
@@ -90,8 +88,7 @@ public class TournamentService {
     }
 
     public String uploadImage(String tournamentId, MultipartFile file) throws IOException {
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+        Tournament tournament = getTournamentById(tournamentId);
 
         String folder = "tournament-images";
         Path path = Paths.get(folder, file.getOriginalFilename());
@@ -123,8 +120,7 @@ public class TournamentService {
     }
     
     public Tournament addParticipant(String tournamentId, String playerId) {
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+        Tournament tournament = getTournamentById(tournamentId);
 
         if (tournament.hasEnded()) {
             throw new RuntimeException("Tournament has already ended");
@@ -151,8 +147,7 @@ public class TournamentService {
     }
 
     public Tournament removeParticipant (String tournamentId, String playerId) {
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+        Tournament tournament = getTournamentById(tournamentId);
 
         Player player = validateAndGetPlayer(playerId);
 
@@ -167,7 +162,14 @@ public class TournamentService {
     public void deleteTournament (String tournamentId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
-
         tournamentRepository.delete(tournament);
+    }
+
+    public List<Match> createAndStoreMatchups(String tournamentId) {
+        Tournament tournament = getTournamentById(tournamentId);
+        List<Match> matchups = matchmakingService.createMatchups(tournament);
+        tournament.setMatches(matchups);
+        tournamentRepository.save(tournament);
+        return matchups;
     }
 }

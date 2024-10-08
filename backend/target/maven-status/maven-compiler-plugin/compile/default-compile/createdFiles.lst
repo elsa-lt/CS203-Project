@@ -18,8 +18,10 @@ com/tetraleague/model/ERole.class
 com/tetraleague/repository/UserRepository.class
 com/tetraleague/controller/AuthController.class
 com/tetraleague/payload/request/SignupRequest.class
+com/tetraleague/service/MatchmakingService.class
 com/tetraleague/model/Glicko2Player.class
 com/tetraleague/model/Tournament.class
+com/tetraleague/model/Match.class
 com/tetraleague/security/jwt/AuthEntryPointJwt.class
 com/tetraleague/model/User.class
 com/tetraleague/model/Role.class

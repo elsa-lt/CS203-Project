@@ -28,10 +28,10 @@ const TournamentCard = ({ id, name, startDate, endDate, prizePool, minElo, image
             <div className="flex w-full p-6">
               <div className="flex flex-col flex-none basis-1/2 mr-6">
                 <div className="flex font-medium font-sans-serif customGray text-4xl mb-4">
-                {tournament.name}
+                {name}
                 </div>
                 <div className="flex font-normal helvetica-neue customGray text-lg">
-                {new Date(tournament.date).toLocaleString()}
+                {new Date(startDate).toLocaleString()}
                   {name}
                 </div>
                 <div className="flex font-normal helvetica-neue customGray text-lg">

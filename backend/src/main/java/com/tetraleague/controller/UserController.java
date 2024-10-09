@@ -139,7 +139,7 @@ public class UserController {
 
     @GetMapping("/{username}/tournaments")
     public ResponseEntity<List<Tournament>> getRegisteredTournaments(@PathVariable String username) {
-        List<Tournament> tournaments = userService.getRegisteredTournaments(username);
+        List<Tournament> tournaments = userService.getTournaments(username);
         return ResponseEntity.ok(tournaments);
     }
 }

@@ -4,6 +4,8 @@ import com.tetraleague.model.Player;
 import com.tetraleague.model.Tournament;
 import com.tetraleague.model.User;
 import com.tetraleague.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,6 +64,7 @@ public class UserService {
         tournamentService.removeParticipant(tournamentId, player.getId());
         if (player.getTournaments().contains(tournament)) {
             player.removeTournament(tournament);
+            userRepository.save(player);
         }
     }
 

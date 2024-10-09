@@ -72,8 +72,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
     }
-    
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
@@ -84,7 +82,6 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
-
 
     @GetMapping("/check")
     public ResponseEntity<?> checkUserExists(@RequestParam(required = false) String username, 
@@ -102,35 +99,24 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    
     @PostMapping("/{username}/joinTournament")
     public ResponseEntity<String> joinTournament(@PathVariable String username, @RequestBody String tournamentId) {
-        Optional<Player> player = userService.findByUsername(username)
-                .filter(user -> user instanceof Player)
-                .map(user -> (Player) user);
-
-        if (player.isPresent()) {
-            try {
-                userService.joinTournament(player.get(), tournamentId);
-                return ResponseEntity.ok("Player joined the tournament successfully!");
-            } catch (RuntimeException e) {
-                logger.error("Error while joining tournament: {}", e.getMessage());
-                return ResponseEntity.badRequest().body(e.getMessage());
-            }
-        } else {
-            logger.warn("Player with username '{}' not found", username);
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PostMapping("/{username}/withdrawTournament")
-    public ResponseEntity<String> withdrawFromTournament(@PathVariable String username, @RequestBody String tournamentId) {
         try {
             Player player = (Player) userService.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Player not found!"));
+            userService.joinTournament(player, tournamentId);
+            return ResponseEntity.ok("Player joined the tournament successfully!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
+    @DeleteMapping("/{username}/withdrawTournament/{tournamentId}")
+    public ResponseEntity<String> withdrawFromTournament(@PathVariable String username, @PathVariable String tournamentId) {
+        try {
+            Player player = (Player) userService.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Player not found!"));
             userService.withdrawFromTournament(player, tournamentId);
-
             return ResponseEntity.ok("Player withdrew from the tournament successfully!");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

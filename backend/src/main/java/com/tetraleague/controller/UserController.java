@@ -124,12 +124,12 @@ public class UserController {
                     Player player = players.get(i);
                     return new PlayerRankingDTO(
                             player.getUsername(),
-                            player.getEloRating(),
+                            (int) player.getEloRating(),
                             player.getGamesWon(),
                             player.getGamesLost(),
                             player.getWinRate(),
                             player.getRank(),
-                            i + 1 // This is the rank (1-based index)
+                            i + 1 // Rank
                     );
                 })
                 .collect(Collectors.toList());
@@ -158,7 +158,7 @@ public class UserController {
                     Player player = players.get(i);
                     return new PlayerRankingDTO(
                             player.getUsername(),
-                            player.getEloRating(),
+                            (int) player.getEloRating(),
                             player.getGamesWon(),
                             player.getGamesLost(),
                             player.getWinRate(),

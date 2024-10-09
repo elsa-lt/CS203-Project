@@ -92,6 +92,7 @@ public class AuthController {
             strRoles.add("player"); // You might set a default role here
         }
         User user = null;
+        
 
         for (String role : strRoles) {
                 switch (role) {

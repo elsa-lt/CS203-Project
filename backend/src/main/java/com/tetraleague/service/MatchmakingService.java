@@ -19,12 +19,16 @@ public class MatchmakingService {
 
     public List<Match> createMatchups(Tournament tournament) {
         List<Player> participants = new ArrayList<>(tournament.getParticipants());
-        
+
         participants.sort((p1, p2) -> Integer.compare(p2.getEloRating(), p1.getEloRating()));
-        
+
+        // Print the sorted Elo ratings for debugging
+        System.out.println("Sorted Participants Elo: ");
+        participants.forEach(p -> System.out.println(p.getEloRating()));
+
         List<Match> matches = new ArrayList<>();
         int half = participants.size() / 2;
-        
+
         for (int i = 0; i < half; i++) {
             Match match = new Match();
             match.setPlayer1(participants.get(i));
@@ -32,14 +36,14 @@ public class MatchmakingService {
             match.setRoundNumber(1);
             matches.add(match);
         }
-        
+
         return matches;
     }
 
     public List<Match> createNextRoundMatches(List<Player> winners, int roundNumber) {
         List<Match> nextRoundMatches = new ArrayList<>();
         int half = winners.size() / 2;
-        
+
         for (int i = 0; i < half; i++) {
             Match match = new Match();
             match.setPlayer1(winners.get(i));
@@ -47,14 +51,14 @@ public class MatchmakingService {
             match.setRoundNumber(roundNumber);
             nextRoundMatches.add(match);
         }
-        
+
         return nextRoundMatches;
     }
 
     public void completeMatch(String tournamentId, String matchId, Player winner) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
-        .orElseThrow(() -> new RuntimeException("Tournament not found"));
-        
+                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+
         Match match = tournament.getMatches().stream()
                 .filter(m -> m.getId().equals(matchId))
                 .findFirst()

@@ -28,7 +28,6 @@ const TournamentSubTabs = ({ tournamentId, tournamentDescription }) => {
             <div className="flex flex-col gap-6 Helvetica Neue text-customGray h-full">
               <div className="font-sans-serif text-customGray text-2xl">DESCRIPTION</div>
               <div className="font-thin space-y-4 overflow-y-auto">
-                {/* Use passed description instead of hardcoded text */}
                 <p>{tournamentDescription || 'Loading description...'}</p>
               </div>
             </div>

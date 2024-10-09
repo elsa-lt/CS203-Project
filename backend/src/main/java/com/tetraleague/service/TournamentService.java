@@ -152,8 +152,7 @@ public class TournamentService {
     }
 
     public boolean isUserRegistered(String tournamentId, String username) {
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+        Tournament tournament = getTournamentById(tournamentId);
 
         return tournament.getParticipants().stream()
                 .filter(player -> player instanceof Player)
@@ -161,17 +160,24 @@ public class TournamentService {
                 .anyMatch(player -> player.getUsername().equals(username));
     }
 
-    public Tournament removeParticipant (String tournamentId, String playerId) {
+    public Tournament removeParticipant(String tournamentId, String playerId) {
         Tournament tournament = getTournamentById(tournamentId);
 
         Player player = validateAndGetPlayer(playerId);
 
-        if (!tournament.getParticipants().contains(player)) {
+        if (!tournament.getParticipants().stream().anyMatch(p -> p.getId().equals(player.getId()))) {
             throw new RuntimeException("Player is not participating in the tournament");
         }
 
-        tournament.removeParticipant(player);
-        return tournamentRepository.save(tournament);
+        boolean removed = tournament.getParticipants().removeIf(p -> p.getId().equals(player.getId()));
+
+        if (!removed) {
+            throw new RuntimeException("Failed to remove the player from the tournament");
+        }
+
+        Tournament updatedTournament = tournamentRepository.save(tournament);
+
+        return updatedTournament;
     }
 
     public void deleteTournament (String tournamentId) {

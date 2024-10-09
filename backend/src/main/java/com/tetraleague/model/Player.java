@@ -28,6 +28,4 @@ public class Player extends User {
     public void removeTournament(Tournament tournament) {
         tournaments.remove(tournament);
     }
-
-    
 }

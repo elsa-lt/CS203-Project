@@ -1,6 +1,11 @@
 package com.tetraleague.service;
 
-import com.tetraleague.model.*;
+import com.tetraleague.model.Tournament;
+import com.tetraleague.model.Player;
+import com.tetraleague.model.User;
+import com.tetraleague.model.ERole;
+import com.tetraleague.model.Round;
+import com.tetraleague.model.Match;
 import com.tetraleague.repository.TournamentRepository;
 import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +30,7 @@ public class TournamentService {
     private UserRepository userRepository;
 
     @Autowired
-    private MatchmakingService matchmakingService;
+    private RoundService roundService;
 
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll();
@@ -53,19 +58,19 @@ public class TournamentService {
         if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
             throw new IllegalArgumentException("Start date cannot be after end date.");
         }
-        if (tournament.getMinElo() > tournament.getMaxElo()) {
-            throw new IllegalArgumentException("Minimum Elo cannot be greater than maximum Elo.");
+    
+        if (tournament.getRank() == null) {
+            throw new IllegalArgumentException("Tournament rank is required.");
         }
+    
         List<Tournament> tournaments = tournamentRepository.findAll();
         for (Tournament existingTournament : tournaments) {
             if (existingTournament.getName().equals(tournament.getName()) &&
-                    (tournament.getStartDate().isBefore(existingTournament.getEndDate()) &&
-                            (tournament.getStartDate().isBefore(existingTournament.getEndDate()) ||
-                                    tournament.getEndDate().isAfter(existingTournament.getStartDate())))) {
+                    (tournament.getStartDate().isBefore(existingTournament.getEndDate()) ||
+                            tournament.getEndDate().isAfter(existingTournament.getStartDate()))) {
                 throw new IllegalArgumentException("Another tournament with the same name overlaps in time frame");
             }
         }
-
     }
 
     private boolean isPowerOfTwo(int n) {
@@ -83,10 +88,9 @@ public class TournamentService {
         tournament.setMaxParticipants(updatedTournament.getMaxParticipants());
         tournament.setStartDate(updatedTournament.getStartDate());
         tournament.setEndDate(updatedTournament.getEndDate());
-        tournament.setMinElo(updatedTournament.getMinElo());
-        tournament.setMaxElo(updatedTournament.getMaxElo());
         tournament.setImageUrl(updatedTournament.getImageUrl());
         tournament.setPrizePool(updatedTournament.getPrizePool());
+        tournament.setRank(updatedTournament.getRank());
 
         return tournamentRepository.save(tournament);
     }
@@ -127,7 +131,7 @@ public class TournamentService {
 
     public Tournament addParticipant(String tournamentId, String playerId) {
         Tournament tournament = getTournamentById(tournamentId);
-
+    
         if (tournament.hasEnded()) {
             throw new RuntimeException("Tournament has already ended");
         }
@@ -137,24 +141,24 @@ public class TournamentService {
         if (tournament.isFull()) {
             throw new RuntimeException("Tournament is full");
         }
-
+    
         Player player = validateAndGetPlayer(playerId);
-
+    
         if (tournament.getParticipants().stream().anyMatch(p -> p.getId().equals(player.getId()))) {
             throw new RuntimeException("Player is already participating in the tournament");
         }
-
-        if (player.getEloRating() < tournament.getMinElo() || player.getEloRating() > tournament.getMaxElo()) {
-            throw new RuntimeException("Player's Elo rating is not within the allowed range for this tournament");
+    
+        if (player.getRank() != tournament.getRank()) {
+            throw new RuntimeException("Player's Rank is not the allowed rank for this tournament");
         }
-
+    
         tournament.addParticipant(player);
         return tournamentRepository.save(tournament);
     }
+    
 
     public boolean isUserRegistered(String tournamentId, String username) {
-        Tournament tournament = tournamentRepository.findById(tournamentId)
-                .orElseThrow(() -> new RuntimeException("Tournament not found"));
+        Tournament tournament = getTournamentById(tournamentId);
 
         return tournament.getParticipants().stream()
                 .filter(player -> player instanceof Player)
@@ -167,12 +171,19 @@ public class TournamentService {
 
         Player player = validateAndGetPlayer(playerId);
 
-        if (!tournament.getParticipants().contains(player)) {
+        if (!tournament.getParticipants().stream().anyMatch(p -> p.getId().equals(player.getId()))) {
             throw new RuntimeException("Player is not participating in the tournament");
         }
 
-        tournament.removeParticipant(player);
-        return tournamentRepository.save(tournament);
+        boolean removed = tournament.getParticipants().removeIf(p -> p.getId().equals(player.getId()));
+
+        if (!removed) {
+            throw new RuntimeException("Failed to remove the player from the tournament");
+        }
+
+        Tournament updatedTournament = tournamentRepository.save(tournament);
+
+        return updatedTournament;
     }
 
     public void deleteTournament(String tournamentId) {
@@ -181,11 +192,42 @@ public class TournamentService {
         tournamentRepository.delete(tournament);
     }
 
-    public List<Match> createAndStoreMatchups(String tournamentId) {
+    public void startTournament(String tournamentId) {
         Tournament tournament = getTournamentById(tournamentId);
-        List<Match> matchups = matchmakingService.createMatchups(tournament);
-        tournament.setMatches(matchups);
+
+        if (tournament.hasStarted()) {
+            throw new RuntimeException("Tournament has already started");
+        }
+
+        Round firstRound = roundService.createFirstRound(tournament.getParticipants());
+        tournament.addRound(firstRound);
+
+        tournament.setStarted(true);
         tournamentRepository.save(tournament);
-        return matchups;
+    }
+
+    public void advanceTournament(Tournament tournament) {
+        List<Round> rounds = tournament.getRounds();
+        Round currentRound = rounds.get(rounds.size() - 1);
+
+        if (roundService.isRoundComplete(currentRound)) {
+            List<Player> winners = currentRound.getWinners();
+
+            if (winners.size() == 1) {
+                tournament.setWinner(winners.get(0));
+                tournament.setEnded(true);
+                tournamentRepository.save(tournament);
+                return;
+            }
+
+            Round nextRound = roundService.createNextRound(winners, currentRound.getRoundNumber() + 1);
+            tournament.addRound(nextRound);
+            tournamentRepository.save(tournament);
+        }
+    }
+
+    public List<Match> getCurrentBrackets(Tournament tournament) {
+        Round currentRound = tournament.getCurrentRound();
+        return currentRound.getMatches();
     }
 }

@@ -1,22 +1,29 @@
 package com.tetraleague.model;
 
-import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import lombok.Data;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Document("users")
 @TypeAlias("player")
 public class Player extends User {
-    private int eloRating;
+
+    private int eloRating; 
+    private double ratingDeviation;
+    private double volatility;
+
     private List<Tournament> tournaments = new ArrayList<>();
 
-    public Player(String username,String name, String email, String password,
-            int eloRating) {
+    private int gamesWon = 0;
+    private int gamesLost = 0;
+    private Rank rank = Rank.UNRANKED;
+
+    public Player(String username, String name, String email, String password, int eloRating) {
         super(username, name, email, password);
         this.eloRating = eloRating;
     }
@@ -29,5 +36,8 @@ public class Player extends User {
         tournaments.remove(tournament);
     }
 
-    
+    public double getWinRate() {
+        int totalGames = gamesLost + gamesWon;
+        return totalGames == 0 ? 0.0 : (double) gamesWon / totalGames * 100.0;
+    }
 }

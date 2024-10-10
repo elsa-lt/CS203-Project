@@ -1,11 +1,10 @@
 package com.tetraleague.controller;
 
-import com.tetraleague.model.User; 
-import com.tetraleague.repository.UserRepository;
-import com.tetraleague.model.Player;
 import com.tetraleague.model.Tournament;
+import com.tetraleague.model.User;
+import com.tetraleague.model.Match; 
+import com.tetraleague.repository.UserRepository;
 import com.tetraleague.service.TournamentService;
-import com.tetraleague.model.Match;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +21,8 @@ public class TournamentController {
 
     @Autowired
     private final UserRepository userRepository;
+
+    @Autowired
     private final TournamentService tournamentService;
 
     @Autowired
@@ -69,13 +70,6 @@ public class TournamentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed: " + e.getMessage());
         }
     }
-
-    @GetMapping("/{id}/matches")
-    public ResponseEntity<List<Match>> getMatches(@PathVariable String id) {
-        Tournament tournament = tournamentService.getTournamentById(id);
-        List<Match> matches = tournament.getMatches();
-        return ResponseEntity.ok(matches);
-    }
     
     @GetMapping("/{tournamentId}/participants/{username}")
     public ResponseEntity<Boolean> checkRegistrationStatus(@PathVariable String tournamentId, @PathVariable String username) {
@@ -101,5 +95,28 @@ public class TournamentController {
         public void setRegistered(boolean registered) {
             isRegistered = registered;
         }
+    }
+    
+    @PostMapping("/{tournamentId}/start")
+    public ResponseEntity<Void> startTournament(@PathVariable String tournamentId) {
+        tournamentService.startTournament(tournamentId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{tournamentId}/advance")
+    public ResponseEntity<Void> advanceTournament(@PathVariable String tournamentId) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        tournamentService.advanceTournament(tournament);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{tournamentId}/brackets")
+    public List<String> getCurrentBrackets(@PathVariable String tournamentId) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        List<Match> currentBrackets = tournamentService.getCurrentBrackets(tournament);
+
+        return currentBrackets.stream()
+                .map(match -> match.getMatchup() + " - " + (match.isCompleted() ? "Winner: " + match.getWinner().getUsername() : "In progress"))
+                .toList();
     }
 }

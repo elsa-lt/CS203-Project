@@ -1,8 +1,6 @@
 package com.tetraleague.service;
 
-import com.tetraleague.model.Player;
-import com.tetraleague.model.Tournament;
-import com.tetraleague.model.User;
+import com.tetraleague.model.*; 
 import com.tetraleague.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

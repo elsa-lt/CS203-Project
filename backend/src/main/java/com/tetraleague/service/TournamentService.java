@@ -66,6 +66,43 @@ public class TournamentService {
                     throw new IllegalArgumentException("Another tournament with the same name overlaps in time frame");
                 }
             }
+
+            //Validate rank and elo rating together
+            if (tournament.getRank() != null) {
+                Rank rank = tournament.getRank();
+                int minElo = tournament.getMinElo();
+                int maxElo = tournament.getMaxElo();
+        
+                switch (rank) {
+                    case PLATINUM:
+                        if (minElo < 4500 || maxElo < 4500) {
+                            throw new IllegalArgumentException("Platinum tournaments must have a minimum Elo of 4500.");
+                        }
+                        break;
+                    case GOLD:
+                        if (minElo < 3500 || maxElo >= 4500) {
+                            throw new IllegalArgumentException("Gold tournaments must have a minimum Elo of 3500 and maximum Elo less than 4500.");
+                        }
+                        break;
+                    case SILVER:
+                        if (minElo < 2500 || maxElo >= 3500) {
+                            throw new IllegalArgumentException("Silver tournaments must have a minimum Elo of 2500 and maximum Elo less than 3500.");
+                        }
+                        break;
+                    case BRONZE:
+                        if (minElo >= 1500 || maxElo >= 2500) {
+                            throw new IllegalArgumentException("Bronze tournaments must have a minimum Elo of 1500 and a maximum Elo less than 2500.");
+                        }
+                        break;
+                    case UNRANKED:
+                        if (minElo >= 1500 || maxElo >= 1500) {
+                            throw new IllegalArgumentException("Unranked tournaments must have an Elo range less than 1500.");
+                        }
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Invalid rank specified.");
+                }
+            }
         }
     }
 
@@ -88,6 +125,7 @@ public class TournamentService {
         tournament.setMaxElo(updatedTournament.getMaxElo());
         tournament.setImageUrl(updatedTournament.getImageUrl());
         tournament.setPrizePool(updatedTournament.getPrizePool());
+        tournament.setRank(updatedTournament.getRank());
 
         return tournamentRepository.save(tournament);
     }
@@ -145,6 +183,11 @@ public class TournamentService {
 
         if (player.getEloRating() < tournament.getMinElo() || player.getEloRating() > tournament.getMaxElo()) {
             throw new RuntimeException("Player's Elo rating is not within the allowed range for this tournament");
+        }
+
+        //Do not need this, we can check with the above
+        if(tournament.getRank() != null && (player.getRank() != tournament.getRank())) {
+            throw new RuntimeException("Player's Rank is not the allowed rank for this tournament");
         }
 
         tournament.addParticipant(player);

@@ -47,6 +47,9 @@ public class Tournament {
     @NotNull(message = "Prize pool is required")
     private Double prizePool;
 
+    //Adding as a nullable field
+    private Rank rank;
+
     private Player winner;
     private boolean started = false;
     private boolean ended = false;

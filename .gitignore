@@ -37,5 +37,8 @@ out/
 .vscode/
 
 .env
+*.class
+frontend/tetra-league-ui/package.json
+frontend/tetra-league-ui/package-lock.json
 
 run.bat

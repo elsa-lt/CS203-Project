@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Tournament {
-
     @Id
     private String id;
 
@@ -28,7 +26,7 @@ public class Tournament {
 
     @NotNull(message = "Number of participants is required")
     private Integer maxParticipants;
-
+    
     @NotNull(message = "Minimum Elo range is required")
     private Integer minElo;
 
@@ -42,46 +40,24 @@ public class Tournament {
     private LocalDateTime endDate;
 
     private List<Player> participants = new ArrayList<>();
+    private List<Match> matches = new ArrayList<>();
+
     private String imageUrl;
 
     @NotNull(message = "Prize pool is required")
     private Double prizePool;
 
-    public void validate() {
-        if (startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("Start date cannot be after end date.");
-        }
-        if (minElo > maxElo) {
-            throw new IllegalArgumentException("Minimum Elo cannot be more than maximum Elo.");
-        }
-        if (numParticipants < 2) {
-            throw new IllegalArgumentException("Number of participants cannot be less than 2.");
-        }
-    }
+    public void addParticipant(Player player) { participants.add(player); }
 
-    public void addParticipant(Player player) {
-        if (!participants.contains(player)) {
-            participants.add(player);
-            // No need to call player.addTournament(this) here
-        }
-    }
+    public void removeParticipant(Player player) { participants.remove(player); }
 
-    public void removeParticipant(Player player) {
-        if (participants.contains(player)) {
-            participants.remove(player);
-            // No need to call player.removeTournament(this) here
-        }
-    }
+    public void addMatch(Match match) { matches.add(match); }
 
-    public boolean hasEnded() {
-        return LocalDateTime.now().isAfter(endDate);
-    }
+    public void removeMatch(Match match) { matches.remove(match); }
 
-    public boolean hasStarted() {
-        return LocalDateTime.now().isAfter(startDate);
-    }
+    public boolean hasEnded() { return LocalDateTime.now().isAfter(endDate); }
 
-    public boolean isFull() {
-        return participants.size() >= maxParticipants;
-    }
+    public boolean hasStarted() { return LocalDateTime.now().isAfter(startDate); }
+
+    public boolean isFull() { return participants.size() >= maxParticipants; }
 }

@@ -9,36 +9,51 @@ import TournamentSubTabs from '../../components/TournamentSubTabs';
 const TournamentDetails = () => {
   const { id } = useParams();
   const [tournament, setTournament] = useState(null);
+  const [username, setUsername] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const token = Cookies.get('token');
-    console.log("Authorization Token:", token);
 
-    const fetchTournamentDetails = async () => {
+    const fetchUserIdAndTournamentDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/tournaments/${id}`, {
+        // Fetch user ID and username
+        const userInfoResponse = await axios.get('http://localhost:8080/api/users/info', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setTournament(response.data);
+
+        const { id: fetchedUserId, username: fetchedUsername } = userInfoResponse.data; 
+        setUsername(fetchedUsername); 
+
+        const tournamentResponse = await axios.get(`http://localhost:8080/api/tournaments/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setTournament(tournamentResponse.data);
       } catch (error) {
         console.error('Error fetching tournament details:', error);
+        setError('Failed to fetch tournament details.');
       }
     };
 
-    fetchTournamentDetails();
+    if (token) {
+      fetchUserIdAndTournamentDetails();
+    } else {
+      console.error("Token is missing");
+    }
   }, [id]);
+
+  if (error) {
+    return <div className="text-red-600">{error}</div>; 
+  }
 
   if (!tournament) {
     return <div>Loading...</div>;
   }
-
-  const formatDateRange = (startDate, endDate) => {
-    const start = new Date(startDate).toLocaleDateString();
-    const end = new Date(endDate).toLocaleDateString();
-    return `${start} - ${end}`;
-  };
 
   return (
     <main
@@ -62,17 +77,21 @@ const TournamentDetails = () => {
           <hr className="w-full border-customGray border-opacity-30"/>
         </div>
 
-        <div className="flex flex-col p-6">
         <TournamentCard 
+          id={tournament.id} 
           name={tournament.name} 
           startDate={tournament.startDate} 
           endDate={tournament.endDate} 
           prizePool={tournament.prizePool} 
           minElo={tournament.minElo} 
           imageUrl={tournament.imageUrl}
-      />
-      <TournamentSubTabs />
-        </div>
+          username={username} // Pass the username to the TournamentCard
+          showRegistrationButtons={true} 
+        />
+        
+        <TournamentSubTabs 
+          tournamentId={tournament.id}
+        />
       </div>
     </main>
   );

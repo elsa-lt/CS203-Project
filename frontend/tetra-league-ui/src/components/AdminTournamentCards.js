@@ -1,65 +1,69 @@
-//Need to connect to backend API
 import React from 'react';
 import Card from 'react-bootstrap/Card';
-import StartButtons from '../components/StartButtons'
+import StartButtons from './StartButtons'; 
 import { FiEdit } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
 
-const TournamentCardsSmall = ({ name, startDate, endDate, prizePool, minElo, imageUrl }) => {
-  const editnavigate= useNavigate();
-  function HandleEdit(){
-    editnavigate('/edit-tournament');
-  }
-    return (
-      <Card className="w-[28rem] rounded-lg overflow-hidden bg-white border border-customGray border-opacity-30 bg-opacity-80">
-        <Card.Body>
-          {/*Header Image*/}
-          <div className="relative h-72">
-            <img
-              src={imageUrl}
-              alt="Tournaments Header Pic"
-              className="object-cover w-[28rem] h-72 justify-center">
-            </img>
+const AdminTournamentCard = ({ tournament }) => {
+  const editNavigate = useNavigate();
+
+
+  const { name, startDate, endDate, minElo, imageUrl } = tournament;
+
+  const handleEdit = () => {
+    editNavigate(`/edit-tournament/${tournament._id}`); 
+  };
+
+  return (
+    <Card className="w-[28rem] rounded-lg overflow-hidden bg-white border border-customGray border-opacity-30 bg-opacity-80">
+      <Card.Body>
+        {/* Header Image */}
+        <div className="relative h-72">
+          <img
+            src={imageUrl || '/Misc Design/tetrisdefault.jpg'} 
+            alt={name || 'Tournament'}
+            className="object-cover w-[28rem] h-72 justify-center"
+          />
+        </div>
+
+        {/* Text Container */}
+        <div className="flex w-full p-6">
+          {/* Tournament Name & Date */}
+          <div className="flex flex-col flex-none basis-3/5 mr-6">
+            <div className="flex font-medium font-sans-serif customGray text-4xl mb-4">
+              {name}
+            </div>
+            <div className="flex helvetica-neue customGray mb-4">
+              Start Date: {new Date(startDate).toLocaleDateString()}
+            </div>
+            <div className="flex helvetica-neue customGray mb-4">
+              End Date: {new Date(endDate).toLocaleDateString()}
+            </div>
+            <div className="flex">
+              <div className="flex items-center">
+                <div className="flex helvetica-neue text-center">
+                  Minimum Rank:
+                </div>
+                <div className="flex font-sans-serif text-center text-xl text-customBronze pl-2">
+                  {minElo} 
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/*Text Container*/}
-          <div className="flex w-full p-6">
-
-            {/*Tournament Name & Date*/}
-            <div className="flex flex-col flex-none basis-3/5 mr-6">
-              <div className="flex font-medium font-sans-serif customGray text-4xl mb-4">
-                {name}
-              </div>
-              <div className="flex helvetica-neue customGray mb-4">
-                {startDate}
-              </div>
-
-              <div className ="flex">
-                <div className="flex items-center">
-                  <div className="flex helvetica-neue text-center">
-                    Minimum Rank:
-                  </div>
-                  <div className="flex font-sans-serif text-center text-xl text-customBronze pl-2">
-                    {minElo} 
-                  </div>
-                </div>
-              </div>
+          <div className="flex flex-col w-full justify-between">
+            <div className="flex justify-end items-center cursor-pointer" onClick={handleEdit}>
+              <div className="flex mr-2">Edit</div>
+              <FiEdit className="text-2xl" />
             </div>
-      
-            <div className="flex flex-col w-full justify-between">
-                <div className="flex justify-end items-center cursor-pointer" on onClick={HandleEdit}>
-                  <div className="flex mr-2">Edit</div>
-                  <FiEdit className="text-2xl" />
-                </div>
-                <div className="flex w-full justify-end items-end">
-                <StartButtons />
-                </div>
+            <div className="flex w-full justify-end items-end">
+              <StartButtons />
             </div>
+          </div>
         </div>
       </Card.Body>
     </Card>
-
   );
 };
 
-export default TournamentCardsSmall;
+export default AdminTournamentCard;

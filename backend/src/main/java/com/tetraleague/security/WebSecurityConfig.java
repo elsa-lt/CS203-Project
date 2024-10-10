@@ -8,7 +8,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +21,7 @@ import org.springframework.http.HttpMethod;
 import com.tetraleague.security.jwt.AuthEntryPointJwt;
 import com.tetraleague.security.jwt.AuthTokenFilter;
 import com.tetraleague.security.services.UserDetailsServiceImpl;
+import java.util.Arrays; 
 
 @Configuration
 @EnableMethodSecurity
@@ -70,6 +70,9 @@ public class WebSecurityConfig {
                 .requestMatchers("/home/**").hasRole("PLAYER")
                 .requestMatchers("/dashboard/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/tournaments/**").hasAnyRole("ADMIN", "PLAYER")
+                .requestMatchers(HttpMethod.POST, "/api/tournaments/**").hasAnyRole("ADMIN", "PLAYER")
+                .requestMatchers(HttpMethod.GET, "/api/users/**").hasAnyRole("ADMIN", "PLAYER")
+                .requestMatchers(HttpMethod.GET, "/api/users/info/**").hasAnyRole("PLAYER")
                 // Other routes need authentication
                 .anyRequest().authenticated());
 
@@ -79,18 +82,17 @@ public class WebSecurityConfig {
         return http.build();
     }
 
+    
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true); 
-        config.addAllowedOrigin("http://localhost:3000"); 
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.addExposedHeader("Set-Cookie"); 
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // Allow specific origin
+        config.setAllowedHeaders(Arrays.asList("*")); // Allow all headers
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow specific methods
+        config.setExposedHeaders(Arrays.asList("Set-Cookie")); // Expose Set-Cookie header
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
-    
-    
 }

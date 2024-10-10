@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext';
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
   const { logout } = useAuth(); 
 
   const toggleDropdown = () => {

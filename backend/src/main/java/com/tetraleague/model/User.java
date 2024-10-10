@@ -2,23 +2,29 @@ package com.tetraleague.model;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "users")
+@Data
+@NoArgsConstructor
 public class User {
     @Id
     private String id;
 
     @NotBlank
-    @Size(max = 20)
+    @Size(max = 40)
     private String username;
+
+    @NotBlank
+    @Size(max = 20)
+    private String name;
 
     @NotBlank
     @Size(max = 50)
@@ -32,11 +38,9 @@ public class User {
     @DBRef
     private Set<Role> roles = new HashSet<>();
 
-    public User() {
-    }
-
-    public User(String username, String email, String password) {
+    public User(String username,String name, String email, String password) {
         this.username = username;
+        this.name = name;
         this.email = email;
         this.password = password;
     }
@@ -55,6 +59,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {

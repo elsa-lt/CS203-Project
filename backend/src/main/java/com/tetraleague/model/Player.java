@@ -3,15 +3,19 @@ package com.tetraleague.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.sql.Date;
+
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Data;
+import java.util.ArrayList;
+import java.util.List;
 
-@Setter
-@Getter
+@Data
 @Document("users")
 @TypeAlias("player")
 public class Player extends User {
@@ -44,6 +48,9 @@ public class Player extends User {
 
     public Player(String username, String email, String password, double eloRating) {
         super(username, email, password);
+    public Player(String username,String name, String email, String password,
+            int eloRating) {
+        super(username, name, email, password);
         this.eloRating = eloRating;
     }
 

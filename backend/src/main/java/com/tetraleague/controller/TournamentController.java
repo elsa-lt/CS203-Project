@@ -1,11 +1,14 @@
 package com.tetraleague.controller;
 
+import com.tetraleague.model.User; 
+import com.tetraleague.repository.UserRepository;
 import com.tetraleague.model.Player;
 import com.tetraleague.model.Tournament;
 import com.tetraleague.service.TournamentService;
+import com.tetraleague.model.Match;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.HttpStatus;
@@ -14,13 +17,17 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tournaments")
+@CrossOrigin(origins = "http://localhost:3000") 
 public class TournamentController {
 
+    @Autowired
+    private final UserRepository userRepository;
     private final TournamentService tournamentService;
 
     @Autowired
-    public TournamentController(TournamentService tournamentService) {
+    public TournamentController(TournamentService tournamentService, UserRepository userRepository) {
         this.tournamentService = tournamentService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -53,8 +60,6 @@ public class TournamentController {
         return ResponseEntity.noContent().build();
     }
 
-//    @PostMapping("/{id}/participants")
-    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/upload-image")
     public ResponseEntity<String> uploadImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
         try {
@@ -65,15 +70,36 @@ public class TournamentController {
         }
     }
 
-    @PostMapping("/{id}/participants")
-    public ResponseEntity<Tournament> addParticipant(@PathVariable String id, @RequestBody String playerId) {
-        Tournament updatedTournament = tournamentService.addParticipant(id, playerId);
-        return ResponseEntity.ok(updatedTournament);
+    @GetMapping("/{id}/matches")
+    public ResponseEntity<List<Match>> getMatches(@PathVariable String id) {
+        Tournament tournament = tournamentService.getTournamentById(id);
+        List<Match> matches = tournament.getMatches();
+        return ResponseEntity.ok(matches);
+    }
+    
+    @GetMapping("/{tournamentId}/participants/{username}")
+    public ResponseEntity<Boolean> checkRegistrationStatus(@PathVariable String tournamentId, @PathVariable String username) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        User player = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Player not found"));
+        
+        boolean isRegistered = tournament.getParticipants().contains(player);
+        return ResponseEntity.ok(isRegistered);
     }
 
-    @DeleteMapping("/{id}/participants/{playerId}")
-    public ResponseEntity<Tournament> removeParticipant(@PathVariable String id, @PathVariable String playerId) {
-        Tournament updatedTournament = tournamentService.removeParticipant(id, playerId);
-        return ResponseEntity.ok(updatedTournament);
+    public static class RegistrationStatusResponse {
+        private boolean isRegistered;
+
+        public RegistrationStatusResponse(boolean isRegistered) {
+            this.isRegistered = isRegistered;
+        }
+
+        public boolean isRegistered() {
+            return isRegistered;
+        }
+
+        public void setRegistered(boolean registered) {
+            isRegistered = registered;
+        }
     }
 }

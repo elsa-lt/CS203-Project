@@ -7,13 +7,16 @@ import com.tetraleague.model.PlayerRankingDTO;
 import com.tetraleague.model.Tournament;
 import com.tetraleague.model.User;
 import com.tetraleague.service.UserService;
+import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Comparator;
+import org.springframework.http.HttpStatus;
+import com.tetraleague.model.UserExistsResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,6 +25,7 @@ import java.util.stream.IntStream;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
@@ -44,13 +48,33 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User updatedUser) {
-        Optional<User> existingUser = userService.getUserById(id);
-        if (existingUser.isPresent()) {
-            updatedUser.setId(id); // Keep the same ID
-            return ResponseEntity.ok(userService.saveUser(updatedUser));
+    public ResponseEntity<?> updateUser(@PathVariable("id") String userId, @RequestBody User updatedUser) {
+        Optional<User> existingUserOpt = userService.getUserById(userId);
+    
+        if (existingUserOpt.isPresent()) {
+            User existingUser = existingUserOpt.get();
+    
+            if (!existingUser.getUsername().equals(updatedUser.getUsername()) && userService.existsByUsername(updatedUser.getUsername())) {
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body("Error: Username is already taken!");
+            }
+    
+            if (!existingUser.getEmail().equals(updatedUser.getEmail()) && userService.existsByEmail(updatedUser.getEmail())) {
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body("Error: Email is already in use!");
+            }
+    
+            // Proceed to update the user
+            Optional<User> updatedUserOpt = userService.updateUser(userId, updatedUser);
+            if (updatedUserOpt.isPresent()) {
+                return ResponseEntity.ok(updatedUserOpt.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating user");
+            }
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
     }
 
@@ -64,110 +88,49 @@ public class UserController {
         }
     }
 
+    @GetMapping("/check")
+    public ResponseEntity<?> checkUserExists(@RequestParam(required = false) String username, 
+                                              @RequestParam(required = false) String email) {
+        boolean usernameExists = (username != null && userService.existsByUsername(username));
+        boolean emailExists = (email != null && userService.existsByEmail(email));
+        
+        return ResponseEntity.ok().body(new UserExistsResponse(usernameExists, emailExists));
+    }
+    
     @GetMapping("/info")
     public ResponseEntity<User> getUserInfo(@AuthenticationPrincipal UserDetails userDetails) {
         Optional<User> optionalUser = userService.findByUsername(userDetails.getUsername());
+        return optionalUser.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            user.setPassword(null);
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.notFound().build();
+    @PostMapping("/{username}/joinTournament")
+    public ResponseEntity<String> joinTournament(@PathVariable String username, @RequestBody String tournamentId) {
+        try {
+            Player player = (Player) userService.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Player not found!"));
+            userService.joinTournament(player, tournamentId);
+            return ResponseEntity.ok("Player joined the tournament successfully!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    // //the above "info" also displays game stats
-    // @GetMapping("/info/gamestats")
-    // public ResponseEntity<PlayerRankingDTO> getPlayerStats(@AuthenticationPrincipal UserDetails userDetails) {
-    //     Optional<Player> playerOptional = userService.findByUsername(userDetails.getUsername())
-    //             .filter(user -> user instanceof Player)
-    //             .map(user -> (Player) user);
-
-    //     if (playerOptional.isPresent()) {
-    //         Player player = playerOptional.get();
-
-    //         // Create PlayerRankingDto based on Player object (without global rank)
-    //         PlayerRankingDTO playerDto = new PlayerRankingDTO(
-    //                 player.getUsername(),
-    //                 player.getEloRating(),
-    //                 player.getGamesWon(),
-    //                 player.getGamesLost(),
-    //                 player.getWinRate(),
-    //                 player.getRank());
-
-    //         return ResponseEntity.ok(playerDto);
-    //     } else {
-    //         return ResponseEntity.notFound().build();
-    //     }
-    // }
-
-    // get the global ranking
-    @GetMapping("/global-ranking")
-    public List<PlayerRankingDTO> getGlobalRanking() {
-        // Fetch all users and filter for players
-        List<Player> players = userService.getAllUsers().stream()
-                .filter(user -> user instanceof Player)
-                .map(user -> (Player) user)
-                .collect(Collectors.toList());
-
-        // Sort players based on the criteria: Rank, EloRating, WinRate, Player ID
-        players.sort(Comparator.comparing(Player::getRank) // Rank
-                .thenComparing(Player::getEloRating, Comparator.reverseOrder()) // EloRating (higher first)
-                .thenComparing(player -> player.getGamesWon() / (double) (player.getGamesWon() + player.getGamesLost()),
-                        Comparator.reverseOrder()) // WinRate (higher first)
-                .thenComparing(Player::getId)); // Player ID 
-
-        // Create a list of PlayerRankingDTOs with ranking numbers
-        List<PlayerRankingDTO> playerRankingDTOs = IntStream.range(0, players.size())
-                .mapToObj(i -> {
-                    Player player = players.get(i);
-                    return new PlayerRankingDTO(
-                            player.getUsername(),
-                            (int) player.getEloRating(),
-                            player.getGamesWon(),
-                            player.getGamesLost(),
-                            player.getWinRate(),
-                            player.getRank(),
-                            i + 1 // Rank
-                    );
-                })
-                .collect(Collectors.toList());
-
-        return playerRankingDTOs;
+    @DeleteMapping("/{username}/withdrawTournament/{tournamentId}")
+    public ResponseEntity<String> withdrawFromTournament(@PathVariable String username, @PathVariable String tournamentId) {
+        try {
+            Player player = (Player) userService.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Player not found!"));
+            userService.withdrawFromTournament(player, tournamentId);
+            return ResponseEntity.ok("Player withdrew from the tournament successfully!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
-    //Get bracket-ranking based on rank
-    @GetMapping("/bracket-ranking/{rank}")
-    public ResponseEntity<List<PlayerRankingDTO>> getBracketRanking(@PathVariable Rank rank) {
-
-        List<Player> players = userService.getAllUsers().stream()
-                .filter(user -> user instanceof Player)
-                .map(user -> (Player) user)
-                .filter(player -> player.getRank() == rank) //Filter by rank
-                .collect(Collectors.toList());
-
-        players.sort(Comparator.comparing(Player::getEloRating, Comparator.reverseOrder())
-                .thenComparing(player -> player.getGamesWon() / (double) (player.getGamesWon() + player.getGamesLost()),
-                        Comparator.reverseOrder()) 
-                .thenComparing(Player::getId)); 
-
-
-        List<PlayerRankingDTO> playerRankingDTOs = IntStream.range(0, players.size())
-                .mapToObj(i -> {
-                    Player player = players.get(i);
-                    return new PlayerRankingDTO(
-                            player.getUsername(),
-                            (int) player.getEloRating(),
-                            player.getGamesWon(),
-                            player.getGamesLost(),
-                            player.getWinRate(),
-                            player.getRank(),
-                            i + 1 
-                    );
-                })
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(playerRankingDTOs);
+    @GetMapping("/{username}/tournaments")
+    public ResponseEntity<List<Tournament>> getRegisteredTournaments(@PathVariable String username) {
+        List<Tournament> tournaments = userService.getTournaments(username);
+        return ResponseEntity.ok(tournaments);
     }
 }

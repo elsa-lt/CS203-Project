@@ -1,5 +1,7 @@
 package com.tetraleague.model;
 
+import java.sql.Date;
+
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -7,8 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @TypeAlias("admin")
 public class Admin extends User {
 
-    //removed role from constructor
-    public Admin(String username, String email, String password) {
-        super(username, email, password);
+    public Admin(String username, String name, String email, String password, Role role) {
+        super(username, name, email, password);
     }
 }

@@ -1,6 +1,8 @@
 package com.tetraleague.controller;
 
-import com.tetraleague.model.*; 
+import com.tetraleague.model.Tournament;
+import com.tetraleague.model.User;
+import com.tetraleague.model.Match; 
 import com.tetraleague.repository.UserRepository;
 import com.tetraleague.service.TournamentService;
 

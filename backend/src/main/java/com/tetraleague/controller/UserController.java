@@ -1,8 +1,12 @@
 package com.tetraleague.controller;
 
-import com.tetraleague.model.*; 
+import com.tetraleague.dto.PlayerRankingDTO;
+import com.tetraleague.model.User;
+import com.tetraleague.model.UserExistsResponse;
+import com.tetraleague.model.Player; 
+import com.tetraleague.model.Tournament;
+import com.tetraleague.model.Rank;
 import com.tetraleague.service.UserService;
-import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,9 +14,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.http.HttpStatus;
 
-// import org.apache.logging.log4j.util.PropertySource.Comparator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,7 +24,6 @@ import java.util.Comparator;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
@@ -132,28 +132,24 @@ public class UserController {
         return ResponseEntity.ok(tournaments);
     }
 
-    // get the global ranking
     @GetMapping("/global-ranking")
     public ResponseEntity<List<PlayerRankingDTO>> getGlobalRanking() {
         
-        // Fetch all users and filter for players
         List<Player> players = userService.getAllUsers().stream()
                 .filter(user -> user instanceof Player)
                 .map(user -> (Player) user)
                 .collect(Collectors.toList());
 
-        // Sort players based on the criteria: Rank, EloRating, WinRate, Player ID
-        players.sort(Comparator.comparing(Player::getRank) // Rank
-                .thenComparing(Player::getEloRating, Comparator.reverseOrder()) // EloRating (higher first)
+        players.sort(Comparator.comparing(Player::getRank)
+                .thenComparing(Player::getEloRating, Comparator.reverseOrder())
                 .thenComparing(player -> {
                     int gamesWon = player.getGamesWon();
                     int gamesLost = player.getGamesLost();
                     int totalGames = gamesWon + gamesLost;
-                    return totalGames == 0 ? 0.0 : (double) gamesWon / totalGames; // Avoid division by zero
-                }, Comparator.reverseOrder()) // WinRate (higher first)
-                .thenComparing(Player::getId)); // Player ID 
+                    return totalGames == 0 ? 0.0 : (double) gamesWon / totalGames;
+                }, Comparator.reverseOrder())
+                .thenComparing(Player::getId));
 
-        // Create a list of PlayerRankingDTOs with ranking numbers
         List<PlayerRankingDTO> playerRankingDTOs = IntStream.range(0, players.size())
                 .mapToObj(i -> {
                     Player player = players.get(i);
@@ -164,22 +160,21 @@ public class UserController {
                             player.getGamesLost(),
                             player.getWinRate(),
                             player.getRank(),
-                            i + 1 // This is the rank (1-based index)
+                            i + 1
                     );
                 })
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(playerRankingDTOs); // Wrap in ResponseEntity
+        return ResponseEntity.ok(playerRankingDTOs);
     }
 
-    // Get bracket-ranking based on rank
     @GetMapping("/bracket-ranking/{rank}")
     public ResponseEntity<List<PlayerRankingDTO>> getBracketRanking(@PathVariable Rank rank) {
         
         List<Player> players = userService.getAllUsers().stream()
                 .filter(user -> user instanceof Player)
                 .map(user -> (Player) user)
-                .filter(player -> player.getRank() == rank) // Filter by rank
+                .filter(player -> player.getRank() == rank)
                 .collect(Collectors.toList());
 
         players.sort(Comparator.comparing(Player::getEloRating, Comparator.reverseOrder())
@@ -187,7 +182,7 @@ public class UserController {
                     int gamesWon = player.getGamesWon();
                     int gamesLost = player.getGamesLost();
                     int totalGames = gamesWon + gamesLost;
-                    return totalGames == 0 ? 0.0 : (double) gamesWon / totalGames; // Avoid division by zero
+                    return totalGames == 0 ? 0.0 : (double) gamesWon / totalGames;
                 }, Comparator.reverseOrder())
                 .thenComparing(Player::getId)); 
        
@@ -205,6 +200,6 @@ public class UserController {
                     );
                 })
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(playerRankingDTOs); // Wrap in ResponseEntity
+        return ResponseEntity.ok(playerRankingDTOs);
     }
 }

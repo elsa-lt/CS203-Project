@@ -1,6 +1,12 @@
 package com.tetraleague.service;
 
-import com.tetraleague.model.*;
+import com.tetraleague.model.Tournament;
+import com.tetraleague.model.Player;
+import com.tetraleague.model.Rank;
+import com.tetraleague.model.User;
+import com.tetraleague.model.ERole;
+import com.tetraleague.model.Round;
+import com.tetraleague.model.Match;
 import com.tetraleague.repository.TournamentRepository;
 import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

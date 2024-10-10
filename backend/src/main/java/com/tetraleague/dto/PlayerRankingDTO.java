@@ -1,10 +1,10 @@
-package com.tetraleague.model;
+package com.tetraleague.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.tetraleague.model.Rank;
 
-@Setter
-@Getter
+import lombok.Data;
+
+@Data
 public class PlayerRankingDTO {
     private String username;
     private int eloRating;
@@ -14,7 +14,6 @@ public class PlayerRankingDTO {
     private Rank rank;
     private int globalRank; 
 
-    //this constructor is used for displaying player game stats
     public PlayerRankingDTO(String username, int eloRating, int gamesWon, int gamesLost, double winRate, Rank rank) {
         this.username = username;
         this.eloRating = eloRating;
@@ -24,7 +23,6 @@ public class PlayerRankingDTO {
         this.rank = rank;
     }
 
-    //this constructor used for player ranking (both global and bracket)
     public PlayerRankingDTO(String username, int eloRating, int gamesWon, int gamesLost, double winRate, Rank rank, int globalRank) {
         this.username = username;
         this.eloRating = eloRating;
@@ -34,5 +32,4 @@ public class PlayerRankingDTO {
         this.rank = rank;
         this.globalRank = globalRank;
     }
-
 }

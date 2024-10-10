@@ -1,80 +1,118 @@
 package com.tetraleague.model;
 
-import lombok.Getter;
+import lombok.Data;
 
+@Data
 public class Glicko2Player {
+    private int rating;
+    private double ratingDeviation;
+    private double volatility;
 
-    //OLD CODE, NOT THE NEW ONE, NEW ONE GOT OVERWRITTEN
-
-    private double rating;          // Player's rating (R)
-    @Getter
-    private double ratingDeviation; // Rating Deviation (RD)
-    private double volatility;      // Volatility (σ)
-
-    // Constants for the Glicko-2 system
+    private static final double TAU = 0.5;
     private static final double GLICKO_SCALE = 173.7178;
-    private static final double Q = Math.log(10) / 400; // q = ln(10)/400
+    private static final double EPSILON = 0.000001;
 
-    // Constructor initialising rating, rating deviation, and volatility
-    public Glicko2Player(double rating, double ratingDeviation, double volatility) {
+    public Glicko2Player(int rating, double ratingDeviation, double volatility) {
         this.rating = rating;
         this.ratingDeviation = ratingDeviation;
         this.volatility = volatility;
     }
 
-    // Convert from normal rating scale to Glicko-2 scale
-    private double convertToGlickoScale(double rating) {
-        return (rating - 1500) / GLICKO_SCALE;
+    public void updateRating(double opponentRating, double opponentRD, double actualScore) {
+        double[] updatedValues = calculateNewRating(rating, ratingDeviation, volatility, opponentRating, opponentRD, actualScore);
+        this.rating = (int) Math.round(updatedValues[0]);
+        this.ratingDeviation = updatedValues[1];
+        this.volatility = updatedValues[2];
     }
 
-    // Convert back from Glicko-2 scale to normal scale
-    private double convertToNormalScale(double glickoRating) {
-        return glickoRating * GLICKO_SCALE + 1500;
+    public static double[] calculateNewRating(double ratingA, double rdA, double volatilityA,
+                                              double ratingB, double rdB, double actualScore) {
+
+        double glickoRatingA = (ratingA - 1500) / GLICKO_SCALE;
+        double glickoRDA = rdA / GLICKO_SCALE;
+
+        double glickoRatingB = (ratingB - 1500) / GLICKO_SCALE;
+        double glickoRDB = rdB / GLICKO_SCALE;
+
+        double gRDB = g(glickoRDB);
+        double expectedScore = E(glickoRatingA, glickoRatingB, glickoRDB);
+
+        double v = variance(glickoRDB, expectedScore);
+
+        double delta = delta(gRDB, actualScore, expectedScore, v);
+
+        double newVolatilityA = updateVolatility(volatilityA, delta, glickoRDA, v);
+
+        double newRD = updateRD(glickoRDA, newVolatilityA, v);
+
+        double newRating = updateRating(glickoRatingA, gRDB, actualScore, expectedScore, newRD);
+
+        double newRatingA = newRating * GLICKO_SCALE + 1500;
+        double newRDA = newRD * GLICKO_SCALE;
+
+        return new double[] {newRatingA, newRDA, newVolatilityA};
     }
 
-    // g(RD) function as per Glicko-2
-    private double g(double rd) {
-        return 1.0 / Math.sqrt(1.0 + 3.0 * Math.pow(rd, 2) / Math.pow(Math.PI, 2));
+    private static double g(double oppRD) {
+        return 1.0 / Math.sqrt(1.0 + 3.0 * oppRD * oppRD / (Math.PI * Math.PI));
     }
 
-    // E function to calculate the expected score
-    private double E(double opponentRating, double rdOpponent) {
-        return 1.0 / (1.0 + Math.pow(10, -g(rdOpponent) * (convertToGlickoScale(rating) - convertToGlickoScale(opponentRating)) / 400));
+    private static double E(double rating, double oppRating, double oppRD) {
+        return 1.0 / (1.0 + Math.exp(-g(oppRD) * (rating - oppRating)));
     }
 
-    // Update rating after a match
-    public void updateRating(double opponentRating, double opponentRD, double outcome) {
-        double gRD = g(opponentRD);
-        double E = E(opponentRating, opponentRD);
-        double dSquared = 1.0 / (Q * Q * gRD * gRD * E * (1 - E));
-
-        // Delta calculation
-        double delta = Q / ((1.0 / Math.pow(ratingDeviation, 2)) + (1.0 / dSquared)) * (gRD * (outcome - E));
-
-        // New RD
-        ratingDeviation = Math.sqrt(1.0 / ((1.0 / Math.pow(ratingDeviation, 2)) + (1.0 / dSquared)));
-
-        // New Rating
-        rating += delta;
+    private static double variance(double oppRD, double expectedScore) {
+        return 1.0 / (g(oppRD) * g(oppRD) * expectedScore * (1 - expectedScore));
     }
 
-    public double getRating() {
-        return convertToNormalScale(rating);
+    private static double delta(double gRD, double actualScore, double expectedScore, double v) {
+        return v * gRD * (actualScore - expectedScore);
     }
 
-    public double getVolatility() {
-        return volatility;
+    private static double updateRD(double RD, double sigma, double v) {
+        return 1.0 / Math.sqrt(1.0 / (RD * RD + sigma * sigma) + 1.0 / v);
     }
 
-    // public static void main(String[] args) {
-    //     // Example usage
-    //     Glicko2Player player1 = new Glicko2Player(1500, 200, 0.06);
-    //     Glicko2Player player2 = new Glicko2Player(1400, 30, 0.06);
+    private static double updateRating(double rating, double gRD, double actualScore, double expectedScore, double newRD) {
+        return rating + newRD * newRD * gRD * (actualScore - expectedScore);
+    }
 
-    //     // Player 1 wins against Player 2
-    //     player1.updateRating(player2.getRating(), player2.getRatingDeviation(), 1);
+    private static double updateVolatility(double sigma, double delta, double phi, double v) {
+        double a = Math.log(sigma * sigma);
+        double A = a;
+        double B;
+        if (delta * delta > phi * phi + v) {
+            B = Math.log(delta * delta - phi * phi - v);
+        } else {
+            B = a - Math.log(10);
+        }
 
-    //     System.out.println("Player 1 new rating: " + player1.getRating());
-    //     System.out.println("Player 1 new rating deviation: " + player1.getRatingDeviation());
-    // }
+        double fA = f(A, delta, phi, v, sigma);
+        double fB = f(B, delta, phi, v, sigma);
+
+        while (Math.abs(B - A) > EPSILON) {
+            double C = A + (A - B) * fA / (fB - fA);
+            double fC = f(C, delta, phi, v, sigma);
+
+            if (fC * fB < 0) {
+                A = B;
+                fA = fB;
+            } else {
+                fA /= 2.0;
+            }
+
+            B = C;
+            fB = fC;
+        }
+
+        return Math.exp(A / 2);
+    }
+    
+    private static double f(double x, double delta, double phi, double v, double sigma) {
+        double expX = Math.exp(x);
+        double term1 = expX * (delta * delta - phi * phi - v - expX);
+        double term2 = 2 * (phi * phi + v + expX) * (phi * phi + v + expX);
+        double term3 = (x - Math.log(sigma * sigma)) / (TAU * TAU);
+        return (term1 / term2) - term3;
+    }
 }

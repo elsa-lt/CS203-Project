@@ -5,7 +5,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.tetraleague.model.*;
+import com.tetraleague.model.User;
+import com.tetraleague.model.Role;
+import com.tetraleague.model.Admin;
+import com.tetraleague.model.Player;
+import com.tetraleague.model.ERole;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,21 +42,17 @@ public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;
 
-
     @Autowired
     UserRepository userRepository;
 
     @Autowired
     RoleRepository roleRepository;
 
-
     @Autowired
     PasswordEncoder encoder;
 
-
     @Autowired
     JwtUtils jwtUtils;
-
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -93,8 +93,8 @@ public class AuthController {
         Set<Role> roles = new HashSet<>();
         
         if (strRoles == null) {
-            strRoles = new HashSet<>(); // Set to empty if null
-            strRoles.add("player"); // You might set a default role here
+            strRoles = new HashSet<>();
+            strRoles.add("player");
         }
         User user = null;
 
@@ -112,7 +112,7 @@ public class AuthController {
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(playerRole);
 
-                        user = new Player(signUpRequest.getUsername(), signUpRequest.getName(), signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()), 400);
+                        user = new Player(signUpRequest.getUsername(), signUpRequest.getName(), signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()), 0);
                         break;
                 }
             }

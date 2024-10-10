@@ -15,9 +15,9 @@ public class PlayerRankingDTO {
     private int globalRank; 
 
     //this constructor is used for displaying player game stats
-    public PlayerRankingDTO(String username, double eloRating, int gamesWon, int gamesLost, double winRate, Rank rank) {
+    public PlayerRankingDTO(String username, int eloRating, int gamesWon, int gamesLost, double winRate, Rank rank) {
         this.username = username;
-        this.eloRating = (int) Math.round(eloRating);
+        this.eloRating = eloRating;
         this.gamesWon = gamesWon;
         this.gamesLost = gamesLost;
         this.winRate = winRate;
@@ -25,9 +25,9 @@ public class PlayerRankingDTO {
     }
 
     //this constructor used for player ranking (both global and bracket)
-    public PlayerRankingDTO(String username, double eloRating, int gamesWon, int gamesLost, double winRate, Rank rank, int globalRank) {
+    public PlayerRankingDTO(String username, int eloRating, int gamesWon, int gamesLost, double winRate, Rank rank, int globalRank) {
         this.username = username;
-        this.eloRating = (int) Math.round(eloRating);
+        this.eloRating = eloRating;
         this.gamesWon = gamesWon;
         this.gamesLost = gamesLost;
         this.winRate = winRate;
@@ -35,14 +35,4 @@ public class PlayerRankingDTO {
         this.globalRank = globalRank;
     }
 
-    //needed as player class does not calculate this
-    public double getWinRate() {
-        if((gamesLost + gamesWon) == 0) {
-            winRate = 0.0;
-        } else {
-            winRate = (gamesWon / (gamesLost + gamesWon)) * 100.0;
-        }
-    
-        return winRate;
-    }
 }

@@ -26,12 +26,6 @@ public class Tournament {
 
     @NotNull(message = "Number of participants is required")
     private Integer maxParticipants;
-    
-    @NotNull(message = "Minimum Elo range is required")
-    private Integer minElo;
-
-    @NotNull(message = "Maximum Elo range is required")
-    private Integer maxElo;
 
     @NotNull(message = "Start date is required")
     private LocalDateTime startDate;
@@ -47,6 +41,7 @@ public class Tournament {
     @NotNull(message = "Prize pool is required")
     private Double prizePool;
 
+    @NotNull(message = "Rank is required")
     private Rank rank;
 
     private Player winner;

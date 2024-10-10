@@ -64,7 +64,6 @@ public class UserController {
                         .body("Error: Email is already in use!");
             }
     
-            // Proceed to update the user
             Optional<User> updatedUserOpt = userService.updateUser(userId, updatedUser);
             if (updatedUserOpt.isPresent()) {
                 return ResponseEntity.ok(updatedUserOpt.get());

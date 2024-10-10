@@ -2,7 +2,6 @@ package com.tetraleague.service;
 
 import com.tetraleague.model.Tournament;
 import com.tetraleague.model.Player;
-import com.tetraleague.model.Rank;
 import com.tetraleague.model.User;
 import com.tetraleague.model.ERole;
 import com.tetraleague.model.Round;
@@ -50,64 +49,26 @@ public class TournamentService {
     }
 
     private void validateTournament(Tournament tournament) {
-        if (tournament.getMaxParticipants() < 2) {
-            if (tournament.getMaxParticipants() == null || tournament.getMaxParticipants() < 2) {
-                throw new IllegalArgumentException("Number of participants cannot be less than 2.");
-            }
-            if (!isPowerOfTwo(tournament.getMaxParticipants())) {
-                throw new IllegalArgumentException("Number of participants must be a power of 2.");
-            }
-            if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
-                throw new IllegalArgumentException("Start date cannot be after end date.");
-            }
-            if (tournament.getMinElo() > tournament.getMaxElo()) {
-                throw new IllegalArgumentException("Minimum Elo cannot be greater than maximum Elo.");
-            }
-            List<Tournament> tournaments = tournamentRepository.findAll();
-            for (Tournament existingTournament : tournaments) {
-                if (existingTournament.getName().equals(tournament.getName()) &&
-                        (tournament.getStartDate().isBefore(existingTournament.getEndDate()) &&
-                                (tournament.getStartDate().isBefore(existingTournament.getEndDate()) ||
-                                        tournament.getEndDate().isAfter(existingTournament.getStartDate())))) {
-                    throw new IllegalArgumentException("Another tournament with the same name overlaps in time frame");
-                }
-            }
-
-            //Validate rank and elo rating together
-            if (tournament.getRank() != null) {
-                Rank rank = tournament.getRank();
-                int minElo = tournament.getMinElo();
-                int maxElo = tournament.getMaxElo();
-        
-                switch (rank) {
-                    case PLATINUM:
-                        if (minElo < 4500 || maxElo < 4500) {
-                            throw new IllegalArgumentException("Platinum tournaments must have a minimum Elo of 4500.");
-                        }
-                        break;
-                    case GOLD:
-                        if (minElo < 3500 || maxElo >= 4500) {
-                            throw new IllegalArgumentException("Gold tournaments must have a minimum Elo of 3500 and maximum Elo less than 4500.");
-                        }
-                        break;
-                    case SILVER:
-                        if (minElo < 2500 || maxElo >= 3500) {
-                            throw new IllegalArgumentException("Silver tournaments must have a minimum Elo of 2500 and maximum Elo less than 3500.");
-                        }
-                        break;
-                    case BRONZE:
-                        if (minElo >= 1500 || maxElo >= 2500) {
-                            throw new IllegalArgumentException("Bronze tournaments must have a minimum Elo of 1500 and a maximum Elo less than 2500.");
-                        }
-                        break;
-                    case UNRANKED:
-                        if (minElo >= 1500 || maxElo >= 1500) {
-                            throw new IllegalArgumentException("Unranked tournaments must have an Elo range less than 1500.");
-                        }
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Invalid rank specified.");
-                }
+        if (tournament.getMaxParticipants() == null || tournament.getMaxParticipants() < 2) {
+            throw new IllegalArgumentException("Number of participants cannot be less than 2.");
+        }
+        if (!isPowerOfTwo(tournament.getMaxParticipants())) {
+            throw new IllegalArgumentException("Number of participants must be a power of 2.");
+        }
+        if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
+            throw new IllegalArgumentException("Start date cannot be after end date.");
+        }
+    
+        if (tournament.getRank() == null) {
+            throw new IllegalArgumentException("Tournament rank is required.");
+        }
+    
+        List<Tournament> tournaments = tournamentRepository.findAll();
+        for (Tournament existingTournament : tournaments) {
+            if (existingTournament.getName().equals(tournament.getName()) &&
+                    (tournament.getStartDate().isBefore(existingTournament.getEndDate()) &&
+                            tournament.getEndDate().isAfter(existingTournament.getStartDate()))) {
+                throw new IllegalArgumentException("Another tournament with the same name overlaps in time frame");
             }
         }
     }
@@ -127,8 +88,6 @@ public class TournamentService {
         tournament.setMaxParticipants(updatedTournament.getMaxParticipants());
         tournament.setStartDate(updatedTournament.getStartDate());
         tournament.setEndDate(updatedTournament.getEndDate());
-        tournament.setMinElo(updatedTournament.getMinElo());
-        tournament.setMaxElo(updatedTournament.getMaxElo());
         tournament.setImageUrl(updatedTournament.getImageUrl());
         tournament.setPrizePool(updatedTournament.getPrizePool());
         tournament.setRank(updatedTournament.getRank());
@@ -170,7 +129,7 @@ public class TournamentService {
     
     public Tournament addParticipant(String tournamentId, String playerId) {
         Tournament tournament = getTournamentById(tournamentId);
-
+    
         if (tournament.hasEnded()) {
             throw new RuntimeException("Tournament has already ended");
         }
@@ -180,25 +139,21 @@ public class TournamentService {
         if (tournament.isFull()) {
             throw new RuntimeException("Tournament is full");
         }
-
+    
         Player player = validateAndGetPlayer(playerId);
-
+    
         if (tournament.getParticipants().stream().anyMatch(p -> p.getId().equals(player.getId()))) {
             throw new RuntimeException("Player is already participating in the tournament");
-        }        
-
-        if (player.getEloRating() < tournament.getMinElo() || player.getEloRating() > tournament.getMaxElo()) {
-            throw new RuntimeException("Player's Elo rating is not within the allowed range for this tournament");
         }
-
-        //Do not need this, we can check with the above
-        if(tournament.getRank() != null && (player.getRank() != tournament.getRank())) {
+    
+        if (player.getRank() != tournament.getRank()) {
             throw new RuntimeException("Player's Rank is not the allowed rank for this tournament");
         }
-
+    
         tournament.addParticipant(player);
         return tournamentRepository.save(tournament);
     }
+    
 
     public boolean isUserRegistered(String tournamentId, String username) {
         Tournament tournament = getTournamentById(tournamentId);

@@ -39,7 +39,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
 class MatchmakingServiceTest {
     @Mock
     private Tournament tournament;
@@ -61,7 +60,7 @@ class MatchmakingServiceTest {
 
     @Mock
     private PasswordEncoder encoder;
-    
+
     @InjectMocks
     private TournamentService tournamentService;
 
@@ -593,7 +592,6 @@ class MatchmakingServiceTest {
         when(roleRepository.findByName(ERole.ROLE_PLAYER)).thenReturn(Optional.of(new Role(ERole.ROLE_PLAYER)));
         when(encoder.encode("password123")).thenReturn("encodedPassword"); // Mock the encode method
 
-
         // Act
         ResponseEntity<?> response = authController.registerUser(signUpRequest);
 
@@ -607,4 +605,38 @@ class MatchmakingServiceTest {
         verify(roleRepository).findByName(ERole.ROLE_PLAYER);
         verify(userRepository).save(any(Player.class));
     }
+
+    @Test
+    void completeMatch_FirstTime_SetsWinnerAndMarksCompleted() {
+        // Arrange
+        Match match = new Match();
+        Player winner = new Player("username", "name", "email", "password", 1000);
+
+        // Act
+        match.completeMatch(winner);
+
+        // Assert
+        assertEquals(winner, match.getWinner());
+        assertTrue(match.isCompleted());
+    }
+
+    @Test
+    void completeMatch_WinnerIsOneOfThePlayers_SuccessfullyCompletes() {
+        // Arrange
+        Match match = new Match();
+        Player player1 = new Player("user1", "Player 1", "player1@example.com", "password1", 1000);
+        Player player2 = new Player("user2", "Player 2", "player2@example.com", "password2", 1100);
+        match.setPlayer1(player1);
+        match.setPlayer2(player2);
+
+        // Act
+        match.completeMatch(player1);
+
+        // Assert
+        assertTrue(match.isCompleted());
+        assertEquals(player1, match.getWinner());
+        assertTrue(match.getWinner() == match.getPlayer1() || match.getWinner() == match.getPlayer2());
+    }
+
+    
 }

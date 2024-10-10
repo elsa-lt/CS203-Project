@@ -44,30 +44,29 @@ public class TournamentService {
     }
 
     private void validateTournament(Tournament tournament) {
-        if (tournament.getMaxParticipants() < 2) {
-            if (tournament.getMaxParticipants() == null || tournament.getMaxParticipants() < 2) {
-                throw new IllegalArgumentException("Number of participants cannot be less than 2.");
-            }
-            if (!isPowerOfTwo(tournament.getMaxParticipants())) {
-                throw new IllegalArgumentException("Number of participants must be a power of 2.");
-            }
-            if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
-                throw new IllegalArgumentException("Start date cannot be after end date.");
-            }
-            if (tournament.getMinElo() > tournament.getMaxElo()) {
-                throw new IllegalArgumentException("Minimum Elo cannot be greater than maximum Elo.");
-            }
-            List<Tournament> tournaments = tournamentRepository.findAll();
-            for (Tournament existingTournament : tournaments) {
-                if (existingTournament.getName().equals(tournament.getName()) &&
-                        (tournament.getStartDate().isBefore(existingTournament.getEndDate()) &&
-                                (tournament.getStartDate().isBefore(existingTournament.getEndDate()) ||
-                                        tournament.getEndDate().isAfter(existingTournament.getStartDate())))) {
-                    throw new IllegalArgumentException("Another tournament with the same name overlaps in time frame");
-                }
+        if (tournament.getMaxParticipants() == null || tournament.getMaxParticipants() < 2) {
+            throw new IllegalArgumentException("Number of participants cannot be less than 2.");
+        }
+        if (!isPowerOfTwo(tournament.getMaxParticipants())) {
+            throw new IllegalArgumentException("Number of participants must be a power of 2.");
+        }
+        if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
+            throw new IllegalArgumentException("Start date cannot be after end date.");
+        }
+        if (tournament.getMinElo() > tournament.getMaxElo()) {
+            throw new IllegalArgumentException("Minimum Elo cannot be greater than maximum Elo.");
+        }
+        List<Tournament> tournaments = tournamentRepository.findAll();
+        for (Tournament existingTournament : tournaments) {
+            if (existingTournament.getName().equals(tournament.getName()) &&
+                    (tournament.getStartDate().isBefore(existingTournament.getEndDate()) &&
+                            (tournament.getStartDate().isBefore(existingTournament.getEndDate()) ||
+                                    tournament.getEndDate().isAfter(existingTournament.getStartDate())))) {
+                throw new IllegalArgumentException("Another tournament with the same name overlaps in time frame");
             }
         }
     }
+    
 
     private boolean isPowerOfTwo(int n) {
         return (n > 0) && ((n & (n - 1)) == 0);

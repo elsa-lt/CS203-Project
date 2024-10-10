@@ -3,9 +3,13 @@ com/tetraleague/security/jwt/JwtUtils.class
 com/tetraleague/repository/RoleRepository.class
 com/tetraleague/service/TournamentService.class
 com/tetraleague/model/Player.class
+com/tetraleague/service/RoundService.class
 com/tetraleague/exception/GlobalExceptionHandler.class
+com/tetraleague/service/MatchService.class
 com/tetraleague/payload/response/MessageResponse.class
 com/tetraleague/service/UserService.class
+com/tetraleague/model/UserExistsResponse.class
+com/tetraleague/model/Round.class
 com/tetraleague/payload/request/LoginRequest.class
 com/tetraleague/security/WebSecurityConfig.class
 com/tetraleague/controller/TournamentController.class
@@ -23,6 +27,7 @@ com/tetraleague/model/Match.class
 com/tetraleague/security/jwt/AuthEntryPointJwt.class
 com/tetraleague/model/User.class
 com/tetraleague/model/Role.class
+com/tetraleague/controller/TournamentController$RegistrationStatusResponse.class
 com/tetraleague/model/Admin.class
 com/tetraleague/security/jwt/AuthTokenFilter.class
 com/tetraleague/controller/UserController.class

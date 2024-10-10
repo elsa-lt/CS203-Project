@@ -34,30 +34,25 @@ import com.tetraleague.security.services.UserDetailsImpl;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    @Autowired
-    AuthenticationManager authenticationManager;
+
     @Autowired
     AuthenticationManager authenticationManager;
 
-    @Autowired
-    UserRepository userRepository;
+
     @Autowired
     UserRepository userRepository;
 
     @Autowired
     RoleRepository roleRepository;
-    @Autowired
-    RoleRepository roleRepository;
+
 
     @Autowired
     PasswordEncoder encoder;
-    @Autowired
-    PasswordEncoder encoder;
+
 
     @Autowired
     JwtUtils jwtUtils;
-    @Autowired
-    JwtUtils jwtUtils;
+
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {

@@ -3,6 +3,9 @@ package com.tetraleague.model;
 import lombok.Getter;
 
 public class Glicko2Player {
+
+    //OLD CODE, NOT THE NEW ONE, NEW ONE GOT OVERWRITTEN
+
     private double rating;          // Player's rating (R)
     @Getter
     private double ratingDeviation; // Rating Deviation (RD)
@@ -63,15 +66,15 @@ public class Glicko2Player {
         return volatility;
     }
 
-    public static void main(String[] args) {
-        // Example usage
-        Glicko2Player player1 = new Glicko2Player(1500, 200, 0.06);
-        Glicko2Player player2 = new Glicko2Player(1400, 30, 0.06);
+    // public static void main(String[] args) {
+    //     // Example usage
+    //     Glicko2Player player1 = new Glicko2Player(1500, 200, 0.06);
+    //     Glicko2Player player2 = new Glicko2Player(1400, 30, 0.06);
 
-        // Player 1 wins against Player 2
-        player1.updateRating(player2.getRating(), player2.getRatingDeviation(), 1);
+    //     // Player 1 wins against Player 2
+    //     player1.updateRating(player2.getRating(), player2.getRatingDeviation(), 1);
 
-        System.out.println("Player 1 new rating: " + player1.getRating());
-        System.out.println("Player 1 new rating deviation: " + player1.getRatingDeviation());
-    }
+    //     System.out.println("Player 1 new rating: " + player1.getRating());
+    //     System.out.println("Player 1 new rating deviation: " + player1.getRatingDeviation());
+    // }
 }

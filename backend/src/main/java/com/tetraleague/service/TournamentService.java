@@ -25,7 +25,7 @@ public class TournamentService {
     private UserRepository userRepository;
 
     @Autowired
-    private MatchmakingService matchmakingService;
+    private RoundService roundService;
 
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll();
@@ -44,30 +44,29 @@ public class TournamentService {
     }
 
     private void validateTournament(Tournament tournament) {
-        if (tournament.getMaxParticipants() < 2) {
-            if (tournament.getMaxParticipants() == null || tournament.getMaxParticipants() < 2) {
-                throw new IllegalArgumentException("Number of participants cannot be less than 2.");
-            }
-            if (!isPowerOfTwo(tournament.getMaxParticipants())) {
-                throw new IllegalArgumentException("Number of participants must be a power of 2.");
-            }
-            if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
-                throw new IllegalArgumentException("Start date cannot be after end date.");
-            }
-            if (tournament.getMinElo() > tournament.getMaxElo()) {
-                throw new IllegalArgumentException("Minimum Elo cannot be greater than maximum Elo.");
-            }
-            List<Tournament> tournaments = tournamentRepository.findAll();
-            for (Tournament existingTournament : tournaments) {
-                if (existingTournament.getName().equals(tournament.getName()) &&
-                        (tournament.getStartDate().isBefore(existingTournament.getEndDate()) &&
-                                (tournament.getStartDate().isBefore(existingTournament.getEndDate()) ||
-                                        tournament.getEndDate().isAfter(existingTournament.getStartDate())))) {
-                    throw new IllegalArgumentException("Another tournament with the same name overlaps in time frame");
-                }
+        if (tournament.getMaxParticipants() == null || tournament.getMaxParticipants() < 2) {
+            throw new IllegalArgumentException("Number of participants cannot be less than 2.");
+        }
+        if (!isPowerOfTwo(tournament.getMaxParticipants())) {
+            throw new IllegalArgumentException("Number of participants must be a power of 2.");
+        }
+        if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
+            throw new IllegalArgumentException("Start date cannot be after end date.");
+        }
+        if (tournament.getMinElo() > tournament.getMaxElo()) {
+            throw new IllegalArgumentException("Minimum Elo cannot be greater than maximum Elo.");
+        }
+        List<Tournament> tournaments = tournamentRepository.findAll();
+        for (Tournament existingTournament : tournaments) {
+            if (existingTournament.getName().equals(tournament.getName()) &&
+                    (tournament.getStartDate().isBefore(existingTournament.getEndDate()) &&
+                            (tournament.getStartDate().isBefore(existingTournament.getEndDate()) ||
+                                    tournament.getEndDate().isAfter(existingTournament.getStartDate())))) {
+                throw new IllegalArgumentException("Another tournament with the same name overlaps in time frame");
             }
         }
     }
+    
 
     private boolean isPowerOfTwo(int n) {
         return (n > 0) && ((n & (n - 1)) == 0);
@@ -160,7 +159,7 @@ public class TournamentService {
                 .anyMatch(player -> player.getUsername().equals(username));
     }
 
-    public Tournament removeParticipant(String tournamentId, String playerId) {
+    public Tournament removeParticipant (String tournamentId, String playerId) {
         Tournament tournament = getTournamentById(tournamentId);
 
         Player player = validateAndGetPlayer(playerId);
@@ -186,11 +185,42 @@ public class TournamentService {
         tournamentRepository.delete(tournament);
     }
 
-    public List<Match> createAndStoreMatchups(String tournamentId) {
+    public void startTournament(String tournamentId) {
         Tournament tournament = getTournamentById(tournamentId);
-        List<Match> matchups = matchmakingService.createMatchups(tournament);
-        tournament.setMatches(matchups);
+
+        if (tournament.hasStarted()) {
+            throw new RuntimeException("Tournament has already started");
+        }
+
+        Round firstRound = roundService.createFirstRound(tournament.getParticipants());
+        tournament.addRound(firstRound);
+
+        tournament.setStarted(true);
         tournamentRepository.save(tournament);
-        return matchups;
+    }
+
+    public void advanceTournament(Tournament tournament) {
+        List<Round> rounds = tournament.getRounds();
+        Round currentRound = rounds.get(rounds.size() - 1);
+
+        if (roundService.isRoundComplete(currentRound)) {
+            List<Player> winners = currentRound.getWinners();
+
+            if (winners.size() == 1) {
+                tournament.setWinner(winners.get(0));
+                tournament.setEnded(true);
+                tournamentRepository.save(tournament);
+                return;
+            }
+
+            Round nextRound = roundService.createNextRound(winners, currentRound.getRoundNumber() + 1);
+            tournament.addRound(nextRound);
+            tournamentRepository.save(tournament);
+        }
+    }
+
+    public List<Match> getCurrentBrackets(Tournament tournament) {
+        Round currentRound = tournament.getCurrentRound();
+        return currentRound.getMatches();
     }
 }

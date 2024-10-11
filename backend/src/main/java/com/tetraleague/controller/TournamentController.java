@@ -1,11 +1,10 @@
 package com.tetraleague.controller;
 
-import com.tetraleague.model.User; 
-import com.tetraleague.repository.UserRepository;
-import com.tetraleague.model.Player;
 import com.tetraleague.model.Tournament;
+import com.tetraleague.model.User;
+import com.tetraleague.model.Match; 
+import com.tetraleague.repository.UserRepository;
 import com.tetraleague.service.TournamentService;
-import com.tetraleague.model.Match;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

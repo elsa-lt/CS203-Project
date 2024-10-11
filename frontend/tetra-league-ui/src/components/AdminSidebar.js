@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LuHome, LuPlusCircle, LuCalendar, LuArchive } from "react-icons/lu";
+import { LuHome, LuPlusCircle, LuCalendar} from "react-icons/lu";
 
-const AdminSidebar = ({ name, imageUrl }) => {
+const AdminSidebar = () => {
   const location = useLocation();
 
   return (
@@ -26,7 +26,7 @@ const AdminSidebar = ({ name, imageUrl }) => {
           <li>
             <Link
               to="/create-tournament"
-              className={`flex items-center space-x-4 pt-4 pb-4 pl-4 font-light font-hevetica-neue text-customGray ${location.pathname === '/create-tournament' ? 'text-white font-medium bg-customGray bg-opacity-80' : 'hover:text-yellow-500'}`}
+              className={`flex items-center space-x-4 pt-4 pb-4 pl-4 font-light font-hevetica-neue text-customGray ${location.pathname === '/create-tournament/:id' ? 'text-white font-medium bg-customGray bg-opacity-80' : 'hover:text-yellow-500'}`}
             >
               <LuPlusCircle className="text-3xl" />
               <span>Tournament Creator</span>
@@ -34,22 +34,13 @@ const AdminSidebar = ({ name, imageUrl }) => {
           </li>
           <li>
             <Link
-              to="/manage-tournaments"
+              to="/admin-tournaments"
               className={`flex items-center space-x-4 pt-4 pb-4 pl-4 font-light font-hevetica-neue text-customGray ${location.pathname === '/manage-tournaments' ? 'text-white font-medium bg-customGray bg-opacity-80' : 'hover:text-yellow-500'}`}
             >
               <LuCalendar className="text-3xl" />
               <span>My Tournaments</span>
             </Link>
           </li>
-          {/* <li>
-            <Link
-              to="/admin-past-tournaments"
-              className={`flex items-center space-x-4 pt-4 pb-4 pl-4 font-light font-hevetica-neue text-customGray ${location.pathname === '/admin-past-tournaments' ? 'text-white font-medium bg-customGray bg-opacity-80' : 'hover:text-yellow-500'}`}
-            >
-              <LuArchive className="text-3xl" />
-              <span>Past Tournaments</span>
-            </Link>
-          </li> */}
         </ul>
       </div>
     </nav>

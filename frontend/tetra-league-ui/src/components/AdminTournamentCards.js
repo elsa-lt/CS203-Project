@@ -10,7 +10,13 @@ const AdminTournamentCard = ({ tournament }) => {
   const [isCancelModalOpen, setCancelModalOpen] = useState(false);
   const [tournamentId, setTournamentId] = useState(null);
 
-  const { name, startDate, endDate, minElo, imageUrl } = tournament;
+  const formatDateRange = (start, end) => {
+    const startFormatted = new Date(start).toLocaleDateString();
+    const endFormatted = new Date(end).toLocaleDateString();
+    return `${startFormatted} - ${endFormatted}`;
+};
+
+  const {name, startDate, endDate, minElo, maxElo, imageUrl } = tournament;
 
   const handleEdit = () => {
     editNavigate(`/edit-tournament/${tournament.id}`); 
@@ -20,7 +26,6 @@ const AdminTournamentCard = ({ tournament }) => {
     setTournamentId(id); 
     setCancelModalOpen(true); 
   };
-
 
   return (
     <Card className="w-[28rem] rounded-lg overflow-hidden bg-white border border-customGray border-opacity-30 bg-opacity-80">
@@ -56,10 +61,7 @@ const AdminTournamentCard = ({ tournament }) => {
               {name}
             </div>
             <div className="flex helvetica-neue customGray mb-4">
-              Start Date: {new Date(startDate).toLocaleDateString()}
-            </div>
-            <div className="flex helvetica-neue customGray mb-4">
-              End Date: {new Date(endDate).toLocaleDateString()}
+              {formatDateRange(startDate, endDate)}
             </div>
             <div className="flex">
               <div className="flex items-center">
@@ -79,7 +81,7 @@ const AdminTournamentCard = ({ tournament }) => {
               <FiEdit className="text-2xl" />
             </div>
             <div className="flex w-full justify-end items-end">
-              <StartButtons />
+              <StartButtons tournament={tournament}/>
             </div>
           </div>
         </div>

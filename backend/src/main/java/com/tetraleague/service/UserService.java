@@ -79,7 +79,7 @@ public class UserService {
             throw new RuntimeException("Player not found!");
         }
     }
-}
+
     public Optional<User> updateUser(String id, User updatedUser) {
         Optional<User> existingUserOpt = userRepository.findById(id);
         

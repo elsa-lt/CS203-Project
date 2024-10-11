@@ -28,10 +28,6 @@ const TournamentCard = ({ id, name, startDate, endDate, prizePool, minElo, image
             <div className="flex w-full p-6">
               <div className="flex flex-col flex-none basis-1/2 mr-6">
                 <div className="flex font-medium font-sans-serif customGray text-4xl mb-4">
-                {name}
-                </div>
-                <div className="flex font-normal helvetica-neue customGray text-lg">
-                {new Date(startDate).toLocaleString()}
                   {name}
                 </div>
                 <div className="flex font-normal helvetica-neue customGray text-lg">
@@ -56,6 +52,7 @@ const TournamentCard = ({ id, name, startDate, endDate, prizePool, minElo, image
                   {minElo}
                 </div>
               </div>
+              <div className="flex border-l-2 border-customGray border-opacity-30"></div>
               <div className="flex w-full pl-6">
                 {showRegistrationButtons && <RegistrationButtons username={username} tournamentId={id} />}
               </div>

@@ -4,11 +4,9 @@ import RegistrationButtons from '../components/RegistrationButtons';
 import { useParams } from 'react-router-dom'; // Assumes you're using react-router for routing
 import axios from 'axios';
 
-const TournamentCard = ({ id, name, startDate, endDate, prizePool, minElo, imageUrl, showRegistrationButtons, username }) => {
-    const formatDateRange = (start, end) => {
-        const startFormatted = new Date(start).toLocaleDateString();
-        const endFormatted = new Date(end).toLocaleDateString();
-        return `${startFormatted} - ${endFormatted}`;
+const TournamentCard = ({ id, name, startDate, endDate, prizePool, rank, imageUrl, showRegistrationButtons, username }) => {
+    const formatDateTime = (date) => {
+        return new Date(date).toLocaleString();
     };
 
     // Update the default image URL
@@ -20,7 +18,7 @@ const TournamentCard = ({ id, name, startDate, endDate, prizePool, minElo, image
           <Card.Body>
             <div className="flex h-72 justify-center">
               <img
-                src={imageUrl || defaultImageUrl}  // Use default image if imageUrl is not provided
+                src={imageUrl || defaultImageUrl}  
                 alt="Tournaments Header Pic"
                 className="object-cover w-full h-full justify-center"
               />
@@ -31,7 +29,10 @@ const TournamentCard = ({ id, name, startDate, endDate, prizePool, minElo, image
                   {name}
                 </div>
                 <div className="flex font-normal helvetica-neue customGray text-lg">
-                  {formatDateRange(startDate, endDate)}
+                  Starts on: {formatDateTime(startDate)}
+                </div>
+                <div className="flex font-normal helvetica-neue customGray text-lg">
+                  Ends on: {formatDateTime(endDate)} 
                 </div>
               </div>
               <div className="flex border-l-2 border-customGray border-opacity-30"></div>
@@ -49,7 +50,7 @@ const TournamentCard = ({ id, name, startDate, endDate, prizePool, minElo, image
                   Minimum Rank
                 </div>
                 <div className="flex font-sans-serif text-center text-4xl text-customBronze pb-6">
-                  {minElo}
+                  {rank}
                 </div>
               </div>
               <div className="flex border-l-2 border-customGray border-opacity-30"></div>

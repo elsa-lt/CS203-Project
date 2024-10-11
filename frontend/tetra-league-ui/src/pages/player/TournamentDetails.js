@@ -83,15 +83,14 @@ const TournamentDetails = () => {
           startDate={tournament.startDate} 
           endDate={tournament.endDate} 
           prizePool={tournament.prizePool} 
-          rank={tournament.rank} 
+          minElo={tournament.minElo} 
           imageUrl={tournament.imageUrl}
-          username={username} 
+          username={username} // Pass the username to the TournamentCard
           showRegistrationButtons={true} 
         />
         
         <TournamentSubTabs 
           tournamentId={tournament.id}
-          tournamentDescription={tournament.description} 
         />
       </div>
     </main>

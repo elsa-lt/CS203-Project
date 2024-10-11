@@ -68,9 +68,9 @@ const LoginPage = () => {
                 required
               />
             </div>
-            <div className="flex justify-between items-center mb-4">
+            {/* <div className="flex justify-between items-center mb-4">
               <Link to="/forgot-password" className="text-blue-600 hover:underline">Forgot your password?</Link>
-            </div>
+            </div> */}
             <button type="submit" className="w-full bg-black text-white font-semibold py-2 px-4 rounded-lg">Login</button>
           </form>
           <p className="mt-4 text-center">

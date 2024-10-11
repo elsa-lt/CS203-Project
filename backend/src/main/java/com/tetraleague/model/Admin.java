@@ -1,7 +1,5 @@
 package com.tetraleague.model;
 
-import java.sql.Date;
-
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 

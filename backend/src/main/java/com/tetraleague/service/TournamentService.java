@@ -1,6 +1,11 @@
 package com.tetraleague.service;
 
-import com.tetraleague.model.*;
+import com.tetraleague.model.Tournament;
+import com.tetraleague.model.Player;
+import com.tetraleague.model.User;
+import com.tetraleague.model.ERole;
+import com.tetraleague.model.Round;
+import com.tetraleague.model.Match;
 import com.tetraleague.repository.TournamentRepository;
 import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,15 +58,16 @@ public class TournamentService {
         if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
             throw new IllegalArgumentException("Start date cannot be after end date.");
         }
-        if (tournament.getMinElo() > tournament.getMaxElo()) {
-            throw new IllegalArgumentException("Minimum Elo cannot be greater than maximum Elo.");
+    
+        if (tournament.getRank() == null) {
+            throw new IllegalArgumentException("Tournament rank is required.");
         }
+    
         List<Tournament> tournaments = tournamentRepository.findAll();
         for (Tournament existingTournament : tournaments) {
             if (existingTournament.getName().equals(tournament.getName()) &&
                     (tournament.getStartDate().isBefore(existingTournament.getEndDate()) &&
-                            (tournament.getStartDate().isBefore(existingTournament.getEndDate()) ||
-                                    tournament.getEndDate().isAfter(existingTournament.getStartDate())))) {
+                            tournament.getEndDate().isAfter(existingTournament.getStartDate()))) {
                 throw new IllegalArgumentException("Another tournament with the same name overlaps in time frame");
             }
         }
@@ -83,10 +89,9 @@ public class TournamentService {
         tournament.setMaxParticipants(updatedTournament.getMaxParticipants());
         tournament.setStartDate(updatedTournament.getStartDate());
         tournament.setEndDate(updatedTournament.getEndDate());
-        tournament.setMinElo(updatedTournament.getMinElo());
-        tournament.setMaxElo(updatedTournament.getMaxElo());
         tournament.setImageUrl(updatedTournament.getImageUrl());
         tournament.setPrizePool(updatedTournament.getPrizePool());
+        tournament.setRank(updatedTournament.getRank());
 
         return tournamentRepository.save(tournament);
     }
@@ -125,7 +130,7 @@ public class TournamentService {
     
     public Tournament addParticipant(String tournamentId, String playerId) {
         Tournament tournament = getTournamentById(tournamentId);
-
+    
         if (tournament.hasEnded()) {
             throw new RuntimeException("Tournament has already ended");
         }
@@ -135,20 +140,21 @@ public class TournamentService {
         if (tournament.isFull()) {
             throw new RuntimeException("Tournament is full");
         }
-
+    
         Player player = validateAndGetPlayer(playerId);
-
+    
         if (tournament.getParticipants().stream().anyMatch(p -> p.getId().equals(player.getId()))) {
             throw new RuntimeException("Player is already participating in the tournament");
-        }        
-
-        if (player.getEloRating() < tournament.getMinElo() || player.getEloRating() > tournament.getMaxElo()) {
-            throw new RuntimeException("Player's Elo rating is not within the allowed range for this tournament");
         }
-
+    
+        if (player.getRank() != tournament.getRank()) {
+            throw new RuntimeException("Player's Rank is not the allowed rank for this tournament");
+        }
+    
         tournament.addParticipant(player);
         return tournamentRepository.save(tournament);
     }
+    
 
     public boolean isUserRegistered(String tournamentId, String username) {
         Tournament tournament = getTournamentById(tournamentId);

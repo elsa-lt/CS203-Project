@@ -1,26 +1,29 @@
 package com.tetraleague.controller;
 
-import com.tetraleague.model.Player;
-import com.tetraleague.model.Tournament;
+import com.tetraleague.dto.PlayerRankingDTO;
 import com.tetraleague.model.User;
+import com.tetraleague.model.UserExistsResponse;
+import com.tetraleague.model.Player; 
+import com.tetraleague.model.Tournament;
+import com.tetraleague.model.Rank;
 import com.tetraleague.service.UserService;
-import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.http.HttpStatus;
-import com.tetraleague.model.UserExistsResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.Comparator; 
+
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
@@ -61,7 +64,6 @@ public class UserController {
                         .body("Error: Email is already in use!");
             }
     
-            // Proceed to update the user
             Optional<User> updatedUserOpt = userService.updateUser(userId, updatedUser);
             if (updatedUserOpt.isPresent()) {
                 return ResponseEntity.ok(updatedUserOpt.get());
@@ -127,5 +129,76 @@ public class UserController {
     public ResponseEntity<List<Tournament>> getRegisteredTournaments(@PathVariable String username) {
         List<Tournament> tournaments = userService.getTournaments(username);
         return ResponseEntity.ok(tournaments);
+    }
+
+    @GetMapping("/global-ranking")
+    public ResponseEntity<List<PlayerRankingDTO>> getGlobalRanking() {
+        
+        List<Player> players = userService.getAllUsers().stream()
+                .filter(user -> user instanceof Player)
+                .map(user -> (Player) user)
+                .collect(Collectors.toList());
+
+        players.sort(Comparator.comparing(Player::getRank)
+                .thenComparing(Player::getEloRating, Comparator.reverseOrder())
+                .thenComparing(player -> {
+                    int gamesWon = player.getGamesWon();
+                    int gamesLost = player.getGamesLost();
+                    int totalGames = gamesWon + gamesLost;
+                    return totalGames == 0 ? 0.0 : (double) gamesWon / totalGames;
+                }, Comparator.reverseOrder())
+                .thenComparing(Player::getId));
+
+        List<PlayerRankingDTO> playerRankingDTOs = IntStream.range(0, players.size())
+                .mapToObj(i -> {
+                    Player player = players.get(i);
+                    return new PlayerRankingDTO(
+                            player.getUsername(),
+                            player.getEloRating(),
+                            player.getGamesWon(),
+                            player.getGamesLost(),
+                            player.getWinRate(),
+                            player.getRank(),
+                            i + 1
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(playerRankingDTOs);
+    }
+
+    @GetMapping("/bracket-ranking/{rank}")
+    public ResponseEntity<List<PlayerRankingDTO>> getBracketRanking(@PathVariable Rank rank) {
+        
+        List<Player> players = userService.getAllUsers().stream()
+                .filter(user -> user instanceof Player)
+                .map(user -> (Player) user)
+                .filter(player -> player.getRank() == rank)
+                .collect(Collectors.toList());
+
+        players.sort(Comparator.comparing(Player::getEloRating, Comparator.reverseOrder())
+                .thenComparing(player -> {
+                    int gamesWon = player.getGamesWon();
+                    int gamesLost = player.getGamesLost();
+                    int totalGames = gamesWon + gamesLost;
+                    return totalGames == 0 ? 0.0 : (double) gamesWon / totalGames;
+                }, Comparator.reverseOrder())
+                .thenComparing(Player::getId)); 
+       
+        List<PlayerRankingDTO> playerRankingDTOs = IntStream.range(0, players.size())
+                .mapToObj(i -> {
+                    Player player = players.get(i);
+                    return new PlayerRankingDTO(
+                            player.getUsername(),
+                            player.getEloRating(),
+                            player.getGamesWon(),
+                            player.getGamesLost(),
+                            player.getWinRate(),
+                            player.getRank(),
+                            i + 1 
+                    );
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(playerRankingDTOs);
     }
 }

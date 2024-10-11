@@ -11,6 +11,7 @@ com/tetraleague/service/UserService.class
 com/tetraleague/model/UserExistsResponse.class
 com/tetraleague/model/Round.class
 com/tetraleague/payload/request/LoginRequest.class
+com/tetraleague/model/Rank.class
 com/tetraleague/security/WebSecurityConfig.class
 com/tetraleague/controller/TournamentController.class
 com/tetraleague/payload/response/JwtResponse.class
@@ -20,6 +21,7 @@ com/tetraleague/security/services/UserDetailsServiceImpl.class
 com/tetraleague/model/ERole.class
 com/tetraleague/repository/UserRepository.class
 com/tetraleague/controller/AuthController.class
+com/tetraleague/service/RankingService.class
 com/tetraleague/payload/request/SignupRequest.class
 com/tetraleague/model/Glicko2Player.class
 com/tetraleague/model/Tournament.class
@@ -30,4 +32,5 @@ com/tetraleague/model/Role.class
 com/tetraleague/controller/TournamentController$RegistrationStatusResponse.class
 com/tetraleague/model/Admin.class
 com/tetraleague/security/jwt/AuthTokenFilter.class
+com/tetraleague/dto/PlayerRankingDTO.class
 com/tetraleague/controller/UserController.class

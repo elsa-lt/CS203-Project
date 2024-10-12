@@ -7,7 +7,7 @@ import axios from 'axios';
 
 const ManageTournamentsPage = () => {
   const [tournaments, setTournaments] = useState([]);
-
+  const [loading, setLoading] = useState(true); // Add loading state
   const token = Cookies.get('token'); 
 
   useEffect(() => {
@@ -23,9 +23,12 @@ const ManageTournamentsPage = () => {
           setTournaments(response.data); 
         } catch (error) {
           console.error('Error fetching tournaments:', error);
+        } finally {
+          setLoading(false); // Set loading to false after fetching data
         }
       } else {
         console.error('Token not found in cookies');
+        setLoading(false); // Set loading to false if token is missing
       }
     };
 
@@ -56,7 +59,7 @@ const ManageTournamentsPage = () => {
         </div>
 
         <div className="flex w-full justify-center items-center">
-          <AdminTournamentSubtabs tournaments={tournaments} />
+          <AdminTournamentSubtabs tournaments={tournaments} loading={loading} />
         </div>
       </div>
     </main>

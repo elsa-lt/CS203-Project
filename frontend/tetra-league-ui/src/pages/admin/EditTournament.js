@@ -12,59 +12,71 @@ const EditTournament = () => {
     name: '',
     description: '',
     maxParticipants: 0,
-    minElo: 0,
-    maxElo: 0,
+    rank: 'UNRANKED',
     startDate: '',
     endDate: '',
-    conduct: '',
     prizePool: 0.0,
-    firstPlace: '',
-    secondPlace: '',
-    thirdPlace: '',
-    registrationStart: '',
-    registrationEnd: '',
+    imageUrl: '',
   });
   const [error, setError] = useState('');
   const [tournament, setTournament] = useState(null);
-  const [username, setUsername] = useState('');
+  const [loading, setLoading] = useState(true); // Add loading state
+  const token = Cookies.get('token'); 
+  const [isSaving, setIsSaving] = useState(false); // New state for saving
 
   useEffect(() => {
-    const token = Cookies.get('token');
-
-    const fetchUserIdAndTournamentDetails = async () => {
-      try {
-        
-        const userInfoResponse = await axios.get('http://localhost:8080/api/users/info', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const { username: fetchedUsername } = userInfoResponse.data; 
-        setUsername(fetchedUsername); 
-
-        
-        const tournamentResponse = await axios.get(`http://localhost:8080/api/tournaments/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        console.log('Fetched tournament:', tournamentResponse.data); 
-        setTournament(tournamentResponse.data);
-        setFormData(tournamentResponse.data);
-      } catch (error) {
-        console.error('Error fetching tournament details:', error);
-        setError('Failed to fetch tournament details.');
+    const fetchTournament = async () => {
+      if (token) {
+        try {
+          console.log("Fetching tournament...FETCHTOURNAMENT");
+          const response = await axios.get(`http://localhost:8080/api/tournaments/${id}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          console.log("Successfully fetched Tournament");
+          setTournament(response.data); 
+          setFormData(response.data);
+        } catch (error) {
+          console.error('Error fetching tournaments:', error);
+        } finally {
+          setLoading(false); // Set loading to false after fetching data
+        }
+      } else {
+        console.error('Token not found in cookies');
+        setLoading(false); // Set loading to false if token is missing
       }
     };
+    fetchTournament();
+  }, []);
 
-    if (token) {
-      fetchUserIdAndTournamentDetails();
+  const saveEdits = async () => {
+    if (token && !isSaving) {
+      setIsSaving(true); // Set saving to true
+      try {
+        console.log("Attempting to edit tournament details for tournament ID:", id);
+        const response = await axios.put(`http://localhost:8080/api/tournaments/${id}`, formData, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        console.log("Successfully edited tournament details for tournament ID:", id);
+        setIsEditing(false);
+        setTournament(response.data); // Update tournament state with the new data
+        setFormData(response.data); 
+      } catch (error) {
+        console.error('Error fetching tournaments:', error);
+        setError('Failed to update tournament.');
+      } finally {
+        setLoading(false); // Set loading to false after fetching data
+        setIsSaving(false);
+      }
     } else {
-      console.error("Token is missing");
+      console.error('Token not found in cookies');
     }
-  }, [id]); // id is dynamically fetched from the URL
+  }
 
   if (error) {
     return <div className="text-red-600">{error}</div>; // Display error message if any
@@ -83,21 +95,24 @@ const EditTournament = () => {
 
   const toggleEdit = async () => {
     if (isEditing) {
-      try {
-        const token = Cookies.get('token');
-        await axios.put(`http://localhost:8080/api/tournaments/${id}`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log('Tournament updated successfully:', formData);
-        setIsEditing(false);
-      } catch (error) {
-        console.error('Error updating tournament:', error);
-        setError('Failed to update tournament.');
-      }
+      await saveEdits();
+      setIsEditing(false);
     } else {
-      setIsEditing(!isEditing);
+      setIsEditing(true);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          imageUrl: reader.result,
+        }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -149,26 +164,6 @@ const EditTournament = () => {
               </div>
 
               <div className="form-group">
-                <h2>Min Elo</h2>
-                <input
-                  type="number"
-                  name="minElo"
-                  value={formData.minElo || 0}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <h2>Max Elo</h2>
-                <input
-                  type="number"
-                  name="maxElo"
-                  value={formData.maxElo || 0}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
                 <h2>Start Date</h2>
                 <input
                   type="datetime-local"
@@ -197,98 +192,66 @@ const EditTournament = () => {
                   name="prizePool"
                   value={formData.prizePool || 0.0}
                   onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <h2>1st Place Prize</h2>
-                <input
-                  type="text"
-                  name="firstPlace"
-                  value={formData.firstPlace || ''}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <h2>2nd Place Prize</h2>
-                <input
-                  type="text"
-                  name="secondPlace"
-                  value={formData.secondPlace || ''}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <h2>3rd Place Prize</h2>
-                <input
-                  type="text"
-                  name="thirdPlace"
-                  value={formData.thirdPlace || ''}
-                  onChange={handleChange}
+                  disabled={!isEditing}
                 />
               </div>
 
               <label>Player Registration Settings</label>
+
+              <div className="form-group">
+                  <h2>Minimum Rank</h2>
+                  <select
+                    name="rank"
+                    value={formData.rank || 'UNRANKED'}
+                    onChange={handleChange}
+                    required
+                    className="w-full border rounded p-2 border-customGray border-opacity-30 text-customGray"
+                    disabled={!isEditing}
+                  >
+                    <option value="UNRANKED">Unranked</option>
+                    <option value="BRONZE">Bronze</option>
+                    <option value="SILVER">Silver</option>
+                    <option value="GOLD">Gold</option>
+                    <option value="PLATINUM">Platinum</option>
+                  </select>
+              </div>
+
               <div className="form-group">
                 <h2>Maximum Number of Participants</h2>
                 <input
                   type="number"  
                   name="maxParticipants"
+                  min="2" 
                   value={formData.maxParticipants || 0}
                   onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <h2>Registration Start Date & Time</h2>
-                <input
-                  type="datetime-local"
-                  name="registrationStart"
-                  value={formData.registrationStart || ''}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div
-                className="form-group">
-                <h2>Registration End Date & Time</h2>
-                <input
-                  type="datetime-local"
-                  name="registrationEnd"
-                  value={formData.registrationEnd || ''}
-                  onChange={handleChange}
+                  disabled={!isEditing}
                 />
               </div>
 
               <label>Page Visuals</label>
               <div className="form-group">
-                <h2>Banner Image</h2>
+                <h2>Tournament Image</h2>
                 <input
                   type="file"
-                  name="bannerImage"
+                  name="tournamentImage"
                   accept="image/*"
-                  onChange={(e) => console.log(e.target.files[0])}
+                  onChange={handleImageChange}
+                  disabled={!isEditing}
                 />
-              </div>
-
-              <div className="form-group">
-                <h2>Card Image</h2>
-                <input
-                  type="file"
-                  name="cardImage"
-                  accept="image/*"
-                  onChange={(e) => console.log(e.target.files[0])}
-                />
+                {formData.imageUrl && ( 
+                  <div>
+                    <img src={formData.imageUrl} alt="Tournament Preview" className="mt-4 w-1/2 h-auto" />
+                  </div>
+                )}
               </div>
 
               <button
                 type="button"
                 className="w-full bg-black text-white font-semibold py-2 px-4 rounded-lg opacity-100"
                 onClick={toggleEdit}
+                disabled={isSaving} // Disable button if saving
               >
-                {isEditing ? 'Save Changes' : 'Edit Tournament'}
+                {isSaving ? 'Saving...' : isEditing ? 'Save Changes' : 'Edit Tournament'}
               </button>
             </form>
           </div>

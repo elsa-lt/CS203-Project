@@ -8,7 +8,7 @@ const AdminTournamentCard = ({ tournament }) => {
   const editNavigate = useNavigate();
 
 
-  const { name, startDate, endDate, minElo, imageUrl } = tournament;
+  const { name, startDate, endDate, rank, imageUrl } = tournament;
 
   const handleEdit = () => {
     editNavigate(`/edit-tournament/${tournament._id}`); 
@@ -45,7 +45,7 @@ const AdminTournamentCard = ({ tournament }) => {
                   Minimum Rank:
                 </div>
                 <div className="flex font-sans-serif text-center text-xl text-customBronze pl-2">
-                  {minElo} 
+                  {rank} 
                 </div>
               </div>
             </div>

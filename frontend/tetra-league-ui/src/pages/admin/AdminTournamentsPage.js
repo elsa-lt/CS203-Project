@@ -9,40 +9,30 @@ const AdminTournamentsPage = () => {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true); // Add loading state
   const token = Cookies.get('token'); 
-  const [username, setUsername] = useState('');
 
   useEffect(() => {
-    const token = Cookies.get('token');
-
-    const fetchTournamentsAndUsername = async () => {
+    const fetchTournaments = async () => {
+      if (token) {
         try {
-            const userInfoResponse = await axios.get('http://localhost:8080/api/users/info', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            const { username: fetchedUsername } = userInfoResponse.data;
-            setUsername(fetchedUsername);
-
-            const tournamentsResponse = await axios.get("http://localhost:8080/api/tournaments", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
-
-            setTournaments(tournamentsResponse.data);
+          const response = await axios.get('http://localhost:8080/api/tournaments', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          setTournaments(response.data); 
         } catch (error) {
           console.error('Error fetching tournaments:', error);
+        } finally {
+          setLoading(false); // Set loading to false after fetching data
         }
-
-        if (token) {
-            fetchTournamentsAndUsername();
-        } else {
-            console.error("Token is missing");
-            setLoading(false);
-        }
+      } else {
+        console.error('Token not found in cookies');
+        setLoading(false); // Set loading to false if token is missing
       }
+    };
+
+    fetchTournaments();
   }, []);
 
   return (

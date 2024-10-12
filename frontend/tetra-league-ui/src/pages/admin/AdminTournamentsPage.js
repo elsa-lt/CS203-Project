@@ -7,6 +7,8 @@ import axios from 'axios';
 
 const AdminTournamentsPage = () => {
   const [tournaments, setTournaments] = useState([]);
+  const [loading, setLoading] = useState(true); // Add loading state
+  const token = Cookies.get('token'); 
   const [username, setUsername] = useState('');
 
   useEffect(() => {
@@ -31,15 +33,16 @@ const AdminTournamentsPage = () => {
 
             setTournaments(tournamentsResponse.data);
         } catch (error) {
-            console.error("Error fetching tournaments or username:", error);
+          console.error('Error fetching tournaments:', error);
         }
-    };
 
-    if (token) {
-        fetchTournamentsAndUsername();
-    } else {
-        console.error("Token is missing");
-    }
+        if (token) {
+            fetchTournamentsAndUsername();
+        } else {
+            console.error("Token is missing");
+            setLoading(false);
+        }
+      }
   }, []);
 
   return (
@@ -66,7 +69,7 @@ const AdminTournamentsPage = () => {
         </div>
 
         <div className="flex w-full justify-center items-center">
-          <AdminTournamentSubtabs tournaments={tournaments} />
+          <AdminTournamentSubtabs tournaments={tournaments} loading={loading} />
         </div>
       </div>
     </main>

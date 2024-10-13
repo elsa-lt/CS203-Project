@@ -2,12 +2,17 @@ import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 
 const LeaderBoardSubtabs = ({ username }) => {
-  const [activeTab, setActiveTab] = useState('My-Events');
+  const [activeTab, setActiveTab] = useState('Global-Ranking'); // Default 
+  const [selectedBracket, setSelectedBracket] = useState('GOLD'); // Default
   const [rankings, setRankings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+  };
+
+  const handleBracketChange = (event) => {
+    setSelectedBracket(event.target.value); 
   };
 
   useEffect(() => {
@@ -16,27 +21,17 @@ const LeaderBoardSubtabs = ({ username }) => {
       try {
         const token = Cookies.get('token'); 
         let response;
-        console.log('Fetching leaderboard for user:', username);
 
         const headers = {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         };
 
         if (activeTab === 'Global-Ranking') {
-            if (username) {
-                response = await fetch(`http://localhost:8080/api/users/${username}/tournaments`, { headers });
-            } else {
-                console.error('Username is required for fetching tournaments.');
-                return; 
-            }
-        } else if (activeTab === 'Tournament-Ranking') {
-            response = await fetch('http://localhost:8080/api/tournaments', { headers });
+          response = await fetch(`http://localhost:8080/api/users/global-ranking`, { headers });
+        } else if (activeTab === 'Bracket-Ranking') {
+          response = await fetch(`http://localhost:8080/api/users/bracket-ranking/${selectedBracket}`, { headers });
         }
-        else{
-
-        }
-
 
         if (!response.ok) {
           const errorText = await response.text(); 
@@ -47,22 +42,21 @@ const LeaderBoardSubtabs = ({ username }) => {
         const data = await response.json();
         setRankings(data);
       } catch (error) {
-        console.error('Error fetching tournaments:', error.message);
+        console.error('Error fetching leaderboard data:', error.message);
       } finally {
-        setLoading(false); // End loading
+        setLoading(false); 
       }
     };
 
     fetchLeaderboard();
-  }, [activeTab, username]); 
+  }, [activeTab, selectedBracket, username]); 
 
   return (
     <div className="w-full mx-auto">
       {loading ? (
-        <div>Loading...</div> // Show loading message
+        <div>Loading...</div>
       ) : (
         <>
-          {/* Tab navigation */}
           <div className="flex justify-around">
             <button
               className={`py-2 px-4 ${activeTab === 'Global-Ranking' ? 'border-b-2 border-blue-500' : ''} cursor-pointer hover:text-yellow-500`}
@@ -71,30 +65,55 @@ const LeaderBoardSubtabs = ({ username }) => {
               Global Ranking
             </button>
             <button
-              className={`py-2 px-4 ${activeTab === 'Tournament-Ranking' ? 'border-b-2 border-blue-500' : ''} cursor-pointer hover:text-yellow-500`}
-              onClick={() => handleTabClick('Tournament-Ranking')}
-            >
-              Tournament Ranking
-            </button>
-            <button
               className={`py-2 px-4 ${activeTab === 'Bracket-Ranking' ? 'border-b-2 border-blue-500' : ''} cursor-pointer hover:text-yellow-500`}
               onClick={() => handleTabClick('Bracket-Ranking')}
             >
-             Bracket Ranking
+              Bracket Ranking
             </button>
           </div>
 
-          {/* Tab content */}
-          <div className="mt-10">
-            {(activeTab === 'Tournament-Ranking' || activeTab === 'Bracket-Ranking') && (
-              <div>
-                {/* <div className="flex flex-wrap w-full gap-6">
-                  {tournaments.map((tournament) => (
-                    <TournamentCardsSmall key={tournament.id} tournament={tournament} />
-                  ))}
-                </div> */}
-              </div>
-            )}
+          {/* Dropdown*/}
+          {activeTab === 'Bracket-Ranking' && (
+            <div className="mt-4">
+              <label htmlFor="bracket-select" className="mr-4">Choose Bracket:</label>
+              <select
+                id="bracket-select"
+                value={selectedBracket}
+                onChange={handleBracketChange}
+                className="border p-2 rounded"
+              >
+                <option value="GOLD">Gold</option>
+                <option value="SILVER">Silver</option>
+                <option value="BRONZE">Bronze</option>
+              </select>
+            </div>
+          )}
+
+          <div className="mt-10 leaderboard-table">
+            <table className="w-full table-auto">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2">Rank</th>
+                  <th className="px-4 py-2">Username</th>
+                  <th className="px-4 py-2">Elo Rating</th>
+                  <th className="px-4 py-2">Games Won</th>
+                  <th className="px-4 py-2">Games Lost</th>
+                  <th className="px-4 py-2">Win Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rankings.map((player, index) => (
+                  <tr key={index} className="text-center">
+                    <td className="px-4 py-2">{index + 1}</td>
+                    <td className="px-4 py-2">{player.username}</td>
+                    <td className="px-4 py-2">{player.eloRating}</td>
+                    <td className="px-4 py-2">{player.gamesWon}</td>
+                    <td className="px-4 py-2">{player.gamesLost}</td>
+                    <td className="px-4 py-2">{(player.winRate * 100).toFixed(2)}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </>
       )}

@@ -1,11 +1,14 @@
 package com.tetraleague;
 
-import com.mongodb.internal.connection.Stream;
 import com.tetraleague.controller.AuthController;
+import com.tetraleague.controller.UserController;
+import com.tetraleague.dto.PlayerRankingDTO;
 import com.tetraleague.model.ERole;
 import com.tetraleague.model.Match;
 import com.tetraleague.model.Player;
+import com.tetraleague.model.Rank;
 import com.tetraleague.model.Role;
+import com.tetraleague.model.Round;
 import com.tetraleague.model.Tournament;
 import com.tetraleague.model.User;
 import com.tetraleague.payload.request.SignupRequest;
@@ -13,14 +16,15 @@ import com.tetraleague.payload.response.MessageResponse;
 import com.tetraleague.repository.RoleRepository;
 import com.tetraleague.repository.TournamentRepository;
 import com.tetraleague.repository.UserRepository;
-import com.tetraleague.service.MatchmakingService;
+import com.tetraleague.service.MatchService;
+import com.tetraleague.service.RankingService;
+import com.tetraleague.service.RoundService;
 import com.tetraleague.service.TournamentService;
+import com.tetraleague.service.UserService;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -28,18 +32,18 @@ import java.util.Set;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 class MatchmakingServiceTest {
+    private static final Rank GOLD = null;
+
     @Mock
     private Tournament tournament;
 
@@ -47,10 +51,13 @@ class MatchmakingServiceTest {
     private UserRepository userRepository;
 
     @InjectMocks
-    private MatchmakingService matchmakingService; // Inject mocked dependencies
+    private MatchService matchmakingService;
 
     @Mock
     private TournamentRepository tournamentRepository;
+
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private AuthController authController;
@@ -64,13 +71,22 @@ class MatchmakingServiceTest {
     @InjectMocks
     private TournamentService tournamentService;
 
+    @Mock
+    private RankingService rankingService;
+
+    @InjectMocks
+    private RoundService roundService;
+
+    @InjectMocks
+    private UserController userController;
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void createMatchups_EvenNumber_Success() throws Exception {
+    void createFirstRound_EvenNumber_Success() throws Exception {
         // Arrange
         Tournament tournament = new Tournament();
         List<Player> participants = new ArrayList<Player>(tournament.getParticipants());
@@ -83,121 +99,89 @@ class MatchmakingServiceTest {
         tournament.setParticipants(participants);
 
         // Act
-        java.util.List<Match> matches = matchmakingService.createMatchups(tournament);
+        Round round1 = roundService.createFirstRound(participants);
 
         // Assert
-        assertEquals(4, matches.size());
+        assertEquals(4, round1.getMatches().size());
         for (int i = 0; i < 4; i++) {
-            Match match = matches.get(i);
-            assertEquals(1, match.getRoundNumber());
-            assertEquals(participants.get(7 - i).getEloRating(), match.getPlayer1().getEloRating());
-            assertEquals(participants.get(3 - i).getEloRating(), match.getPlayer2().getEloRating());
+            assertEquals(1, round1.getRoundNumber());
+            assertEquals(participants.get(i).getEloRating(),
+                    round1.getMatches().get(i).getPlayer1().getEloRating());
+            assertEquals(participants.get(4 + i).getEloRating(),
+                    round1.getMatches().get(i).getPlayer2().getEloRating());
         }
     }
 
-    // @Test
-    // void createMatchups_OddNumber_Success() throws Exception{
-    // // Arrange
-    // Tournament tournament = new Tournament();
-    // List<Player> participants = new
-    // ArrayList<Player>(tournament.getParticipants());
-    // for (int i = 0; i < 7; i++) {
-    // Player player = new Player("username"+i, "name"+i, "email"+i,
-    // "password"+i,0);
-    // player.setEloRating(1000 + i * 100);
-    // participants.add(player);
-    // }
-    // tournament.setParticipants(participants);
-
-    // // Act
-    // java.util.List<Match> matches =
-    // matchmakingService.createMatchups(tournament);
-
-    // // Assert
-    // assertEquals(3, matches.size());
-    // for (int i = 0; i < 3; i++) {
-    // Match match = matches.get(i);
-    // assertEquals(1, match.getRoundNumber());
-    // assertEquals(participants.get(i), match.getPlayer1());
-    // assertEquals(participants.get(i + 3), match.getPlayer2());
-    // }
-    // }
-
     @Test
-    void createNextRoundMatches_AddWinner_Complete() throws Exception {
+    void updateTournament_NonExistentTournament_ThrowsException() {
         // Arrange
-        List<Player> winners = new ArrayList<Player>(tournament.getParticipants());
-        Player singleWinner = new Player("username", "name", "email", "password", 3);
-        singleWinner.setEloRating(1500);
-        winners.add(singleWinner);
-        int roundNumber = 2;
-
-        // Act
-        List<Match> nextRoundMatches = matchmakingService.createNextRoundMatches(winners, roundNumber);
-
-        // Assert
-        assertTrue(nextRoundMatches.isEmpty());
-    }
-
-    @Test
-    void completeMatch_TournamentNotFound_ThrowException() throws Exception {
-        // Arrange
-        String tournamentId = "nonexistent-id";
-        String matchId = "match-id";
-        Player winner = new Player("username", "name", "email", "password", 3);
-        when(tournamentRepository.findById(tournamentId)).thenReturn(Optional.empty());
+        String nonExistentId = "nonexistent123";
+        Tournament updatedTournament = new Tournament();
+        updatedTournament.setName("Updated Tournament");
+        when(tournamentRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(RuntimeException.class, () -> {
-            matchmakingService.completeMatch(tournamentId, matchId, winner);
-        });
-        verify(tournamentRepository).findById(tournamentId);
+            tournamentService.updateTournament(nonExistentId, updatedTournament);
+        }, "Tournament not found");
+
+        verify(tournamentRepository).findById(nonExistentId);
         verifyNoMoreInteractions(tournamentRepository);
     }
 
     @Test
-    void completeMatch_MatchNotFound_ThrowsException() throws Exception {
+    void updateTournament_AlreadyStartedNotEnded_UpdatesAllowedFields() {
         // Arrange
         String tournamentId = "tournament123";
-        String matchId = "nonexistent_match";
-        Player winner = new Player("username", "name", "email", "password", 3);
-        Tournament mockTournament = mock(Tournament.class);
-        when(tournamentRepository.findById(tournamentId)).thenReturn(Optional.of(mockTournament));
-        when(mockTournament.getMatches()).thenReturn(new ArrayList<>());
+        Tournament existingTournament = new Tournament();
+        existingTournament.setId(tournamentId);
+        existingTournament.setStarted(true);
+        existingTournament.setEnded(false);
+        existingTournament.setName("Original Tournament");
+        existingTournament.setDescription("Original Description");
+        existingTournament.setMaxParticipants(8);
+        existingTournament.setStartDate(LocalDateTime.now().minusDays(1));
+        existingTournament.setEndDate(LocalDateTime.now().plusDays(6));
+        existingTournament.setImageUrl("original-image-url");
+        existingTournament.setPrizePool(500.0);
+        existingTournament.setRank(Rank.GOLD);
+        List<Player> participants = new ArrayList<>(existingTournament.getParticipants());
 
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
-            matchmakingService.completeMatch(tournamentId, matchId, winner);
-        }, "Match not found");
+        for (int i = 0; i < 8; i++) {
+            Player player = new Player("username" + i, "name" + i, "email" + i, "password" + i, 0);
+            player.setEloRating(1000 + i * 100);
+            participants.add(player);
+        }
+        existingTournament.setParticipants(participants);
 
-        verify(tournamentRepository).findById(tournamentId);
-        verify(mockTournament).getMatches();
-        verify(tournamentRepository, never()).save(any(Tournament.class));
-    }
+        Tournament updatedTournament = new Tournament();
+        updatedTournament.setName("Updated Tournament");
+        updatedTournament.setDescription("Updated Description");
+        updatedTournament.setMaxParticipants(8); // Set maxParticipants
+        updatedTournament.setStartDate(existingTournament.getStartDate());
+        updatedTournament.setEndDate(LocalDateTime.now().plusDays(7));
+        updatedTournament.setImageUrl("updated-image-url");
+        updatedTournament.setPrizePool(1000.0);
+        updatedTournament.setRank(Rank.GOLD);
 
-    @Test
-    void completeMatch_MatchAndTournamentFound_UpdateTournament() throws Exception {
-        // Arrange
-        String tournamentId = "tournament123";
-        String matchId = "match456";
-        Player winner = new Player("username", "name", "email", "password", 3);
-        winner.setId("winner789");
-
-        Tournament mockTournament = mock(Tournament.class);
-        Match mockMatch = mock(Match.class);
-        ArrayList<Match> matches = new ArrayList<>();
-        matches.add(mockMatch);
-
-        when(tournamentRepository.findById(tournamentId)).thenReturn(Optional.of(mockTournament));
-        when(mockTournament.getMatches()).thenReturn(matches);
-        when(mockMatch.getId()).thenReturn(matchId);
+        when(tournamentRepository.findById(tournamentId)).thenReturn(Optional.of(existingTournament));
+        when(tournamentRepository.save(any(Tournament.class))).thenReturn(existingTournament);
 
         // Act
-        matchmakingService.completeMatch(tournamentId, matchId, winner);
+        Tournament result = tournamentService.updateTournament(tournamentId, updatedTournament);
 
         // Assert
-        verify(mockMatch).completeMatch(winner);
-        verify(tournamentRepository).save(mockTournament);
+        assertEquals("Updated Tournament", result.getName());
+        assertEquals("Updated Description", result.getDescription());
+        assertEquals(8, result.getMaxParticipants());
+        assertEquals(existingTournament.getStartDate(), result.getStartDate());
+        assertEquals(updatedTournament.getEndDate(), result.getEndDate());
+        assertEquals("updated-image-url", result.getImageUrl());
+        assertEquals(1000.0, result.getPrizePool());
+        assertEquals(Rank.GOLD, result.getRank());
+
+        verify(tournamentRepository).findById(tournamentId);
+        verify(tournamentRepository).save(existingTournament);
     }
 
     @Test
@@ -208,8 +192,7 @@ class MatchmakingServiceTest {
         validTournament.setMaxParticipants(8);
         validTournament.setStartDate(LocalDateTime.now());
         validTournament.setEndDate(LocalDateTime.now().plusDays(7));
-        validTournament.setMinElo(1000);
-        validTournament.setMaxElo(2000);
+        validTournament.setRank(Rank.GOLD);
 
         when(tournamentRepository.save(any(Tournament.class))).thenReturn(validTournament);
 
@@ -262,63 +245,13 @@ class MatchmakingServiceTest {
         invalidTournament.setMaxParticipants(8);
         invalidTournament.setStartDate(LocalDateTime.now().plusDays(7));
         invalidTournament.setEndDate(LocalDateTime.now());
-        invalidTournament.setMinElo(1000);
-        invalidTournament.setMaxElo(2000);
+        invalidTournament.setRank(GOLD);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
             tournamentService.createTournament(invalidTournament);
         }, "Start date cannot be after end date.");
 
-        verify(tournamentRepository, never()).save(any(Tournament.class));
-    }
-
-    @Test
-    void createTournament_MinEloGreaterThanMaxElo_ThrowsException() {
-        // Arrange
-        Tournament invalidTournament = new Tournament();
-        invalidTournament.setName("Invalid Tournament");
-        invalidTournament.setMaxParticipants(8);
-        invalidTournament.setStartDate(LocalDateTime.now());
-        invalidTournament.setEndDate(LocalDateTime.now().plusDays(7));
-        invalidTournament.setMinElo(2000);
-        invalidTournament.setMaxElo(1000);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
-            tournamentService.createTournament(invalidTournament);
-        }, "Minimum Elo cannot be greater than maximum Elo.");
-
-        verify(tournamentRepository, never()).save(any(Tournament.class));
-    }
-
-    @Test
-    void createTournament_OverlappingTournament_ThrowsException() {
-        // Arrange
-        Tournament existingTournament = new Tournament();
-        existingTournament.setName("Overlapping Tournament");
-        existingTournament.setStartDate(LocalDateTime.now());
-        existingTournament.setEndDate(LocalDateTime.now().plusDays(7));
-
-        Tournament newTournament = new Tournament();
-        newTournament.setName("Overlapping Tournament");
-        newTournament.setStartDate(LocalDateTime.now().plusDays(3));
-        newTournament.setEndDate(LocalDateTime.now().plusDays(10));
-        newTournament.setMaxParticipants(8);
-        newTournament.setMinElo(1000);
-        newTournament.setMaxElo(2000);
-
-        List<Tournament> existingTournaments = new ArrayList<>();
-        existingTournaments.add(existingTournament);
-
-        when(tournamentRepository.findAll()).thenReturn(existingTournaments);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
-            tournamentService.createTournament(newTournament);
-        }, "Another tournament with the same name overlaps in time frame");
-
-        verify(tournamentRepository).findAll();
         verify(tournamentRepository, never()).save(any(Tournament.class));
     }
 
@@ -435,8 +368,7 @@ class MatchmakingServiceTest {
         when(mockTournament.isFull()).thenReturn(false);
         when(userRepository.findById(playerId)).thenReturn(Optional.of(mockPlayer));
         when(mockPlayer.getEloRating()).thenReturn(900);
-        when(mockTournament.getMinElo()).thenReturn(1000);
-        when(mockTournament.getMaxElo()).thenReturn(2000);
+        mockTournament.setRank(GOLD);
 
         // Act & Assert
         assertThrows(RuntimeException.class, () -> tournamentService.addParticipant(tournamentId, playerId),
@@ -449,7 +381,7 @@ class MatchmakingServiceTest {
     }
 
     @Test
-    void addParticipant_PlayerEloAboveMax_ThrowsException() {
+    void addParticipant_PlayerRankAboveMax_ThrowsException() {
         // Arrange
         String tournamentId = "tournament123";
         String playerId = "player456";
@@ -460,8 +392,8 @@ class MatchmakingServiceTest {
         when(mockTournament.hasEnded()).thenReturn(false);
         when(mockTournament.hasStarted()).thenReturn(false);
         when(mockTournament.isFull()).thenReturn(false);
-        when(mockTournament.getMaxElo()).thenReturn(2000);
-        when(mockPlayer.getEloRating()).thenReturn(2100);
+        when(mockTournament.getRank()).thenReturn(GOLD);
+        when(mockPlayer.getEloRating()).thenReturn(2000);
         when(userRepository.findById(playerId)).thenReturn(Optional.of(mockPlayer));
 
         // Act & Assert
@@ -491,8 +423,7 @@ class MatchmakingServiceTest {
         when(mockTournament.getParticipants()).thenReturn(new ArrayList<>());
         when(mockPlayer.getEloRating()).thenReturn(1500);
         when(mockPlayer.getRoles()).thenReturn(Set.of(new Role(ERole.ROLE_PLAYER)));
-        when(mockTournament.getMinElo()).thenReturn(1000);
-        when(mockTournament.getMaxElo()).thenReturn(2000);
+        when(mockTournament.getRank()).thenReturn(GOLD);
         when(tournamentRepository.save(mockTournament)).thenReturn(mockTournament);
 
         // Act
@@ -533,7 +464,7 @@ class MatchmakingServiceTest {
         signUpRequest.setName("New User");
         Set<String> roles = new HashSet<>();
         roles.add("player");
-        signUpRequest.setRole(roles);
+        signUpRequest.setRoles(roles);
         MockitoAnnotations.openMocks(this);
         when(userRepository.existsByUsername("existingUsername")).thenReturn(true);
 
@@ -560,7 +491,7 @@ class MatchmakingServiceTest {
         signUpRequest.setName("New User");
         Set<String> roles = new HashSet<>();
         roles.add("player");
-        signUpRequest.setRole(roles);
+        signUpRequest.setRoles(roles);
 
         when(userRepository.existsByEmail(signUpRequest.getEmail())).thenReturn(true);
 
@@ -585,7 +516,7 @@ class MatchmakingServiceTest {
         signUpRequest.setPassword("password123");
         Set<String> roles = new HashSet<>();
         roles.add("player");
-        signUpRequest.setRole(roles);
+        signUpRequest.setRoles(roles);
 
         when(userRepository.existsByUsername("newuser")).thenReturn(false);
         when(userRepository.existsByEmail("newuser@example.com")).thenReturn(false);
@@ -607,36 +538,61 @@ class MatchmakingServiceTest {
     }
 
     @Test
-    void completeMatch_FirstTime_SetsWinnerAndMarksCompleted() {
+    void completeMatch_UpdatesEloRatingsForBothPlayers() {
         // Arrange
-        Match match = new Match();
-        Player winner = new Player("username", "name", "email", "password", 1000);
+        Match mockMatch = mock(Match.class);
+        Player winner = new Player("winner", "Winner", "winner@example.com", "password", 1000);
+        Player loser = new Player("loser", "Loser", "loser@example.com", "password", 1000);
+        when(mockMatch.isCompleted()).thenReturn(false);
+        when(mockMatch.getPlayer1()).thenReturn(winner);
+        when(mockMatch.getPlayer2()).thenReturn(loser);
 
         // Act
-        match.completeMatch(winner);
+        matchmakingService.completeMatch(mockMatch, winner);
 
         // Assert
-        assertEquals(winner, match.getWinner());
-        assertTrue(match.isCompleted());
+        verify(mockMatch).completeMatch(winner);
+        verify(rankingService).updatePlayerEloRating(winner.getUsername(), loser.getUsername(), 1.0);
+        verify(rankingService).updatePlayerStats(winner.getUsername(), 1.0);
+        verify(rankingService).updatePlayerStats(loser.getUsername(), 0.0);
     }
 
     @Test
-    void completeMatch_WinnerIsOneOfThePlayers_SuccessfullyCompletes() {
+    void getBracketRanking_ShouldAssignCorrectRankingPositions() {
         // Arrange
-        Match match = new Match();
-        Player player1 = new Player("user1", "Player 1", "player1@example.com", "password1", 1000);
-        Player player2 = new Player("user2", "Player 2", "player2@example.com", "password2", 1100);
-        match.setPlayer1(player1);
-        match.setPlayer2(player2);
+        Rank testRank = Rank.GOLD;
+        List<User> users = new ArrayList<>();
+        Player player1 = new Player("user1", "Player 1", "email1@test.com", "password", 1500);
+        player1.setRank(testRank);
+        player1.setGamesWon(10);
+        player1.setGamesLost(5);
+        Player player2 = new Player("user2", "Player 2", "email2@test.com", "password", 1600);
+        player2.setRank(testRank);
+        player2.setGamesWon(15);
+        player2.setGamesLost(3);
+        Player player3 = new Player("user3", "Player 3", "email3@test.com", "password", 1400);
+        player3.setRank(testRank);
+        player3.setGamesWon(8);
+        player3.setGamesLost(7);
+        users.add(player1);
+        users.add(player2);
+        users.add(player3);
+
+        when(userService.getAllUsers()).thenReturn(users);
 
         // Act
-        match.completeMatch(player1);
+        ResponseEntity<List<PlayerRankingDTO>> response = userController.getBracketRanking(testRank);
 
         // Assert
-        assertTrue(match.isCompleted());
-        assertEquals(player1, match.getWinner());
-        assertTrue(match.getWinner() == match.getPlayer1() || match.getWinner() == match.getPlayer2());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        List<PlayerRankingDTO> rankings = response.getBody();
+        assertNotNull(rankings);
+        assertEquals(3, rankings.size());
+        assertEquals(1, rankings.get(0).getGlobalRank());
+        assertEquals(2, rankings.get(1).getGlobalRank());
+        assertEquals(3, rankings.get(2).getGlobalRank());
+        assertEquals("user2", rankings.get(0).getUsername());
+        assertEquals("user1", rankings.get(1).getUsername());
+        assertEquals("user3", rankings.get(2).getUsername());
     }
-
-    
 }

@@ -3,29 +3,29 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 function RegistrationButtons({ tournamentId, username }) {
-    const [isRegistered, setIsRegistered] = useState(false); 
-    
+    const [isRegistered, setIsRegistered] = useState(null); 
+
     useEffect(() => {
         const checkRegistrationStatus = async () => {
             const token = Cookies.get('token');
-                try {
-                    const response = await axios.get(`http://localhost:8080/api/tournaments/${tournamentId}/participants/${username}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                    });
-                    
+            try {
+                const response = await axios.get(`http://localhost:8080/api/tournaments/${tournamentId}/participants/${username}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
                     console.log("Registration status:", response.data); // Debugging 
     
                     setIsRegistered(response.data === true);
-                } catch (error) {
-                    console.error('Error checking registration status:', error);
-                }
-            };
-    
-            checkRegistrationStatus(); 
-        }, [tournamentId, username]);
+            } catch (error) {
+                console.error('Error checking registration status:', error);
+            }
+        };
+
+        checkRegistrationStatus();
+    }, [tournamentId, username]); 
 
     const handleRegister = async () => {
         if (!isRegistered) {
@@ -48,7 +48,6 @@ function RegistrationButtons({ tournamentId, username }) {
             }
         } else {
             alert("You are already registered for this tournament.");
-            setIsRegistered(true);
         }
     };
 
@@ -63,7 +62,7 @@ function RegistrationButtons({ tournamentId, username }) {
                         'Content-Type': 'application/json',
                     },
                 });
-                alert(response.data); 
+                alert("Successfully withdrawn from the tournament.");
                 setIsRegistered(false); 
             } catch (error) {
                 console.error('Error withdrawing from tournament:', error);
@@ -72,29 +71,33 @@ function RegistrationButtons({ tournamentId, username }) {
         }
     };
 
+    if (isRegistered === null) {
+        return <div>Loading...</div>; 
+    }
+
     return (
         <div className="flex flex-col w-full gap-2 items-center justify-center">
-        {isRegistered ? (
-            <div 
-                className="flex justify-center items-center font-medium helvetica-neue text-customGray border border-customGray h-11 w-full rounded-full">
-                Registered
-            </div>
-        ) : (
-            <div 
-                className="flex justify-center items-center font-medium helvetica-neue bg-customGray text-white h-11 w-full rounded-full cursor-pointer"
-                onClick={handleRegister}>
-                Register
-            </div>
-        )}
-        {isRegistered && (
-            <div
-                className="flex justify-center items-center font-medium helvetica-neue text-white bg-customRed h-11 w-full rounded-full cursor-pointer mt-2"
-                onClick={handleWithdraw}>
-                Withdraw
-            </div>
-        )}
-    </div>
-);
+            {isRegistered ? (
+                <div 
+                    className="flex justify-center items-center font-medium helvetica-neue text-customGray border border-customGray h-11 w-full rounded-full">
+                    Registered
+                </div>
+            ) : (
+                <div 
+                    className="flex justify-center items-center font-medium helvetica-neue bg-customGray text-white h-11 w-full rounded-full cursor-pointer"
+                    onClick={handleRegister}>
+                    Register
+                </div>
+            )}
+            {isRegistered && (
+                <div
+                    className="flex justify-center items-center font-medium helvetica-neue text-white bg-customRed h-11 w-full rounded-full cursor-pointer mt-2"
+                    onClick={handleWithdraw}>
+                    Withdraw
+                </div>
+            )}
+        </div>
+    );
 }
 
 export default RegistrationButtons;

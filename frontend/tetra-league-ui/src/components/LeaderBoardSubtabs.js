@@ -12,14 +12,14 @@ const LeaderBoardSubtabs = ({ username }) => {
   };
 
   const handleBracketChange = (event) => {
-    setSelectedBracket(event.target.value); 
+    setSelectedBracket(event.target.value);
   };
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
-      setLoading(true); 
+      setLoading(true);
       try {
-        const token = Cookies.get('token'); 
+        const token = Cookies.get('token');
         let response;
 
         const headers = {
@@ -34,8 +34,8 @@ const LeaderBoardSubtabs = ({ username }) => {
         }
 
         if (!response.ok) {
-          const errorText = await response.text(); 
-          console.error('Response error:', response.status, errorText); 
+          const errorText = await response.text();
+          console.error('Response error:', response.status, errorText);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
@@ -44,12 +44,12 @@ const LeaderBoardSubtabs = ({ username }) => {
       } catch (error) {
         console.error('Error fetching leaderboard data:', error.message);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
     fetchLeaderboard();
-  }, [activeTab, selectedBracket, username]); 
+  }, [activeTab, selectedBracket, username]);
 
   return (
     <div className="w-full mx-auto">
@@ -89,9 +89,9 @@ const LeaderBoardSubtabs = ({ username }) => {
             </div>
           )}
 
-          <div className="mt-10 leaderboard-table">
-            <table className="w-full table-auto">
-              <thead>
+          <div className="w-full max-w-6xl bg-white opacity-70 rounded-lg shadow-lg p-6 h-[550px] overflow-y-auto ml-20">
+            <table className="table-auto w-full text-left">
+              <thead className="sticky top-0 bg-white">
                 <tr>
                   <th className="px-4 py-2">Rank</th>
                   <th className="px-4 py-2">Username</th>

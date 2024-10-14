@@ -73,10 +73,9 @@ public class Tournament {
     }
 
     public void addRound(Round round) {
-        if (round != null) {
-            rounds.add(round);
-        }
+        rounds.add(round);
     }
+    
     
     public Round getCurrentRound() {
         return rounds.isEmpty() ? null : rounds.get(rounds.size() - 1);
@@ -85,6 +84,16 @@ public class Tournament {
     public void setWinner(String winnerId) {
         this.winnerId = winnerId;
         this.ended = true;
+    }
+    
+    public List<String> getWinnersFromRounds() {
+        List<String> winners = new ArrayList<>();
+        for (Round round : rounds) {
+            if (round.isComplete()) {
+                winners.addAll(round.getWinnersId());
+            }
+        }
+        return winners;
     }
 
     public int getCurrentRoundNumber() {

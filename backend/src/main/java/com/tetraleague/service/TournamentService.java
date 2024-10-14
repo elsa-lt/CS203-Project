@@ -7,6 +7,7 @@ import com.tetraleague.model.ERole;
 import com.tetraleague.model.Round;
 import com.tetraleague.model.Match;
 import com.tetraleague.repository.TournamentRepository;
+import com.tetraleague.repository.MatchRepository;
 import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,8 +33,16 @@ public class TournamentService {
     @Autowired
     private RoundService roundService;
 
+    @Autowired
+    private MatchRepository matchRepository;
+
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll();
+    }
+
+    public Match getMatchById(String matchId) {
+        return matchRepository.findById(matchId)
+            .orElseThrow(() -> new RuntimeException("Match not found"));
     }
 
     public Tournament getTournamentById(String id) {
@@ -195,29 +204,41 @@ public class TournamentService {
         tournamentRepository.save(tournament);
     }
 
+    public void completeMatch(String matchId, String winnerId) {
+        Match match = getMatchById(matchId);
+        match.setCompleted(true);
+        match.setWinnerId(winnerId);
+        matchRepository.save(match);
+    }
+    
+
     public void advanceTournament(String tournamentId) {
         Tournament tournament = getTournamentById(tournamentId);
         List<Round> rounds = tournament.getRounds();
         Round currentRound = rounds.get(rounds.size() - 1);
-
+    
         if (roundService.isRoundComplete(currentRound)) {
             List<String> winnersId = currentRound.getWinnersId();
-
+    
             if (winnersId.size() == 1) {
                 tournament.setWinner(winnersId.get(0));
                 tournament.setEnded(true);
-                tournamentRepository.save(tournament);
-                return;
+            } else {
+                Round nextRound = roundService.createNextRound(winnersId, currentRound.getRoundNumber() + 1);
+                tournament.addRound(nextRound);
             }
-
-            Round nextRound = roundService.createNextRound(winnersId, currentRound.getRoundNumber() + 1);
-            tournament.addRound(nextRound);
+    
             tournamentRepository.save(tournament);
+        } else {
+            // Handle the case when the round is incomplete
+            throw new RuntimeException("Current round is not complete, cannot advance the tournament.");
         }
     }
 
-    public List<Match> getCurrentMatches(Tournament tournament) {
-        Round currentRound = tournament.getCurrentRound();
-        return currentRound.getMatches();
+    public List<Match> getCurrentMatches(String tournamentId) {
+        Tournament tournament = getTournamentById(tournamentId);
+        Round currentRound = tournament.getCurrentRound(); 
+        return currentRound.getMatches(); 
     }
+    
 }

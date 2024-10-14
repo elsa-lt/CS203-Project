@@ -26,8 +26,9 @@ public class Round {
 
     public List<String> getWinnersId() {
         if (!isComplete()) {
-            throw new IllegalStateException("Cannot get winners from an incomplete round.");
+            return new ArrayList<>(); 
         }
         return matches.stream().map(Match::getWinnerId).collect(Collectors.toList());
     }
+    
 }

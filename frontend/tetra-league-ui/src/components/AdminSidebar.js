@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LuHome, LuPlusCircle, LuCalendar} from "react-icons/lu";
+import { MdLeaderboard } from 'react-icons/md';
 
 const AdminSidebar = () => {
   const location = useLocation();
@@ -34,6 +35,13 @@ const AdminSidebar = () => {
             >
               <LuCalendar className="text-3xl" />
               <span>My Tournaments</span>
+            </Link>
+            <Link
+              to="/tournament-leaderboard"
+              className={`flex items-center space-x-4 pt-6 pb-4 pl-5 font-light font-hevetica-neue text-customGray ${location.pathname === '/tournament-leaderboard' ? 'text-white font-medium bg-blue-700 bg-opacity-80' : 'hover:text-blue-700'}`}
+            >
+              <MdLeaderboard className="text-3xl" />
+              <span>Leaderboard</span>
             </Link>
           </li>
         </ul>

@@ -7,6 +7,7 @@ import com.tetraleague.model.ERole;
 import com.tetraleague.model.Round;
 import com.tetraleague.model.Match;
 import com.tetraleague.repository.TournamentRepository;
+import com.tetraleague.repository.MatchRepository;
 import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,8 +33,16 @@ public class TournamentService {
     @Autowired
     private RoundService roundService;
 
+    @Autowired
+    private MatchRepository matchRepository;
+
     public List<Tournament> getAllTournaments() {
         return tournamentRepository.findAll();
+    }
+
+    public Match getMatchById(String matchId) {
+        return matchRepository.findById(matchId)
+            .orElseThrow(() -> new RuntimeException("Match not found"));
     }
 
     public Tournament getTournamentById(String id) {
@@ -41,10 +50,10 @@ public class TournamentService {
         return tournamentRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Tournament not found"));
     }
-    
 
     public Tournament createTournament(Tournament tournament) {
         validateTournament(tournament);
+        checkOverlap(tournament);
         return tournamentRepository.save(tournament);
     }
 
@@ -58,11 +67,12 @@ public class TournamentService {
         if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
             throw new IllegalArgumentException("Start date cannot be after end date.");
         }
-    
         if (tournament.getRank() == null) {
             throw new IllegalArgumentException("Tournament rank is required.");
         }
-    
+    }
+
+    public void checkOverlap(Tournament tournament) {
         List<Tournament> tournaments = tournamentRepository.findAll();
         for (Tournament existingTournament : tournaments) {
             if (existingTournament.getName().equals(tournament.getName()) &&
@@ -72,7 +82,6 @@ public class TournamentService {
             }
         }
     }
-    
 
     private boolean isPowerOfTwo(int n) {
         return (n > 0) && ((n & (n - 1)) == 0);
@@ -143,7 +152,7 @@ public class TournamentService {
     
         Player player = validateAndGetPlayer(playerId);
     
-        if (tournament.getParticipants().stream().anyMatch(p -> p.getId().equals(player.getId()))) {
+        if (tournament.getParticipants().stream().anyMatch(p -> p.equals(playerId))) {
             throw new RuntimeException("Player is already participating in the tournament");
         }
     
@@ -151,18 +160,8 @@ public class TournamentService {
             throw new RuntimeException("Player's Rank is not the allowed rank for this tournament");
         }
     
-        tournament.addParticipant(player);
+        tournament.addParticipant(playerId);
         return tournamentRepository.save(tournament);
-    }
-    
-
-    public boolean isUserRegistered(String tournamentId, String username) {
-        Tournament tournament = getTournamentById(tournamentId);
-
-        return tournament.getParticipants().stream()
-                .filter(player -> player instanceof Player)
-                .map(Player.class::cast) 
-                .anyMatch(player -> player.getUsername().equals(username));
     }
 
     public Tournament removeParticipant (String tournamentId, String playerId) {
@@ -170,11 +169,11 @@ public class TournamentService {
 
         Player player = validateAndGetPlayer(playerId);
 
-        if (!tournament.getParticipants().stream().anyMatch(p -> p.getId().equals(player.getId()))) {
+        if (tournament.getParticipants().stream().noneMatch(p -> p.equals(playerId))) {
             throw new RuntimeException("Player is not participating in the tournament");
         }
 
-        boolean removed = tournament.getParticipants().removeIf(p -> p.getId().equals(player.getId()));
+        boolean removed = tournament.getParticipants().removeIf(p -> p.equals(playerId));
 
         if (!removed) {
             throw new RuntimeException("Failed to remove the player from the tournament");
@@ -205,28 +204,41 @@ public class TournamentService {
         tournamentRepository.save(tournament);
     }
 
-    public void advanceTournament(Tournament tournament) {
+    public void completeMatch(String matchId, String winnerId) {
+        Match match = getMatchById(matchId);
+        match.setCompleted(true);
+        match.setWinnerId(winnerId);
+        matchRepository.save(match);
+    }
+    
+
+    public void advanceTournament(String tournamentId) {
+        Tournament tournament = getTournamentById(tournamentId);
         List<Round> rounds = tournament.getRounds();
         Round currentRound = rounds.get(rounds.size() - 1);
-
+    
         if (roundService.isRoundComplete(currentRound)) {
-            List<Player> winners = currentRound.getWinners();
-
-            if (winners.size() == 1) {
-                tournament.setWinner(winners.get(0));
+            List<String> winnersId = currentRound.getWinnersId();
+    
+            if (winnersId.size() == 1) {
+                tournament.setWinner(winnersId.get(0));
                 tournament.setEnded(true);
-                tournamentRepository.save(tournament);
-                return;
+            } else {
+                Round nextRound = roundService.createNextRound(winnersId, currentRound.getRoundNumber() + 1);
+                tournament.addRound(nextRound);
             }
-
-            Round nextRound = roundService.createNextRound(winners, currentRound.getRoundNumber() + 1);
-            tournament.addRound(nextRound);
+    
             tournamentRepository.save(tournament);
+        } else {
+            // Handle the case when the round is incomplete
+            throw new RuntimeException("Current round is not complete, cannot advance the tournament.");
         }
     }
 
-    public List<Match> getCurrentBrackets(Tournament tournament) {
-        Round currentRound = tournament.getCurrentRound();
-        return currentRound.getMatches();
+    public List<Match> getCurrentMatches(String tournamentId) {
+        Tournament tournament = getTournamentById(tournamentId);
+        Round currentRound = tournament.getCurrentRound(); 
+        return currentRound.getMatches(); 
     }
+    
 }

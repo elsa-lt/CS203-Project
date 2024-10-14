@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 @Data
 public class Round {
     private int roundNumber;
-    private List<Match> matches = new ArrayList<>();
+    private List<Match> matches;
 
     public Round(int roundNumber, List<Match> matches) {
         this.roundNumber = roundNumber;
@@ -24,10 +24,11 @@ public class Round {
         return matches.stream().allMatch(Match::isCompleted);
     }
 
-    public List<Player> getWinners() {
+    public List<String> getWinnersId() {
         if (!isComplete()) {
-            throw new IllegalStateException("Cannot get winners from an incomplete round.");
+            return new ArrayList<>(); 
         }
-        return matches.stream().map(Match::getWinner).collect(Collectors.toList());
+        return matches.stream().map(Match::getWinnerId).collect(Collectors.toList());
     }
+    
 }

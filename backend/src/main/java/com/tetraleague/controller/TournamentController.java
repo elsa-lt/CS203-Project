@@ -120,6 +120,9 @@ public class TournamentController {
         }
     }
 
-    
-
+    @PostMapping("/{tournamentId}/rounds/{roundNumber}/complete")
+    public ResponseEntity<Void> completeRoundMatches(@PathVariable String tournamentId, @PathVariable int roundNumber) {
+        tournamentService.completeAllMatchesInRound(tournamentId, roundNumber);
+        return ResponseEntity.ok().build();
+    }    
 }

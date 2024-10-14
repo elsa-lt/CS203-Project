@@ -109,7 +109,7 @@ const LeaderBoardSubtabs = ({ username }) => {
                     <td className="px-4 py-2">{player.eloRating}</td>
                     <td className="px-4 py-2">{player.gamesWon}</td>
                     <td className="px-4 py-2">{player.gamesLost}</td>
-                    <td className="px-4 py-2">{(player.winRate * 100).toFixed(2)}%</td>
+                    <td className="px-4 py-2">{(player.winRate).toFixed(2)}%</td>
                   </tr>
                 ))}
               </tbody>

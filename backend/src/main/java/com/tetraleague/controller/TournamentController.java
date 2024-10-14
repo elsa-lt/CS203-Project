@@ -105,18 +105,21 @@ public class TournamentController {
 
     @PostMapping("/{tournamentId}/advance")
     public ResponseEntity<Void> advanceTournament(@PathVariable String tournamentId) {
-        Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        tournamentService.advanceTournament(tournament);
+        tournamentService.advanceTournament(tournamentId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{tournamentId}/brackets")
-    public List<String> getCurrentBrackets(@PathVariable String tournamentId) {
-        Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        List<Match> currentBrackets = tournamentService.getCurrentBrackets(tournament);
-
-        return currentBrackets.stream()
-                .map(match -> match.getMatchup() + " - " + (match.isCompleted() ? "Winner: " + match.getWinner().getUsername() : "In progress"))
-                .toList();
+    @GetMapping("/{tournamentId}/matches")
+    public ResponseEntity<List<Match>> getCurrentMatches(@PathVariable String tournamentId) {
+        try {
+            List<Match> currentMatches = tournamentService.getCurrentMatches(tournamentId);
+            return ResponseEntity.ok(currentMatches);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(null); 
+        }
     }
+
+    
+
 }

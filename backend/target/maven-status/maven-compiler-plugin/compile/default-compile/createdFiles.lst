@@ -13,8 +13,10 @@ com/tetraleague/model/Round.class
 com/tetraleague/payload/request/LoginRequest.class
 com/tetraleague/model/Rank.class
 com/tetraleague/security/WebSecurityConfig.class
+com/tetraleague/controller/MatchController.class
 com/tetraleague/controller/TournamentController.class
 com/tetraleague/payload/response/JwtResponse.class
+com/tetraleague/repository/MatchRepository.class
 com/tetraleague/security/services/UserDetailsImpl.class
 com/tetraleague/repository/TournamentRepository.class
 com/tetraleague/security/services/UserDetailsServiceImpl.class

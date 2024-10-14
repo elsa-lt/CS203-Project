@@ -230,7 +230,6 @@ public class TournamentService {
     
             tournamentRepository.save(tournament);
         } else {
-            // Handle the case when the round is incomplete
             throw new RuntimeException("Current round is not complete, cannot advance the tournament.");
         }
     }
@@ -239,6 +238,23 @@ public class TournamentService {
         Tournament tournament = getTournamentById(tournamentId);
         Round currentRound = tournament.getCurrentRound(); 
         return currentRound.getMatches(); 
+    }
+    
+    public void completeAllMatchesInRound(String tournamentId, int roundNumber) {
+        Tournament tournament = getTournamentById(tournamentId);
+        List<Round> rounds = tournament.getRounds();
+    
+        Round roundToComplete = rounds.stream()
+            .filter(round -> round.getRoundNumber() == roundNumber)
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Round not found"));
+    
+        for (Match match : roundToComplete.getMatches()) {
+            match.setCompleted(true);  
+            // i think need set winner id here match.setWinner(winnerId);
+        }
+    
+        tournamentRepository.save(tournament);
     }
     
 }

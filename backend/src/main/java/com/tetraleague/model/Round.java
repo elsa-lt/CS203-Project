@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 @Data
 public class Round {
     private int roundNumber;
-    private List<Match> matches = new ArrayList<>();
+    private List<Match> matches;
 
     public Round(int roundNumber, List<Match> matches) {
         this.roundNumber = roundNumber;

@@ -4,6 +4,7 @@ import com.tetraleague.model.Match;
 import com.tetraleague.model.Round;
 import com.tetraleague.model.Player;
 
+import com.tetraleague.repository.MatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,10 @@ import java.util.List;
 public class RoundService {
 
     @Autowired
-    private MatchService matchService; 
+    private MatchService matchService;
+
+    @Autowired
+    private MatchRepository matchRepository;
 
     public Round createFirstRound(List<Player> participants) {
         participants.sort((p1, p2) -> Integer.compare(p2.getEloRating(), p1.getEloRating()));
@@ -23,6 +27,7 @@ public class RoundService {
         List<Match> matches = new ArrayList<>();
         for (int i = 0; i < half; i++) {
             Match match = new Match(participants.get(i), participants.get(i + half), 1);
+            matchRepository.save(match);
             matches.add(match);
         }
 
@@ -35,9 +40,11 @@ public class RoundService {
 
         for (int i = 0; i < half; i++) {
             Match match = new Match(winners.get(i), winners.get(i + half), roundNumber);
+            matchRepository.save(match);
             nextRoundMatches.add(match);
         }
 
+        winners.clear();
         return new Round(roundNumber, nextRoundMatches);
     }
 
@@ -46,6 +53,6 @@ public class RoundService {
     }
 
     public void completeMatch(Match match, Player winner) {
-        matchService.completeMatch(match, winner);
+        matchService.completeMatch(match.getId(), winner);
     }
 }

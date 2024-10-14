@@ -41,10 +41,10 @@ public class TournamentService {
         return tournamentRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Tournament not found"));
     }
-    
 
     public Tournament createTournament(Tournament tournament) {
         validateTournament(tournament);
+        checkOverlap(tournament);
         return tournamentRepository.save(tournament);
     }
 
@@ -58,11 +58,12 @@ public class TournamentService {
         if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
             throw new IllegalArgumentException("Start date cannot be after end date.");
         }
-    
         if (tournament.getRank() == null) {
             throw new IllegalArgumentException("Tournament rank is required.");
         }
-    
+    }
+
+    public void checkOverlap(Tournament tournament) {
         List<Tournament> tournaments = tournamentRepository.findAll();
         for (Tournament existingTournament : tournaments) {
             if (existingTournament.getName().equals(tournament.getName()) &&
@@ -72,7 +73,6 @@ public class TournamentService {
             }
         }
     }
-    
 
     private boolean isPowerOfTwo(int n) {
         return (n > 0) && ((n & (n - 1)) == 0);
@@ -225,7 +225,7 @@ public class TournamentService {
         }
     }
 
-    public List<Match> getCurrentBrackets(Tournament tournament) {
+    public List<Match> getCurrentMatches(Tournament tournament) {
         Round currentRound = tournament.getCurrentRound();
         return currentRound.getMatches();
     }

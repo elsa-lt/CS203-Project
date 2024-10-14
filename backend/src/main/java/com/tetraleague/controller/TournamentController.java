@@ -110,12 +110,12 @@ public class TournamentController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{tournamentId}/brackets")
-    public List<String> getCurrentBrackets(@PathVariable String tournamentId) {
+    @GetMapping("/{tournamentId}/matches")
+    public List<String> getCurrentMatches(@PathVariable String tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        List<Match> currentBrackets = tournamentService.getCurrentBrackets(tournament);
+        List<Match> currentMatches = tournamentService.getCurrentMatches(tournament);
 
-        return currentBrackets.stream()
+        return currentMatches.stream()
                 .map(match -> match.getMatchup() + " - " + (match.isCompleted() ? "Winner: " + match.getWinner().getUsername() : "In progress"))
                 .toList();
     }

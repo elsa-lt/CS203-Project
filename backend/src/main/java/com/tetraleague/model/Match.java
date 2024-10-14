@@ -2,8 +2,10 @@ package com.tetraleague.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
+@Document(collection = "matches")
 public class Match {
     @Id
     private String id;
@@ -20,18 +22,12 @@ public class Match {
         this.isCompleted = false;
     }
 
-    public void completeMatch(Player winner) {
-        if (this.isCompleted) {
-            throw new IllegalStateException("Match has already been completed");
-        }
-        if (!player1.equals(winner) && !player2.equals(winner)) {
-            throw new IllegalArgumentException("Winner must be one of the players in the match.");
-        }
+    public void setWinner(Player winner) {
         this.winner = winner;
         this.isCompleted = true;
     }
 
     public String getMatchup() {
-        return player1.getUsername() + " vs " + player2.getUsername();
+        return "Match " + getId() + ": " + player1.getUsername() + " vs " + player2.getUsername();
     }
 }

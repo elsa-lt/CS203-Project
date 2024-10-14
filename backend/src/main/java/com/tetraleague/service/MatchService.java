@@ -22,7 +22,7 @@ public class MatchService {
         return matchRepository.findById(matchId);
     }
 
-    public void completeMatch(String matchId, Player winner) {
+    public void completeMatch(String matchId, String winnerId) {
         Optional<Match> optionalMatch = matchRepository.findById(matchId);
 
         if (optionalMatch.isEmpty()) {
@@ -35,16 +35,16 @@ public class MatchService {
             throw new IllegalStateException("Match has already been completed");
         }
 
-        if (!match.getPlayer1().getId().equals(winner.getId()) && !match.getPlayer2().getId().equals(winner.getId())) {
+        if (!match.getPlayer1Id().equals(winnerId) && !match.getPlayer2Id().equals(winnerId)) {
             throw new IllegalArgumentException("Winner must be one of the players in the match.");
         }
 
-        match.setWinner(winner);
+        match.setWinner(winnerId);
         matchRepository.save(match);
 
-        double outcomeForPlayer1 = match.getPlayer1().getId().equals(winner.getId()) ? 1 : 0;
-        rankingService.updatePlayerEloRating(match.getPlayer1().getUsername(), match.getPlayer2().getUsername(), outcomeForPlayer1);
-        rankingService.updatePlayerStats(match.getPlayer1().getUsername(), outcomeForPlayer1);
-        rankingService.updatePlayerStats(match.getPlayer2().getUsername(), 1 - outcomeForPlayer1);
+//        double outcomeForPlayer1 = match.getPlayer1Id().equals(winnerId) ? 1 : 0;
+//        rankingService.updatePlayerEloRating(match.getPlayer1Id(), match.getPlayer2Id(), outcomeForPlayer1);
+//        rankingService.updatePlayerStats(match.getPlayer1Id(), outcomeForPlayer1);
+//        rankingService.updatePlayerStats(match.getPlayer2Id(), 1 - outcomeForPlayer1);
     }
 }

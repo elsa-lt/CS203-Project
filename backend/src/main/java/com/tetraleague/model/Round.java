@@ -24,10 +24,10 @@ public class Round {
         return matches.stream().allMatch(Match::isCompleted);
     }
 
-    public List<Player> getWinners() {
+    public List<String> getWinnersId() {
         if (!isComplete()) {
             throw new IllegalStateException("Cannot get winners from an incomplete round.");
         }
-        return matches.stream().map(Match::getWinner).collect(Collectors.toList());
+        return matches.stream().map(Match::getWinnerId).collect(Collectors.toList());
     }
 }

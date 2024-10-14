@@ -105,8 +105,7 @@ public class TournamentController {
 
     @PostMapping("/{tournamentId}/advance")
     public ResponseEntity<Void> advanceTournament(@PathVariable String tournamentId) {
-        Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        tournamentService.advanceTournament(tournament);
+        tournamentService.advanceTournament(tournamentId);
         return ResponseEntity.ok().build();
     }
 
@@ -116,7 +115,7 @@ public class TournamentController {
         List<Match> currentMatches = tournamentService.getCurrentMatches(tournament);
 
         return currentMatches.stream()
-                .map(match -> match.getMatchup() + " - " + (match.isCompleted() ? "Winner: " + match.getWinner().getUsername() : "In progress"))
+                .map(match -> match.getMatchup() + " - " + (match.isCompleted() ? "Winner: " + match.getWinnerId() : "In progress"))
                 .toList();
     }
 }

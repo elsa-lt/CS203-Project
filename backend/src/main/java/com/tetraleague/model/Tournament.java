@@ -33,7 +33,7 @@ public class Tournament {
     @NotNull(message = "End date is required")
     private LocalDateTime endDate;
 
-    private List<Player> participants = new ArrayList<>();
+    private List<String> participants = new ArrayList<>();
     private List<Round> rounds = new ArrayList<>();
 
     private String imageUrl;
@@ -44,16 +44,16 @@ public class Tournament {
     @NotNull(message = "Rank is required")
     private Rank rank;
 
-    private Player winner;
+    private String winnerId;
     private boolean started = false;
     private boolean ended = false;
 
-    public void addParticipant(Player player) {
-        participants.add(player);
+    public void addParticipant(String playerId) {
+        participants.add(playerId);
     }
 
-    public void removeParticipant(Player player) {
-        participants.remove(player);
+    public void removeParticipant(String playerId) {
+        participants.add(playerId);
     }
 
     public boolean isFull() {
@@ -82,8 +82,8 @@ public class Tournament {
         return rounds.isEmpty() ? null : rounds.get(rounds.size() - 1);
     }
     
-    public void setWinner(Player winner) {
-        this.winner = winner;
+    public void setWinner(String winnerId) {
+        this.winnerId = winnerId;
         this.ended = true;
     }
 

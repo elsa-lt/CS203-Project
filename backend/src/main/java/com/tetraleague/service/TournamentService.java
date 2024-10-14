@@ -143,7 +143,7 @@ public class TournamentService {
     
         Player player = validateAndGetPlayer(playerId);
     
-        if (tournament.getParticipants().stream().anyMatch(p -> p.getId().equals(player.getId()))) {
+        if (tournament.getParticipants().stream().anyMatch(p -> p.equals(playerId))) {
             throw new RuntimeException("Player is already participating in the tournament");
         }
     
@@ -151,18 +151,8 @@ public class TournamentService {
             throw new RuntimeException("Player's Rank is not the allowed rank for this tournament");
         }
     
-        tournament.addParticipant(player);
+        tournament.addParticipant(playerId);
         return tournamentRepository.save(tournament);
-    }
-    
-
-    public boolean isUserRegistered(String tournamentId, String username) {
-        Tournament tournament = getTournamentById(tournamentId);
-
-        return tournament.getParticipants().stream()
-                .filter(player -> player instanceof Player)
-                .map(Player.class::cast) 
-                .anyMatch(player -> player.getUsername().equals(username));
     }
 
     public Tournament removeParticipant (String tournamentId, String playerId) {
@@ -170,11 +160,11 @@ public class TournamentService {
 
         Player player = validateAndGetPlayer(playerId);
 
-        if (!tournament.getParticipants().stream().anyMatch(p -> p.getId().equals(player.getId()))) {
+        if (tournament.getParticipants().stream().noneMatch(p -> p.equals(playerId))) {
             throw new RuntimeException("Player is not participating in the tournament");
         }
 
-        boolean removed = tournament.getParticipants().removeIf(p -> p.getId().equals(player.getId()));
+        boolean removed = tournament.getParticipants().removeIf(p -> p.equals(playerId));
 
         if (!removed) {
             throw new RuntimeException("Failed to remove the player from the tournament");
@@ -205,21 +195,22 @@ public class TournamentService {
         tournamentRepository.save(tournament);
     }
 
-    public void advanceTournament(Tournament tournament) {
+    public void advanceTournament(String tournamentId) {
+        Tournament tournament = getTournamentById(tournamentId);
         List<Round> rounds = tournament.getRounds();
         Round currentRound = rounds.get(rounds.size() - 1);
 
         if (roundService.isRoundComplete(currentRound)) {
-            List<Player> winners = currentRound.getWinners();
+            List<String> winnersId = currentRound.getWinnersId();
 
-            if (winners.size() == 1) {
-                tournament.setWinner(winners.get(0));
+            if (winnersId.size() == 1) {
+                tournament.setWinner(winnersId.get(0));
                 tournament.setEnded(true);
                 tournamentRepository.save(tournament);
                 return;
             }
 
-            Round nextRound = roundService.createNextRound(winners, currentRound.getRoundNumber() + 1);
+            Round nextRound = roundService.createNextRound(winnersId, currentRound.getRoundNumber() + 1);
             tournament.addRound(nextRound);
             tournamentRepository.save(tournament);
         }

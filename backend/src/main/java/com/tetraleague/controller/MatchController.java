@@ -16,9 +16,9 @@ public class MatchController {
     }
 
     @PostMapping("/{matchId}/result")
-    public String completeMatch(@PathVariable String tournamentId, @PathVariable String matchId, @RequestBody Player winner) {
-        matchService.completeMatch(matchId, winner);
-        return "Match " + matchId + " completed. Winner: " + winner.getUsername();
+    public String completeMatch(@PathVariable String tournamentId, @PathVariable String matchId, @RequestBody String winnerId) {
+        matchService.completeMatch(matchId, winnerId);
+        return "Match " + matchId + " completed. Winner: " + winnerId;
     }
 }
 

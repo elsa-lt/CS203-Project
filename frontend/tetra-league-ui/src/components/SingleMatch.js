@@ -8,7 +8,7 @@ const SingleMatch = ({ match, matchboxHeight, padding, isSelectingWinners }) => 
   const [player2Id, setPlayer2Id] = useState(match.player2Id);
   const [player1UserName, setPlayer1Username] = useState(null);
   const [player2UserName, setPlayer2Username] = useState(null);
-  const [winner, setWinner] = useState(null);
+  const [winnerId, setWinnerId] = useState(null);
 
   useEffect(() => {
     const token = Cookies.get('token');
@@ -48,10 +48,30 @@ const SingleMatch = ({ match, matchboxHeight, padding, isSelectingWinners }) => 
     }
   }, [match]);
 
+  const completeMatch = async () => {
+    const token = Cookies.get('token');
+
+    if (!token) {
+      console.error("Token is missing");
+      return;
+    }
+
+    try {
+      // Fetch user ID and username
+      const player1InfoResponse = await axios.get(`http://localhost:8080/api/users/${player1Id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error) {
+      console.error('Error fetching username for players:', error);
+    }
+  }
+
   const handleSelectPlayer1 = () => {
     if (isSelectingWinners) {
       setSelectedPlayer(selectedPlayer === 'player1' ? null : 'player1');
-      setWinner(selectedPlayer === 'player1' ? null : 'player1');
+      setWinnerId(selectedPlayer === 'player1' ? null : 'player1');
     }
     const updatedMatch = { ...match, isCompleted: true };
   };
@@ -59,7 +79,7 @@ const SingleMatch = ({ match, matchboxHeight, padding, isSelectingWinners }) => 
   const handleSelectPlayer2 = () => {
     if (isSelectingWinners) {
       setSelectedPlayer(selectedPlayer === 'player2' ? null : 'player2');
-      setWinner(selectedPlayer === 'player2' ? null : 'player2');
+      setWinnerId(selectedPlayer === 'player2' ? null : 'player2');
     }
     const updatedMatch = { ...match, isCompleted: true };
   };

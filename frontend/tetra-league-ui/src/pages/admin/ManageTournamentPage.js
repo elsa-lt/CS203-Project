@@ -14,10 +14,11 @@ const ManageTournamentPage = () => {
 
   const [hasStarted, setHasStarted] = useState(started);
   const [tournamentData, updateTournamentData] = useState(tournament);
-  const [currentMatches, updateCurrentMatches] = useState([]);
-  const [allMatches, updateAllMatches] = useState([]);
-  const [currentRoundNumber, updateCurrentRoundNumber] = useState(allMatches.length);
+  const [currentMatches, updateCurrentMatches] = useState([]); //stores matches for current round
+  const [allMatches, updateAllMatches] = useState([]); //stores matches by round
+  const [currentRoundNumber, updateCurrentRoundNumber] = useState(0);
   const [isSelectingWinners, setIsSelectingWinners] = useState(false);
+  const [roundComplete, setRoundComplete] = useState(false);
 
   if (!tournamentData) {
     return <div>No tournament data available.</div>;
@@ -25,11 +26,15 @@ const ManageTournamentPage = () => {
 
   const startAndInitialiseTournament = async () => {
     const started = await startTournament();
-      if (started) {
-        await fetchMatches();
-        updateCurrentRoundNumber(1);
-      }
+    if (started) {
+      await fetchMatches();
+      updateCurrentRoundNumber(1);
     }
+  }
+
+  const handleSelectWinners = () => {
+    setIsSelectingWinners(!isSelectingWinners);
+  }
 
   //Function to Start Tournament
   const startTournament = async () => {
@@ -100,7 +105,7 @@ const ManageTournamentPage = () => {
     }
   };
 
-  //Fetch the matches of the current round
+
   const fetchMatches = async () => {
     const token = Cookies.get('token');
   
@@ -126,13 +131,77 @@ const ManageTournamentPage = () => {
     }
   };
 
-  const handleSelectWinners = () => {
-    setIsSelectingWinners(!isSelectingWinners);
-  }
 
-  const updateMatchWithWinner = () => {
-    
-  }
+  const CompleteRoundMatches = async () => {
+    const token = Cookies.get('token');
+  
+    if (!token) {
+      console.error("Token is missing");
+      return;
+    }
+
+    try {
+      console.log("Attempting to complete matches of current round of Tournament with ID:", id);
+      const completeRoundResponse = await axios.post(`http://localhost:8080/api/tournaments/${id}/rounds/${currentRoundNumber}/complete`, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      console.log("Successfully completed matches of Tournament with ID:", id);
+      console.log(completeRoundResponse.data);
+      setRoundComplete(true);
+      return true;
+    } catch (error) {
+      console.error('Error completing rounds of tournament round:', error);
+      return false;
+    }
+  };
+
+  const advanceTournament = async () => {
+    const token = Cookies.get('token');
+  
+    const roundCompleted = await CompleteRoundMatches();
+
+    if (roundCompleted) {
+
+      if (!token) {
+        console.error("Token is missing");
+        return;
+      }
+
+      const confirmAdvance = window.confirm("Are you sure you want to start the tournament?");
+      if (confirmAdvance){
+        try {
+          console.log("Attempting to advance to next round of Tournament with ID:", id);
+          const advanceResponse = await axios.post(`http://localhost:8080/api/tournaments/${id}/rounds/${currentRoundNumber}/advance`, {}, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+          console.log("Successfully advanced to next round of Tournament with ID:", id);
+          console.log(advanceResponse.data);
+          updateCurrentRoundNumber(currentRoundNumber + 1);
+  
+          const tournamentResponse = await fetchTournamentData();
+          if (tournamentResponse) {
+            const tournamentData = tournamentResponse.data; // Directly access the data
+            console.log("Fetched tournament data:", tournamentData);
+            updateTournamentData(tournamentData);
+          }
+  
+          await fetchMatches();
+  
+          setRoundComplete(false);
+  
+        } catch (error) {
+          console.error('Error advancing to nexxt round of tournament:', error);
+        }
+      }
+    } else {
+      alert("Must complete Current round before advancing");
+    }
+
+  };
 
   //UI
   return (
@@ -173,7 +242,8 @@ const ManageTournamentPage = () => {
           hasStarted={hasStarted}
           currentRoundNumber={currentRoundNumber}
           handleSelectWinners={handleSelectWinners}
-          isSelectingWinners={isSelectingWinners}/>
+          isSelectingWinners={isSelectingWinners}
+          advanceTournament={advanceTournament}/>
       </div>
 
     </main>
@@ -181,65 +251,3 @@ const ManageTournamentPage = () => {
 };
 
 export default ManageTournamentPage;
-
-
-          // // Fetch updated tournament data
-          // const tournamentResponse = await fetchTournamentData();
-        
-          // if (tournamentResponse) {
-          //   const tournamentData = tournamentResponse.data; // Directly access the data
-          //   console.log("Fetched tournament data:", tournamentData);
-  
-          //   // Update states with new data
-          //   setHasStarted(true);
-          //   updateTournamentData(tournamentData);
-          //   alert("Successfully started tournament!");
-          //   console.log("Tournament has successfully started and current round has been set!");
-          // }
-
-
-  // //Advance the Tournament to next round
-  // const advanceTournament = async () => {
-  //   const token = Cookies.get('token');
-  
-  //   if (!token) {
-  //     console.error("Token is missing");
-  //     return;
-  //   }
-
-  //   try {
-  //     console.log("Attempting to advance Tournament with ID:", id);
-  //     const currentRoundResponse = await axios.post(`http://localhost:8080/api/tournaments/${id}/advance`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     console.log("Successfully fetched advanced Tournament with ID:", id);
-  //     await fetchCurrentRound();
-  //   } catch (error) {
-  //     console.error('Error advancing tournament:', error);
-  //   }
-  // };
-
-    // //Advance the Tournament to next round
-  // const advanceTournament = async () => {
-  //   const token = Cookies.get('token');
-  
-  //   if (!token) {
-  //     console.error("Token is missing");
-  //     return;
-  //   }
-
-  //   try {
-  //     console.log("Attempting to advance Tournament with ID:", id);
-  //     const currentRoundResponse = await axios.post(`http://localhost:8080/api/tournaments/${id}/advance`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     console.log("Successfully fetched advanced Tournament with ID:", id);
-  //     await fetchCurrentRound();
-  //   } catch (error) {
-  //     console.error('Error advancing tournament:', error);
-  //   }
-  // };

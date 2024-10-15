@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function ManageTournamentButtons({ startAndInitialiseTournament, hasStarted, handleSelectWinners, isSelectingWinners }) {
+function ManageTournamentButtons({ startAndInitialiseTournament, hasStarted, handleSelectWinners, isSelectingWinners, advanceTournament }) {
 
   return (
     <div className="flex gap-6">
@@ -12,8 +12,8 @@ function ManageTournamentButtons({ startAndInitialiseTournament, hasStarted, han
       </div>
 
       <div 
-        className="flex justify-center items-center font-medium helvetica-neue bg-customBlue text-white h-11 w-40 rounded-full cursor-pointer
-        ">
+        className="flex justify-center items-center font-medium helvetica-neue bg-customBlue text-white h-11 w-40 rounded-full cursor-pointer"
+        onClick={advanceTournament}>
         Advance
       </div>
 

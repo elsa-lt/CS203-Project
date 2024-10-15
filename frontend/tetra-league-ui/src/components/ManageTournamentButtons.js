@@ -22,7 +22,7 @@ function ManageTournamentButtons({ startAndInitialiseTournament, hasStarted, han
           className={`flex justify-center items-center font-medium helvetica-neue ${hasStarted ? "bg-customBlue" : "bg-customRed"} text-white h-11 w-40 rounded-full cursor-pointer`}
           onClick={startAndInitialiseTournament}>
           {/*Initial Register Button */}
-          {hasStarted ? "Already Started": "Start"}
+          Start
         </div>
       )}
 

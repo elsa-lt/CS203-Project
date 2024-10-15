@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Sidebar from '../../components/AdminSidebar';
@@ -19,6 +19,27 @@ const CreateTournamentsPage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [minStartDate, setMinStartDate] = useState('');
+  const [minEndDate, setMinEndDate] = useState('');
+
+  useEffect(() => {
+    // Set minimum start date to tomorrow's date
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1); // Tomorrow
+    setMinStartDate(tomorrow.toISOString().slice(0, 16)); // Format to YYYY-MM-DDTHH:MM
+  }, []);
+
+  useEffect(() => {
+    if (tournamentDetails.startDate) {
+      const selectedStartDate = new Date(tournamentDetails.startDate);
+      const nextDay = new Date(selectedStartDate);
+      nextDay.setDate(selectedStartDate.getDate() + 1); // Day after selected start date
+      setMinEndDate(nextDay.toISOString().slice(0, 16)); // Format to YYYY-MM-DDTHH:MM
+    } else {
+      // Reset minEndDate when startDate is empty
+      setMinEndDate('');
+    }
+  }, [tournamentDetails.startDate]);
 
   const handleChange = (e) => {
     setTournamentDetails({
@@ -45,12 +66,22 @@ const CreateTournamentsPage = () => {
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
-    setIsLoading(true); 
+    setIsLoading(true);
 
     // Validate inputs
     if (!tournamentDetails.name || !tournamentDetails.description || !tournamentDetails.startDate || !tournamentDetails.endDate || !tournamentDetails.maxParticipants || !tournamentDetails.rank || !tournamentDetails.imageUrl) {
       setErrorMessage('Please fill out all fields and upload an image.');
-      setIsLoading(false); 
+      setIsLoading(false);
+      return;
+    }
+
+    // Date validation
+    const selectedStartDate = new Date(tournamentDetails.startDate);
+    const selectedEndDate = new Date(tournamentDetails.endDate);
+
+    if (selectedEndDate <= selectedStartDate) {
+      setErrorMessage('End date must be after the start date.');
+      setIsLoading(false);
       return;
     }
 
@@ -78,7 +109,7 @@ const CreateTournamentsPage = () => {
     } catch (error) {
       setErrorMessage(error.response ? error.response.data : 'An unexpected error occurred.');
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -143,6 +174,7 @@ const CreateTournamentsPage = () => {
                     onChange={handleChange}
                     className="w-full p-2 border rounded-lg"
                     required
+                    min={minStartDate} // Minimum start date set to the day after today
                   />
                 </div>
                 <div className="form-group">
@@ -154,6 +186,7 @@ const CreateTournamentsPage = () => {
                     onChange={handleChange}
                     className="w-full p-2 border rounded-lg"
                     required
+                    min={minEndDate} // Minimum end date set to the day after the selected start date
                   />
                 </div>
               </div>
@@ -219,7 +252,7 @@ const CreateTournamentsPage = () => {
 
               <button
                 type="submit"
-                className={`bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-700 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`} // Disable button if loading
+                className={`bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`} // Disable button if loading
                 disabled={isLoading}
               >
                 {isLoading ? 'Creating...' : 'Create Tournament'}

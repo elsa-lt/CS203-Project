@@ -15,10 +15,14 @@ public class MatchController {
         this.matchService = matchService;
     }
 
-    @PostMapping("/{matchId}/result")
-    public String completeMatch(@PathVariable String tournamentId, @PathVariable String matchId, @RequestBody String winnerId) {
+    @PutMapping("/{matchId}/result")
+    public String completeMatch(
+            @PathVariable String tournamentId,
+            @PathVariable String matchId,
+            @RequestBody String winnerId) {
         matchService.completeMatch(matchId, winnerId);
         return "Match " + matchId + " completed. Winner: " + winnerId;
     }
+
 }
 

@@ -6,105 +6,82 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "tournaments")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Document(collection = "tournaments")
 public class Tournament {
+
     @Id
     private String id;
-
-    @NotNull(message = "Name is required")
     private String name;
-
-    @NotNull(message = "Description is required")
     private String description;
-
-    @NotNull(message = "Number of participants is required")
     private Integer maxParticipants;
-
-    @NotNull(message = "Start date is required")
     private LocalDateTime startDate;
-
-    @NotNull(message = "End date is required")
     private LocalDateTime endDate;
-
-    private List<String> participants = new ArrayList<>();
-    private List<Round> rounds = new ArrayList<>();
-
+    private List<String> playerIds = new ArrayList<>();  // Updated field name
+    private List<String> roundIds = new ArrayList<>();   // Store round IDs instead of Round objects
     private String imageUrl;
-
-    @NotNull(message = "Prize pool is required")
     private Double prizePool;
-
-    @NotNull(message = "Rank is required")
     private Rank rank;
-
     private String winnerId;
     private boolean started = false;
     private boolean ended = false;
 
-    public void addParticipant(String playerId) {
-        participants.add(playerId);
-    }
-
-    public void removeParticipant(String playerId) {
-        participants.add(playerId);
-    }
-
-    public boolean isFull() {
-        return participants.size() >= maxParticipants;
-    }
-
-    public boolean hasEnded() {
-        return ended || LocalDateTime.now().isAfter(endDate);
+    // Add a round by its ID
+    public void addRound(String roundId) {
+        roundIds.add(roundId);
     }
 
     public boolean hasStarted() {
-        return started || LocalDateTime.now().isAfter(startDate);
+        return started;
     }
 
-    public void startTournament() {
-        this.started = true;
+    public boolean hasEnded() {
+        return ended;
     }
 
-    public void addRound(Round round) {
-        rounds.add(round);
+    public boolean isFull() {
+        return playerIds.size() >= maxParticipants;  // Updated to playerIds
     }
-    
-    
-    public Round getCurrentRound() {
-        return rounds.isEmpty() ? null : rounds.get(rounds.size() - 1);
-    }
-    
+
     public void setWinner(String winnerId) {
         this.winnerId = winnerId;
-        this.ended = true;
+    }
+
+   // Add the method to return current round ID
+// The `getCurrentRoundId()` method in the `Tournament` class is used to retrieve the ID of the current
+// round in the tournament. It checks if the list of round IDs (`roundIds`) is empty and throws a
+// `RuntimeException` if there are no rounds available. Otherwise, it returns the ID of the last round
+// in the list, assuming it is the current round.
+    public String getCurrentRoundId() {
+        if (roundIds.isEmpty()) {
+            throw new RuntimeException("No rounds available");
+        }
+        return roundIds.get(roundIds.size() - 1); // Assuming last round is current
+    }
+
+    // Add a method to get all rounds
+    public List<Round> getRounds() {
+        // Replace this with actual logic to fetch rounds from your repository
+        return new ArrayList<>();
+    }
+
+
+    public void addParticipant(String playerId) {
+        this.playerIds.add(playerId);
+    }
+    public void removeParticipant(String participantId) {
+        playerIds.remove(participantId);
+    }
+
+    public List<String> getPlayerIds() {
+        return playerIds;
     }
     
-    public List<String> getWinnersFromRounds() {
-        List<String> winners = new ArrayList<>();
-        for (Round round : rounds) {
-            if (round.isComplete()) {
-                winners.addAll(round.getWinnersId());
-            }
-        }
-        return winners;
-    }
-
-    public List<String> getParticipants() {
-        return participants;
-    }
-
-    public int getCurrentRoundNumber() {
-        return rounds.size();
-    }
-
-    public boolean hasRounds() {
-        return !rounds.isEmpty();
-    }
 }

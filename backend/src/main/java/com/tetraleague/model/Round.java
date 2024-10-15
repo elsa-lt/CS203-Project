@@ -1,34 +1,40 @@
 package com.tetraleague.model;
 
 import lombok.Data;
-
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@Document(collection = "rounds")
 public class Round {
+    @Id
+    private String id;
     private int roundNumber;
-    private List<Match> matches;
+    private List<String> matchIds = new ArrayList<>(); // Correct the variable name
 
-    public Round(int roundNumber, List<Match> matches) {
+    // Constructor to accept match IDs
+    public Round(int roundNumber, List<String> matchIds) {
         this.roundNumber = roundNumber;
-        this.matches = matches;
+        this.matchIds = matchIds;
     }
 
-    public void addMatch(Match match) {
-        matches.add(match);
+    public List<String> getMatches() {
+        return matchIds;
     }
 
+    // Add a match by ID
+    public void addMatch(String matchId) {
+        matchIds.add(matchId);
+    }
+
+    // Dummy method to check if match is complete
     public boolean isComplete() {
-        return matches.stream().allMatch(Match::isCompleted);
+        return matchIds.stream().allMatch(matchId -> {
+            // Replace with actual logic to check if match is complete
+            return true;
+        });
     }
-
-    public List<String> getWinnersId() {
-        if (!isComplete()) {
-            return new ArrayList<>(); 
-        }
-        return matches.stream().map(Match::getWinnerId).collect(Collectors.toList());
-    }
-    
 }

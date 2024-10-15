@@ -4,6 +4,8 @@ com/tetraleague/repository/RoleRepository.class
 com/tetraleague/service/TournamentService.class
 com/tetraleague/model/Player.class
 com/tetraleague/service/RoundService.class
+com/tetraleague/repository/RoundRepository.class
+com/tetraleague/exception/RoundNotFoundException.class
 com/tetraleague/exception/GlobalExceptionHandler.class
 com/tetraleague/service/MatchService.class
 com/tetraleague/payload/response/MessageResponse.class
@@ -16,6 +18,7 @@ com/tetraleague/security/WebSecurityConfig.class
 com/tetraleague/controller/MatchController.class
 com/tetraleague/controller/TournamentController.class
 com/tetraleague/payload/response/JwtResponse.class
+com/tetraleague/exception/TournamentNotFoundException.class
 com/tetraleague/repository/MatchRepository.class
 com/tetraleague/security/services/UserDetailsImpl.class
 com/tetraleague/repository/TournamentRepository.class

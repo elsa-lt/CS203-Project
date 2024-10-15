@@ -3,6 +3,7 @@ package com.tetraleague.service;
 import com.tetraleague.model.*;
 
 import com.tetraleague.repository.MatchRepository;
+import com.tetraleague.repository.RoundRepository;
 import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,57 +21,47 @@ public class RoundService {
     private MatchRepository matchRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private RoundRepository roundRepository;
 
-    public Round createFirstRound(List<String> participantsId) {
-        List<Player> participants = new ArrayList<>();
-        for (String p : participantsId) {
-            User user = userRepository.findById(p)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-
-            if (user.getRoles().stream()
-                    .noneMatch(role -> role.getName().equals(ERole.ROLE_PLAYER))) {
-                throw new RuntimeException("User is not a player");
-            }
-
-            if (user instanceof Player player) {
-                participants.add(player);
-            } else {
-                throw new ClassCastException("User is not a valid player");
-            }
-        }
-        participants.sort((p1, p2) -> Integer.compare(p2.getEloRating(), p1.getEloRating()));
-        int half = participants.size() / 2;
-
-        List<Match> matches = new ArrayList<>();
-        for (int i = 0; i < half; i++) {
-            Match match = new Match(participants.get(i).getId(), participants.get(i + half).getId(), 1);
-            matchRepository.save(match);
-            matches.add(match);
-        }
-
-        return new Round(1, matches);
+    public Round getRoundById(String roundId) {
+        return roundRepository.findById(roundId)
+                .orElseThrow(() -> new RuntimeException("Round not found with ID: " + roundId));
     }
 
+    public Round createFirstRound(List<String> participantsId) {
+        int half = participantsId.size() / 2;
+        List<String> matchIds = new ArrayList<>();
+
+        for (int i = 0; i < half; i++) {
+            Match match = new Match(participantsId.get(i), participantsId.get(i + half), 1);
+            matchRepository.save(match);  // Save match to DB
+            matchIds.add(match.getId());  // Store match ID instead of object
+        }
+
+        Round firstRound = new Round(1, matchIds);
+        roundRepository.save(firstRound);  // Make sure to save the round
+        return firstRound;  // Return round with match IDs
+    }
+
+    // Create the next round
     public Round createNextRound(List<String> winnersId, int roundNumber) {
         int half = winnersId.size() / 2;
-        List<Match> nextRoundMatches = new ArrayList<>();
+        List<String> nextRoundMatchIds = new ArrayList<>();
 
         for (int i = 0; i < half; i++) {
             Match match = new Match(winnersId.get(i), winnersId.get(i + half), roundNumber);
             matchRepository.save(match);
-            nextRoundMatches.add(match);
+            nextRoundMatchIds.add(match.getId());
         }
 
-        winnersId.clear();
-        return new Round(roundNumber, nextRoundMatches);
+        return new Round(roundNumber, nextRoundMatchIds);
     }
 
     public boolean isRoundComplete(Round round) {
-        return round.isComplete();
-    }
-
-    public void completeMatch(Match match, String winnerId) {
-        matchService.completeMatch(match.getId(), winnerId);
+        return round.getMatchIds().stream()
+                .allMatch(matchId -> {
+                    Match match = matchService.getMatchById(matchId);
+                    return match != null && match.isCompleted();
+                });
     }
 }

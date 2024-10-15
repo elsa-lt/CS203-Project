@@ -251,7 +251,6 @@ public class TournamentService {
     
         for (Match match : roundToComplete.getMatches()) {
             match.setCompleted(true);  
-            // i think need set winner id here match.setWinner(winnerId);
         }
     
         tournamentRepository.save(tournament);

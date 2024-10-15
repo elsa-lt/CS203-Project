@@ -37,15 +37,4 @@ public class Round {
             return true;
         });
     }
-
-    // Get the winners' IDs from completed matches
-    public List<String> getWinnersId() {
-        if (!isComplete()) {
-            return new ArrayList<>();
-        }
-        return matchIds.stream().map(matchId -> {
-            // Replace with actual logic to fetch the winner from MatchService
-            return "winnerId"; // Fetch actual winnerId
-        }).collect(Collectors.toList());
-    }
 }

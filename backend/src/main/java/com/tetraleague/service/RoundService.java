@@ -57,12 +57,11 @@ public class RoundService {
         return new Round(roundNumber, nextRoundMatchIds);
     }
 
-    // Check if the round is complete
     public boolean isRoundComplete(Round round) {
         return round.getMatchIds().stream()
-                .allMatch(matchId -> matchService.findMatchById(matchId)
-                        .map(match -> match.isCompleted()) // Change method reference to lambda
-                        .orElse(false));
+                .allMatch(matchId -> {
+                    Match match = matchService.getMatchById(matchId);
+                    return match != null && match.isCompleted();
+                });
     }
-
 }

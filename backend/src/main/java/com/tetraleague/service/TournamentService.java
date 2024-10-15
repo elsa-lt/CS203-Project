@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Optional;
@@ -194,7 +195,6 @@ public class TournamentService {
         // Save the updated tournament back to the repository
         tournamentRepository.save(tournament);
     }
-
     
     public void deleteTournament (String tournamentId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
@@ -232,7 +232,14 @@ public class TournamentService {
         Round currentRound = roundService.getRoundById(rounds.get(roundNumber++ - 1));
 
         if (roundService.isRoundComplete(currentRound)) {
-            List<String> winnersId = currentRound.getWinnersId();
+            List<String> currentMatchIds = currentRound.getMatchIds();
+            List<Match> currentMatches = new ArrayList<>();
+
+            List<String> winnersId = new ArrayList<>();
+            for (String id : currentMatchIds) {
+                Match match = matchService.getMatchById(id);
+                winnersId.add(match.getWinnerId());
+            }
 
             if (winnersId.size() == 1) {
                 tournament.setWinner(winnersId.get(0));
@@ -256,9 +263,7 @@ public class TournamentService {
         Round currentRound = roundService.getRoundById(currentRoundId);
         
         return currentRound.getMatchIds().stream()
-                .map(matchService::findMatchById) // Use a method that returns Optional<Match>
-                .filter(Optional::isPresent) // Filter out empty Optionals
-                .map(Optional::get) // Get the Match object
+                .map(matchService::getMatchById) // Use a method that returns Optional<Match>
                 .map(Match::getId) // Assuming Match has a getId method
                 .collect(Collectors.toList());
     }

@@ -19,19 +19,14 @@ public class MatchService {
     @Autowired
     private MatchRepository matchRepository;
 
-    public Optional<Match> findMatchById(String matchId) {
-        return matchRepository.findById(matchId);
+    public Match getMatchById(String matchId) {
+        return matchRepository.findById(matchId)
+                .orElseThrow(() -> new RuntimeException("Round not found with ID: " + matchId));
     }
 
     @Transactional
     public void completeMatch(String matchId, String winnerId) {
-        Optional<Match> optionalMatch = matchRepository.findById(matchId);
-        
-        if (optionalMatch.isEmpty()) {
-            throw new IllegalArgumentException("Match with ID " + matchId + " not found.");
-        }
-        
-        Match match = optionalMatch.get();
+        Match match = getMatchById(matchId);
         
         if (match.isCompleted()) {
             throw new IllegalStateException("Match has already been completed");
@@ -42,7 +37,7 @@ public class MatchService {
         }
         
         match.setWinner(winnerId);
-        matchRepository.save(match); // This line saves the updated match to the database
+        matchRepository.save(match);
     }
     
 }

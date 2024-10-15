@@ -23,20 +23,18 @@ const CreateTournamentsPage = () => {
   const [minEndDate, setMinEndDate] = useState('');
 
   useEffect(() => {
-    // Set minimum start date to tomorrow's date
     const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1); // Tomorrow
-    setMinStartDate(tomorrow.toISOString().slice(0, 16)); // Format to YYYY-MM-DDTHH:MM
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    setMinStartDate(tomorrow.toISOString().slice(0, 16)); 
   }, []);
 
   useEffect(() => {
     if (tournamentDetails.startDate) {
       const selectedStartDate = new Date(tournamentDetails.startDate);
       const nextDay = new Date(selectedStartDate);
-      nextDay.setDate(selectedStartDate.getDate() + 1); // Day after selected start date
-      setMinEndDate(nextDay.toISOString().slice(0, 16)); // Format to YYYY-MM-DDTHH:MM
+      nextDay.setDate(selectedStartDate.getDate() + 1);
+      setMinEndDate(nextDay.toISOString().slice(0, 16));
     } else {
-      // Reset minEndDate when startDate is empty
       setMinEndDate('');
     }
   }, [tournamentDetails.startDate]);
@@ -68,14 +66,12 @@ const CreateTournamentsPage = () => {
     setSuccessMessage('');
     setIsLoading(true);
 
-    // Validate inputs
     if (!tournamentDetails.name || !tournamentDetails.description || !tournamentDetails.startDate || !tournamentDetails.endDate || !tournamentDetails.maxParticipants || !tournamentDetails.rank || !tournamentDetails.imageUrl) {
       setErrorMessage('Please fill out all fields and upload an image.');
       setIsLoading(false);
       return;
     }
 
-    // Date validation
     const selectedStartDate = new Date(tournamentDetails.startDate);
     const selectedEndDate = new Date(tournamentDetails.endDate);
 
@@ -174,7 +170,7 @@ const CreateTournamentsPage = () => {
                     onChange={handleChange}
                     className="w-full p-2 border rounded-lg"
                     required
-                    min={minStartDate} // Minimum start date set to the day after today
+                    min={minStartDate} 
                   />
                 </div>
                 <div className="form-group">

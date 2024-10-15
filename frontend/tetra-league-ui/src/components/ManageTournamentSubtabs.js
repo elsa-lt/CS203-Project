@@ -77,8 +77,8 @@ const ManageTournamentSubtabs = ({ tournament, startAndInitialiseTournament, all
                         <RoundModeller
                           key={roundIndex}
                           matchboxHeight={matchboxHeight}
-                          currentRoundNumber={roundIndex + 1} // +1 because roundIndex is 0-based
-                          matches={roundMatches} // Pass matches for the specific round
+                          currentRoundNumber={roundIndex + 1} 
+                          matches={roundMatches} 
                           isSelectingWinners={isSelectingWinners}
                         />
                       ))}

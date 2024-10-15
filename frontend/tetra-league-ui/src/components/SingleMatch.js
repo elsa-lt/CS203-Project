@@ -15,7 +15,6 @@ const SingleMatch = ({ match, matchboxHeight, padding, isSelectingWinners }) => 
 
     const fetchPlayerId = async () => {
       try {
-        // Fetch user ID and username
         const player1InfoResponse = await axios.get(`http://localhost:8080/api/users/${player1Id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,7 +56,6 @@ const SingleMatch = ({ match, matchboxHeight, padding, isSelectingWinners }) => 
     }
 
     try {
-      // Fetch user ID and username
       const player1InfoResponse = await axios.get(`http://localhost:8080/api/users/${player1Id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -95,7 +93,6 @@ const SingleMatch = ({ match, matchboxHeight, padding, isSelectingWinners }) => 
             className="rounded-lg w-48"
             xmlns="http://www.w3.org/2000/svg">
 
-            {/* top half in blue */}
             <rect 
               x="0"
               y="0"
@@ -108,8 +105,6 @@ const SingleMatch = ({ match, matchboxHeight, padding, isSelectingWinners }) => 
                 "fill-gray-500"}` : "fill-customBlue"}
               onClick={handleSelectPlayer1}
               />
-              
-            {/* bottom half in red */}
             <rect 
               x="0"
               y="50%"
@@ -123,7 +118,6 @@ const SingleMatch = ({ match, matchboxHeight, padding, isSelectingWinners }) => 
               onClick={handleSelectPlayer2}
               />
 
-            {/* Text on the blue half */}
             <text
               x="50%" 
               y="25%" 
@@ -131,11 +125,9 @@ const SingleMatch = ({ match, matchboxHeight, padding, isSelectingWinners }) => 
               fill="white" 
               fontSize="16" 
             >
-              {/* {player1} */}
               {player1UserName}
             </text>
             
-            {/* Text on the red half */}
             <text
               x="50%" 
               y="75%" 
@@ -143,7 +135,6 @@ const SingleMatch = ({ match, matchboxHeight, padding, isSelectingWinners }) => 
               fill="white" 
               fontSize="16" 
             >
-              {/* {player2} */}
               {player2UserName}
             </text>
 

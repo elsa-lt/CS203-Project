@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 
 const LeaderBoardSubtabs = ({ username }) => {
-  const [activeTab, setActiveTab] = useState('Global-Ranking'); // Default 
-  const [selectedBracket, setSelectedBracket] = useState('GOLD'); // Default
+  const [activeTab, setActiveTab] = useState('Global-Ranking'); 
+  const [selectedBracket, setSelectedBracket] = useState('GOLD'); 
   const [rankings, setRankings] = useState([]);
   const [loading, setLoading] = useState(true);
 

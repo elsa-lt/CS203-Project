@@ -14,8 +14,7 @@ const LoginPage = () => {
     console.log('Form submitted');
 
     try {
-      const user = await login(username, password); // Get user info with roles
-      console.log('User roles:', user.roles); // Debug roles
+      const user = await login(username, password); 
 
       if (user.roles.includes('ROLE_ADMIN')) {
         console.log('Navigating to /dashboard');
@@ -68,9 +67,6 @@ const LoginPage = () => {
                 required
               />
             </div>
-            {/* <div className="flex justify-between items-center mb-4">
-              <Link to="/forgot-password" className="text-blue-600 hover:underline">Forgot your password?</Link>
-            </div> */}
             <button type="submit" className="w-full bg-black text-white font-semibold py-2 px-4 rounded-lg">Login</button>
           </form>
           <p className="mt-4 text-center">

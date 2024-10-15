@@ -9,13 +9,13 @@ import axios from 'axios';
 
 const ManageTournamentPage = () => {
   const location = useLocation();
-  const { tournament } = location.state || {}; // Access the tournament object;
+  const { tournament } = location.state || {};
   const { id, started } = tournament;
 
   const [hasStarted, setHasStarted] = useState(started);
   const [tournamentData, updateTournamentData] = useState(tournament);
-  const [currentMatches, updateCurrentMatches] = useState([]); //stores matches for current round
-  const [allMatches, updateAllMatches] = useState([]); //stores matches by round
+  const [currentMatches, updateCurrentMatches] = useState([]); 
+  const [allMatches, updateAllMatches] = useState([]); 
   const [currentRoundNumber, updateCurrentRoundNumber] = useState(0);
   const [isSelectingWinners, setIsSelectingWinners] = useState(false);
   const [roundComplete, setRoundComplete] = useState(false);
@@ -48,7 +48,6 @@ const ManageTournamentPage = () => {
       console.log("token:", token);
     
       try {
-        // Attempt to start Tournament
         console.log("Attempting to start Tournament with ID:", id);
         const response = await axios.post(`http://localhost:8080/api/tournaments/${id}/start`, {}, {
           headers: {
@@ -57,14 +56,12 @@ const ManageTournamentPage = () => {
           },
         });
 
-        // Fetch updated tournament data
         const tournamentResponse = await fetchTournamentData();
       
         if (tournamentResponse) {
-          const tournamentData = tournamentResponse.data; // Directly access the data
+          const tournamentData = tournamentResponse.data; 
           console.log("Fetched tournament data:", tournamentData);
 
-          // Update states with new data
           setHasStarted(true);
           updateTournamentData(tournamentData);
           alert("Successfully started tournament!");
@@ -79,7 +76,6 @@ const ManageTournamentPage = () => {
     }
   };
 
-  //Fetch the Tournament
   const fetchTournamentData = async () => {
     const token = Cookies.get('token');
   
@@ -184,7 +180,7 @@ const ManageTournamentPage = () => {
   
           const tournamentResponse = await fetchTournamentData();
           if (tournamentResponse) {
-            const tournamentData = tournamentResponse.data; // Directly access the data
+            const tournamentData = tournamentResponse.data; 
             console.log("Fetched tournament data:", tournamentData);
             updateTournamentData(tournamentData);
           }
@@ -194,7 +190,7 @@ const ManageTournamentPage = () => {
           setRoundComplete(false);
   
         } catch (error) {
-          console.error('Error advancing to nexxt round of tournament:', error);
+          console.error('Error advancing to next round of tournament:', error);
         }
       }
     } else {
@@ -212,7 +208,7 @@ const ManageTournamentPage = () => {
         style={{
           backgroundImage: `url('/Background/Gray Background.png')`,
           backgroundAttachment: 'fixed',
-          zIndex: -1, // Ensure the background stays behind content
+          zIndex: -1, 
         }}
       ></div>
 

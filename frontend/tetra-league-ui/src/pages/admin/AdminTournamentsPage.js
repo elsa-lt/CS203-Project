@@ -7,7 +7,7 @@ import axios from 'axios';
 
 const AdminTournamentsPage = () => {
   const [tournaments, setTournaments] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true); 
   const token = Cookies.get('token'); 
 
   useEffect(() => {

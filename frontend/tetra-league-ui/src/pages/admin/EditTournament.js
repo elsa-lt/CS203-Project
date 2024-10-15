@@ -20,9 +20,9 @@ const EditTournament = () => {
   });
   const [error, setError] = useState('');
   const [tournament, setTournament] = useState(null);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true); 
   const token = Cookies.get('token'); 
-  const [isSaving, setIsSaving] = useState(false); // New state for saving
+  const [isSaving, setIsSaving] = useState(false); 
 
   useEffect(() => {
     const fetchTournament = async () => {
@@ -53,7 +53,7 @@ const EditTournament = () => {
 
   const saveEdits = async () => {
     if (token && !isSaving) {
-      setIsSaving(true); // Set saving to true
+      setIsSaving(true);
       try {
         console.log("Attempting to edit tournament details for tournament ID:", id);
         const response = await axios.put(`http://localhost:8080/api/tournaments/${id}`, formData, {
@@ -64,13 +64,13 @@ const EditTournament = () => {
         });
         console.log("Successfully edited tournament details for tournament ID:", id);
         setIsEditing(false);
-        setTournament(response.data); // Update tournament state with the new data
+        setTournament(response.data); 
         setFormData(response.data); 
       } catch (error) {
         console.error('Error fetching tournaments:', error);
         setError('Failed to update tournament.');
       } finally {
-        setLoading(false); // Set loading to false after fetching data
+        setLoading(false);
         setIsSaving(false);
       }
     } else {
@@ -79,7 +79,7 @@ const EditTournament = () => {
   }
 
   if (error) {
-    return <div className="text-red-600">{error}</div>; // Display error message if any
+    return <div className="text-red-600">{error}</div>; 
   }
 
   if (!tournament) {
@@ -249,7 +249,7 @@ const EditTournament = () => {
                 type="button"
                 className="w-full bg-black text-white font-semibold py-2 px-4 rounded-lg opacity-100"
                 onClick={toggleEdit}
-                disabled={isSaving} // Disable button if saving
+                disabled={isSaving} 
               >
                 {isSaving ? 'Saving...' : isEditing ? 'Save Changes' : 'Edit Tournament'}
               </button>

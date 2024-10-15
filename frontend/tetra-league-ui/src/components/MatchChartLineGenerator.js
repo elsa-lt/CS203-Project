@@ -1,6 +1,5 @@
 import React from 'react';
 
-// { matchboxHeight, spacing }
 const MatchChartLineGenerator = ({ matchboxHeight, padding, lineHeight }) => {
 
   return(
@@ -24,7 +23,3 @@ const MatchChartLineGenerator = ({ matchboxHeight, padding, lineHeight }) => {
 };
 
 export default MatchChartLineGenerator
-
-/*
-margin -> margin + (spacing / 2)
-*/

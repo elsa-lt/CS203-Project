@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from 'react-bootstrap/Card'; // Import Bootstrap Card component for styling
+import Card from 'react-bootstrap/Card';
 
 const AdminCards = () => {
   return (

@@ -17,7 +17,6 @@ const TournamentDetails = () => {
 
     const fetchUserIdAndTournamentDetails = async () => {
       try {
-        // Fetch user ID and username
         const userInfoResponse = await axios.get('http://localhost:8080/api/users/info', {
           headers: {
             Authorization: `Bearer ${token}`,

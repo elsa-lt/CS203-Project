@@ -14,7 +14,6 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
       e.preventDefault();
 
-      // Validate that required fields are not empty
       if (!username || !name || !email || !confirmPassword) {
           setError('All fields are required');
           return;
@@ -31,21 +30,16 @@ const RegisterPage = () => {
               name,
               email,
               password,
-              confirmPassword // Include confirmPassword
+              confirmPassword 
           });
-
-          // Log the response
-          console.log('Response:', response);
 
           if (response.status === 200) {
               navigate('/login');
           } else {
-              // Log response if error
               console.log('Response data:', response.data);
               setError(response.data.message || 'Sign up failed. Please try again.');
           }
       } catch (error) {
-          // Handle the error response from the backend
           if (error.response) {
               console.error('Error response:', error.response.data);
               setError(error.response.data.message || 'Sign up failed. Please try again.');

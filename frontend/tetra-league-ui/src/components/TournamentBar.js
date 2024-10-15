@@ -1,11 +1,9 @@
-//Need to connect to backend API
 import React from 'react';
 import RegistrationButtons from '../components/RegistrationButtons';
 
 const TournamentBar = ({ name, startDate, endDate, prizePool, minElo, imageUrl }) => {
     return (
       <div className="flex w-full h-52 rounded-lg overflow-hidden bg-white border border-customGray border-opacity-30 bg-opacity-80">
-          {/*Header Image*/}
           <div className="w-72 h-full justify-center items-center">
             <img
               src={imageUrl} 
@@ -14,10 +12,8 @@ const TournamentBar = ({ name, startDate, endDate, prizePool, minElo, imageUrl }
             </img>
           </div>
 
-          {/*Text Container*/}
           <div className="flex w-full justify-between ml-6">
 
-            {/*Tournament Name & Date*/}
             <div className="flex flex-col flex-none basis-2/3 justify-center mr-6">
               <div className="flex font-medium font-sans-serif customGray text-3xl mb-4">{name}</div>
               <div className="flex helvetica-neue customGray mb-4">{startDate}</div>

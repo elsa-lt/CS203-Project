@@ -40,7 +40,7 @@ const TournamentCardsSmall = ({ tournament }) => {
                 Minimum Rank:
               </div>
               <div className="flex font-sans-serif text-center text-xl text-customBronze pl-2">
-                {tournament.minElo ? tournament.minElo : 'No minimum rank'}
+                {tournament.rank}
               </div>
             </div>
           </div>

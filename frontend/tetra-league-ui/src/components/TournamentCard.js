@@ -53,6 +53,7 @@ const TournamentCard = ({ id, name, startDate, endDate, prizePool, rank, imageUr
                   {rank}
                 </div>
               </div>
+              <div className="flex border-l-2 border-customGray border-opacity-30"></div>
               <div className="flex w-full pl-6">
                 {showRegistrationButtons && <RegistrationButtons username={username} tournamentId={id} />}
               </div>

@@ -1,17 +1,30 @@
-import React from 'react';
+import {React,useState} from 'react';
 import Card from 'react-bootstrap/Card';
 import StartButtons from './StartButtons'; 
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiX } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom';
+import CancelModal from './CancelModal';
 
 const AdminTournamentCard = ({ tournament }) => {
   const editNavigate = useNavigate();
+  const [isCancelModalOpen, setCancelModalOpen] = useState(false);
+  const [tournamentId, setTournamentId] = useState(null);
 
+  const formatDateRange = (start, end) => {
+    const startFormatted = new Date(start).toLocaleDateString();
+    const endFormatted = new Date(end).toLocaleDateString();
+    return `${startFormatted} - ${endFormatted}`;
+};
 
   const { name, startDate, endDate, rank, imageUrl } = tournament;
 
   const handleEdit = () => {
-    editNavigate(`/edit-tournament/${tournament._id}`); 
+    editNavigate(`/edit-tournament/${tournament.id}`); 
+  };
+
+  const handleOpenModal = (id) => {
+    setTournamentId(id); 
+    setCancelModalOpen(true); 
   };
 
   return (
@@ -19,6 +32,20 @@ const AdminTournamentCard = ({ tournament }) => {
       <Card.Body>
         {/* Header Image */}
         <div className="relative h-72">
+        <button
+              onClick={() => setCancelModalOpen(true)}
+              className="absolute top-3 right-5 text-black hover:text-yellow-400 flex items-center space-x-1"
+              aria-label="Delete Tournament"
+            >
+              <FiX className="text-2xl text-red-500 font-bold ml-auto" onClick={() => handleOpenModal(tournament.id)}/>
+            </button>
+          
+        
+        <CancelModal
+          isOpen={isCancelModalOpen}
+          onClose={() => setCancelModalOpen(false)}
+          tournamentId={tournamentId}
+        />
           <img
             src={imageUrl || '/Misc Design/tetrisdefault.jpg'} 
             alt={name || 'Tournament'}
@@ -34,10 +61,7 @@ const AdminTournamentCard = ({ tournament }) => {
               {name}
             </div>
             <div className="flex helvetica-neue customGray mb-4">
-              Start Date: {new Date(startDate).toLocaleDateString()}
-            </div>
-            <div className="flex helvetica-neue customGray mb-4">
-              End Date: {new Date(endDate).toLocaleDateString()}
+              {formatDateRange(startDate, endDate)}
             </div>
             <div className="flex">
               <div className="flex items-center">
@@ -57,7 +81,7 @@ const AdminTournamentCard = ({ tournament }) => {
               <FiEdit className="text-2xl" />
             </div>
             <div className="flex w-full justify-end items-end">
-              <StartButtons />
+              <StartButtons tournament={tournament}/>
             </div>
           </div>
         </div>

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LuHome, LuPlusCircle, LuCalendar, LuArchive } from "react-icons/lu";
+import { LuHome, LuPlusCircle, LuCalendar} from "react-icons/lu";
 
-const AdminSidebar = ({ name, imageUrl }) => {
+const AdminSidebar = () => {
   const location = useLocation();
 
   return (
@@ -29,7 +29,7 @@ const AdminSidebar = ({ name, imageUrl }) => {
           </li>
           <li>
             <Link
-              to="/manage-tournaments"
+              to="/admin-tournaments"
               className={`flex items-center space-x-4 pt-4 pb-4 pl-4 font-light font-hevetica-neue text-customGray ${location.pathname === '/manage-tournaments' ? 'text-white font-medium bg-blue-700 bg-opacity-80' : 'hover:text-blue-700'}`}
             >
               <LuCalendar className="text-3xl" />

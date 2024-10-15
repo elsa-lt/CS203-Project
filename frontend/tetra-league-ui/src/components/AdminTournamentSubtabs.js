@@ -62,7 +62,7 @@ const AdminTournamentSubtabs = ({ tournaments, loading }) => {
 
       <div className="flex justify-end mb-4">
         <button 
-          className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="py-2 px-4 bg-customGray text-white rounded hover:bg-gray-600"
           onClick={() => setSortAscending(prev => !prev)} 
         >
           Sort by Date {sortAscending ? '↓' : '↑'}

@@ -5,7 +5,7 @@ import AdminTournamentSubtabs from '../../components/AdminTournamentSubtabs';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
-const ManageTournamentsPage = () => {
+const AdminTournamentsPage = () => {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true); // Add loading state
   const token = Cookies.get('token'); 
@@ -33,7 +33,7 @@ const ManageTournamentsPage = () => {
     };
 
     fetchTournaments();
-  }, [token]);
+  }, []);
 
   return (
     <main
@@ -66,4 +66,4 @@ const ManageTournamentsPage = () => {
   );
 };
 
-export default ManageTournamentsPage;
+export default AdminTournamentsPage;

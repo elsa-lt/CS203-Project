@@ -9,6 +9,7 @@ import com.tetraleague.exception.RoundNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.HttpStatus;
@@ -111,9 +112,9 @@ public class TournamentController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{tournamentId}/advance")
-    public ResponseEntity<Void> advanceTournament(@PathVariable String tournamentId) {
-        tournamentService.advanceTournament(tournamentId);
+    @PostMapping("/{tournamentId}/rounds/{roundNumber}/advance")
+    public ResponseEntity<Void> advanceTournament(@PathVariable String tournamentId, @PathVariable int roundNumber) {
+        tournamentService.advanceTournament(tournamentId, roundNumber);
         return ResponseEntity.ok().build();
     }
 

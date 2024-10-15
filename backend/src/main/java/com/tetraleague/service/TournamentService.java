@@ -7,6 +7,7 @@ import com.tetraleague.model.ERole;
 import com.tetraleague.model.Round;
 import com.tetraleague.model.Match;
 import com.tetraleague.exception.TournamentNotFoundException;
+import com.tetraleague.repository.RoundRepository;
 import com.tetraleague.repository.TournamentRepository;
 import com.tetraleague.repository.MatchRepository;
 import com.tetraleague.repository.UserRepository;
@@ -39,6 +40,9 @@ public class TournamentService {
 
     @Autowired
     private MatchService matchService;
+
+    @Autowired
+    private RoundRepository roundRepository;
 
     @Autowired
     private MatchRepository matchRepository;
@@ -216,19 +220,27 @@ public class TournamentService {
         matchService.completeMatch(matchId, winnerId);
     }
 
-    public void advanceTournament(String tournamentId) {
+    public void advanceTournament(String tournamentId, int roundNumber) {
         Tournament tournament = getTournamentById(tournamentId);
-        List<Round> rounds = tournament.getRounds();
-        Round currentRound = rounds.get(rounds.size() - 1);
+        List<String> rounds = tournament.getRoundIds();
+
+        // Check if rounds is empty
+        if (rounds.isEmpty()) {
+            throw new RuntimeException("No rounds available in the tournament.");
+        }
+
+        Round currentRound = roundService.getRoundById(rounds.get(roundNumber++ - 1));
 
         if (roundService.isRoundComplete(currentRound)) {
             List<String> winnersId = currentRound.getWinnersId();
 
             if (winnersId.size() == 1) {
                 tournament.setWinner(winnersId.get(0));
+                System.out.println(winnersId);
+                System.out.println("Winner: " + winnersId.get(0));
                 tournament.setEnded(true);
             } else {
-                Round nextRound = roundService.createNextRound(winnersId, currentRound.getRoundNumber() + 1);
+                Round nextRound = roundService.createNextRound(winnersId, currentRound.getRoundNumber());
                 tournament.addRound(nextRound.getId());
             }
 
@@ -250,27 +262,23 @@ public class TournamentService {
                 .map(Match::getId) // Assuming Match has a getId method
                 .collect(Collectors.toList());
     }
-    
-    
+
     public void completeAllMatchesInRound(String tournamentId, int roundNumber) {
         Tournament tournament = getTournamentById(tournamentId);
-        List<Round> rounds = tournament.getRounds();
-        
-        Round roundToComplete = rounds.stream()
-            .filter(round -> round.getRoundNumber() == roundNumber)
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Round not found"));
-        
+        List<String> rounds = tournament.getRoundIds();
+
+        Round currentRound = roundService.getRoundById(rounds.get(roundNumber - 1));
+
         // Retrieve match IDs from the round and complete them
-        for (String matchId : roundToComplete.getMatchIds()) { // Assuming getMatchIds() returns List<String>
+        for (String matchId : currentRound.getMatchIds()) { // Assuming getMatchIds() returns List<String>
             Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new RuntimeException("Match not found with ID: " + matchId));
             
             match.setCompleted(true);
             matchRepository.save(match); // Save the updated match
         }
-        
+
+        roundRepository.save(currentRound);
         tournamentRepository.save(tournament); // Save tournament state
     }
-    
 }

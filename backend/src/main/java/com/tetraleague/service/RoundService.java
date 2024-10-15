@@ -27,9 +27,7 @@ public class RoundService {
         return roundRepository.findById(roundId)
                 .orElseThrow(() -> new RuntimeException("Round not found with ID: " + roundId));
     }
-    
-    // Create the first round by generating match IDs
-// Create the first round by generating match IDs
+
     public Round createFirstRound(List<String> participantsId) {
         int half = participantsId.size() / 2;
         List<String> matchIds = new ArrayList<>();
@@ -44,7 +42,6 @@ public class RoundService {
         roundRepository.save(firstRound);  // Make sure to save the round
         return firstRound;  // Return round with match IDs
     }
-
 
     // Create the next round
     public Round createNextRound(List<String> winnersId, int roundNumber) {

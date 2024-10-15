@@ -45,22 +45,22 @@ const SingleMatch = ({ match, matchboxHeight, padding, isSelectingWinners, compl
     } else {
       console.error("Token is missing");
     }
-  }, [match]);
+  }, [player1Id, player2Id]);
 
 
   const handleSelectPlayer1 = () => {
     if (isSelectingWinners) {
       setSelectedPlayer(selectedPlayer === 'player1' ? null : 'player1');
-      setWinnerId(selectedPlayer === 'player1' ? null : 'player1');
-      completeMatch(match.id, winnerId);
+      setWinnerId(player1Id);
+      completeMatch(match.id, player1Id);
     }
   };
 
   const handleSelectPlayer2 = () => {
     if (isSelectingWinners) {
       setSelectedPlayer(selectedPlayer === 'player2' ? null : 'player2');
-      setWinnerId(selectedPlayer === 'player2' ? null : 'player2');
-      completeMatch(match.id, winnerId);
+      setWinnerId(player2Id);
+      completeMatch(match.id, player2Id);
     }
   };
 

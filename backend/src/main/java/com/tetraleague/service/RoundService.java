@@ -29,6 +29,7 @@ public class RoundService {
     }
     
     // Create the first round by generating match IDs
+// Create the first round by generating match IDs
     public Round createFirstRound(List<String> participantsId) {
         int half = participantsId.size() / 2;
         List<String> matchIds = new ArrayList<>();
@@ -39,8 +40,11 @@ public class RoundService {
             matchIds.add(match.getId());  // Store match ID instead of object
         }
 
-        return new Round(1, matchIds);  // Return round with match IDs
+        Round firstRound = new Round(1, matchIds);
+        roundRepository.save(firstRound);  // Make sure to save the round
+        return firstRound;  // Return round with match IDs
     }
+
 
     // Create the next round
     public Round createNextRound(List<String> winnersId, int roundNumber) {

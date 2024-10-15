@@ -61,7 +61,7 @@ public class Tournament {
 // in the list, assuming it is the current round.
     public String getCurrentRoundId() {
         if (roundIds.isEmpty()) {
-            throw new RuntimeException("No rounds available");
+            return null;
         }
         return roundIds.get(roundIds.size() - 1); // Assuming last round is current
     }

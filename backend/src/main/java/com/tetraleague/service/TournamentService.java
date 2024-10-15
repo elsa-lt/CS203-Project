@@ -6,8 +6,6 @@ import com.tetraleague.model.User;
 import com.tetraleague.model.ERole;
 import com.tetraleague.model.Round;
 import com.tetraleague.model.Match;
-import com.tetraleague.exception.TournamentNotFoundException;
-import com.tetraleague.repository.RoundRepository;
 import com.tetraleague.repository.TournamentRepository;
 import com.tetraleague.repository.MatchRepository;
 import com.tetraleague.repository.UserRepository;
@@ -20,11 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.Optional;
-
 
 @Service
 public class TournamentService {
@@ -38,12 +32,6 @@ public class TournamentService {
 
     @Autowired
     private RoundService roundService;
-
-    @Autowired
-    private MatchService matchService;
-
-    @Autowired
-    private RoundRepository roundRepository;
 
     @Autowired
     private MatchRepository matchRepository;
@@ -148,10 +136,10 @@ public class TournamentService {
             throw new ClassCastException("User is not a valid player");
         }
     }
-
-    public Tournament addParticipant(String tournamentId, String participantIds) {
+    
+    public Tournament addParticipant(String tournamentId, String playerId) {
         Tournament tournament = getTournamentById(tournamentId);
-
+    
         if (tournament.hasEnded()) {
             throw new RuntimeException("Tournament has already ended");
         }
@@ -161,41 +149,41 @@ public class TournamentService {
         if (tournament.isFull()) {
             throw new RuntimeException("Tournament is full");
         }
-
-        String[] playerIds = participantIds.split(",");
-
-        for (String playerId : playerIds) {
-            Player player = validateAndGetPlayer(playerId);
-
-            if (tournament.getPlayerIds().stream().anyMatch(p -> p.equals(playerId))) {
-                throw new RuntimeException("Player " + playerId + " is already participating in the tournament");
-            }
-
-            if (player.getRank() != tournament.getRank()) {
-                throw new RuntimeException("Player's Rank is not the allowed rank for this tournament");
-            }
-
-            tournament.addParticipant(playerId);
+    
+        Player player = validateAndGetPlayer(playerId);
+    
+        if (tournament.getParticipants().stream().anyMatch(p -> p.equals(playerId))) {
+            throw new RuntimeException("Player is already participating in the tournament");
         }
-
+    
+        if (player.getRank() != tournament.getRank()) {
+            throw new RuntimeException("Player's Rank is not the allowed rank for this tournament");
+        }
+    
+        tournament.addParticipant(playerId);
         return tournamentRepository.save(tournament);
     }
 
-    public void removeParticipant(String tournamentId, String participantId) {
+    public Tournament removeParticipant (String tournamentId, String playerId) {
         Tournament tournament = getTournamentById(tournamentId);
-        
-        // Check if the tournament has already started or ended
-        if (tournament.hasStarted()) {
-            throw new RuntimeException("Cannot remove participant from a tournament that has already started");
+
+        Player player = validateAndGetPlayer(playerId);
+
+        if (tournament.getParticipants().stream().noneMatch(p -> p.equals(playerId))) {
+            throw new RuntimeException("Player is not participating in the tournament");
         }
-        
-        // Remove the participant from the tournament
-        tournament.removeParticipant(participantId);
-        
-        // Save the updated tournament back to the repository
-        tournamentRepository.save(tournament);
+
+        boolean removed = tournament.getParticipants().removeIf(p -> p.equals(playerId));
+
+        if (!removed) {
+            throw new RuntimeException("Failed to remove the player from the tournament");
+        }
+
+        Tournament updatedTournament = tournamentRepository.save(tournament);
+
+        return updatedTournament;
     }
-    
+
     public void deleteTournament (String tournamentId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
@@ -209,81 +197,64 @@ public class TournamentService {
             throw new RuntimeException("Tournament has already started");
         }
 
-        Round firstRound = roundService.createFirstRound(tournament.getPlayerIds());
-        tournament.addRound(firstRound.getId());
+        Round firstRound = roundService.createFirstRound(tournament.getParticipants());
+        tournament.addRound(firstRound);
 
         tournament.setStarted(true);
         tournamentRepository.save(tournament);
     }
 
     public void completeMatch(String matchId, String winnerId) {
-        matchService.completeMatch(matchId, winnerId);
+        Match match = getMatchById(matchId);
+        match.setCompleted(true);
+        match.setWinnerId(winnerId);
+        matchRepository.save(match);
     }
+    
 
-    public void advanceTournament(String tournamentId, int roundNumber) {
+    public void advanceTournament(String tournamentId) {
         Tournament tournament = getTournamentById(tournamentId);
-        List<String> rounds = tournament.getRoundIds();
-
-        // Check if rounds is empty
-        if (rounds.isEmpty()) {
-            throw new RuntimeException("No rounds available in the tournament.");
-        }
-
-        Round currentRound = roundService.getRoundById(rounds.get(roundNumber++ - 1));
-
+        List<Round> rounds = tournament.getRounds();
+        Round currentRound = rounds.get(rounds.size() - 1);
+    
         if (roundService.isRoundComplete(currentRound)) {
-            List<String> currentMatchIds = currentRound.getMatchIds();
-            List<Match> currentMatches = new ArrayList<>();
-
-            List<String> winnersId = new ArrayList<>();
-            for (String id : currentMatchIds) {
-                Match match = matchService.getMatchById(id);
-                winnersId.add(match.getWinnerId());
-            }
-
+            List<String> winnersId = currentRound.getWinnersId();
+    
             if (winnersId.size() == 1) {
                 tournament.setWinner(winnersId.get(0));
-                System.out.println(winnersId);
-                System.out.println("Winner: " + winnersId.get(0));
                 tournament.setEnded(true);
             } else {
-                Round nextRound = roundService.createNextRound(winnersId, currentRound.getRoundNumber());
-                tournament.addRound(nextRound.getId());
+                Round nextRound = roundService.createNextRound(winnersId, currentRound.getRoundNumber() + 1);
+                tournament.addRound(nextRound);
             }
-
+    
             tournamentRepository.save(tournament);
         } else {
             throw new RuntimeException("Current round is not complete, cannot advance the tournament.");
         }
     }
 
-    public List<String> getCurrentMatches(String tournamentId) {
+    public List<Match> getCurrentMatches(String tournamentId) {
         Tournament tournament = getTournamentById(tournamentId);
-        String currentRoundId = tournament.getCurrentRoundId(); 
-        Round currentRound = roundService.getRoundById(currentRoundId);
-        
-        return currentRound.getMatchIds().stream()
-                .map(matchService::getMatchById) // Use a method that returns Optional<Match>
-                .map(Match::getId) // Assuming Match has a getId method
-                .collect(Collectors.toList());
+        Round currentRound = tournament.getCurrentRound(); 
+        return currentRound.getMatches(); 
     }
-
+    
     public void completeAllMatchesInRound(String tournamentId, int roundNumber) {
         Tournament tournament = getTournamentById(tournamentId);
-        List<String> rounds = tournament.getRoundIds();
-
-        Round currentRound = roundService.getRoundById(rounds.get(roundNumber - 1));
-
-        // Retrieve match IDs from the round and complete them
-        for (String matchId : currentRound.getMatchIds()) { // Assuming getMatchIds() returns List<String>
-            Match match = matchRepository.findById(matchId)
-                .orElseThrow(() -> new RuntimeException("Match not found with ID: " + matchId));
-            
-            match.setCompleted(true);
-            matchRepository.save(match); // Save the updated match
+        List<Round> rounds = tournament.getRounds();
+    
+        Round roundToComplete = rounds.stream()
+            .filter(round -> round.getRoundNumber() == roundNumber)
+            .findFirst()
+            .orElseThrow(() -> new RuntimeException("Round not found"));
+    
+        for (Match match : roundToComplete.getMatches()) {
+            match.setCompleted(true);  
+            // i think need set winner id here match.setWinner(winnerId);
         }
-
-        roundRepository.save(currentRound);
-        tournamentRepository.save(tournament); // Save tournament state
+    
+        tournamentRepository.save(tournament);
     }
+    
 }

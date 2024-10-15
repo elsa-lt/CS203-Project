@@ -31,7 +31,7 @@ const AdminSidebar = () => {
           <li>
             <Link
               to="/admin-tournaments"
-              className={`flex items-center space-x-4 pt-4 pb-4 pl-4 font-light font-hevetica-neue text-customGray ${location.pathname === '/manage-tournaments' ? 'text-white font-medium bg-blue-700 bg-opacity-80' : 'hover:text-blue-700'}`}
+              className={`flex items-center space-x-4 pt-4 pb-4 pl-4 font-light font-hevetica-neue text-customGray ${location.pathname === '/admin-tournaments' ? 'text-white font-medium bg-blue-700 bg-opacity-80' : 'hover:text-blue-700'}`}
             >
               <LuCalendar className="text-3xl" />
               <span>My Tournaments</span>

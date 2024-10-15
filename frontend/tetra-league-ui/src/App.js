@@ -17,6 +17,7 @@ import ManageTournamentPage from './pages/admin/ManageTournamentPage';
 import CreateTournamentPage from './pages/admin/CreateTournamentPage';
 import EditTournament from './pages/admin/EditTournament';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminLeaderBoardPage from "./pages/admin/AdminLeaderBoardPage";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
       <Route path="/create-tournament" element={<ProtectedRoute element={<CreateTournamentPage />} role="admin" />} />
       <Route path="/edit-tournament/:id" element={<ProtectedRoute element={<EditTournament />} role="admin" />} />
       <Route path="/manage-tournament/:id" element={<ProtectedRoute element={<ManageTournamentPage />} role="admin" />} />
+      <Route path="/tournament-leaderboard" element={<ProtectedRoute element={<AdminLeaderBoardPage />} role="admin" />} />
     </Routes>
   );
 }

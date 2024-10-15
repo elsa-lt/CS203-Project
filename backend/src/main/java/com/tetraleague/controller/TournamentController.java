@@ -77,7 +77,7 @@ public class TournamentController {
         User player = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Player not found"));
         
-        boolean isRegistered = tournament.getParticipants().contains(player);
+        boolean isRegistered = tournament.getParticipants().contains(player.getId());
         return ResponseEntity.ok(isRegistered);
     }
 
@@ -120,6 +120,9 @@ public class TournamentController {
         }
     }
 
-    
-
+    @PostMapping("/{tournamentId}/rounds/{roundNumber}/complete")
+    public ResponseEntity<Void> completeRoundMatches(@PathVariable String tournamentId, @PathVariable int roundNumber) {
+        tournamentService.completeAllMatchesInRound(tournamentId, roundNumber);
+        return ResponseEntity.ok().build();
+    }    
 }

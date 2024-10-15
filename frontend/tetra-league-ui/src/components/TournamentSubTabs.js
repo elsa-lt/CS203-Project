@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 
 const TournamentSubTabs = ({ tournamentId, tournamentDescription }) => {
-  // State to keep track of the active tab
   const [activeTab, setActiveTab] = useState('Overview');
 
-  // Function to handle tab click
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
   };
@@ -35,27 +33,43 @@ const TournamentSubTabs = ({ tournamentId, tournamentDescription }) => {
         )}
 
         {activeTab === 'Participants' && (
-          <div className="flex-grow mt-4 p-6 bg-white rounded-lg border border-customGray border-opacity-30">
-            <h2 className="text-2xl font-semibold">Participants</h2>
-            <p>This is the Participants content.</p>
+          <div className="flex-grow mt-4 p-6 rounded-lg border border-customGray border-opacity-30 bg-white bg-opacity-80">
+            <div className="flex flex-col gap-6 Helvetica Neue text-customGray h-full">
+              <h2 className="text-2xl font-sans-serif">PARTICIPANTS</h2>
+              <div className="font-thin space-y-4 overflow-y-auto">
+                <p>This is the Participants content.</p>
+              </div>
+            </div>
           </div>
         )}
         {activeTab === 'Matches' && (
-          <div className="flex-grow mt-4 p-6 bg-white rounded-lg border border-customGray border-opacity-30">
-            <h2 className="text-2xl font-semibold">Matches</h2>
-            <p>This is the Matches content.</p>
+          <div className="flex-grow mt-4 p-6 rounded-lg border border-customGray border-opacity-30 bg-white bg-opacity-80">
+            <div className="flex flex-col gap-6 Helvetica Neue text-customGray h-full">
+              <h2 className="text-2xl font-sans-serif">MATCHES</h2>
+              <div className="font-thin space-y-4 overflow-y-auto">
+                <p>This is the Matches content.</p>
+              </div>
+            </div>
           </div>
         )}
         {activeTab === 'Past Matches' && (
-          <div className="flex-grow mt-4 p-6 bg-white rounded-lg border border-customGray border-opacity-30">
-            <h2 className="text-2xl font-semibold">Matches</h2>
-            <p>This is the Past Matches content.</p>
+          <div className="flex-grow mt-4 p-6 rounded-lg border border-customGray border-opacity-30 bg-white bg-opacity-80">
+            <div className="flex flex-col gap-6 Helvetica Neue text-customGray h-full">
+              <h2 className="text-2xl font-sans-serif">PAST MATCHES</h2>
+              <div className="font-thin space-y-4 overflow-y-auto">
+                <p>This is the Past Matches content.</p>
+              </div>
+            </div>
           </div>
         )}
         {activeTab === 'Tournament Bracket' && (
-          <div className="flex-grow mt-4 p-6 bg-white rounded-lg border border-customGray border-opacity-30">
-            <h2 className="text-2xl font-semibold">Tournament Bracket</h2>
-            <p>This is the Tournament Bracket content.</p>
+          <div className="flex-grow mt-4 p-6 rounded-lg border border-customGray border-opacity-30 bg-white bg-opacity-80">
+            <div className="flex flex-col gap-6 Helvetica Neue text-customGray h-full">
+              <h2 className="text-2xl font-sans-serif">TOURNAMENT BRACKET</h2>
+              <div className="font-thin space-y-4 overflow-y-auto">
+                <p>This is the Tournament Bracket content.</p>
+              </div>
+            </div>
           </div>
         )}
       </div>

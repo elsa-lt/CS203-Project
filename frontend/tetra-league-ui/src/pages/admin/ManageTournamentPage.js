@@ -199,6 +199,35 @@ const ManageTournamentPage = () => {
 
   };
 
+  //sets winnerID & isCompleted = true for a single match
+  const completeMatch = async (matchId, winnerId) => {
+    const token = Cookies.get('token');
+
+    if (!token) {
+      console.error("Token is missing");
+      return;
+    }
+
+    const confirmWinner = window.confirm("set player as winner?");
+    if (confirmWinner) {
+      try {
+        console.log("completing match with match ID:", matchId);
+        console.log("tournamentId:", id);
+        console.log("winnerId:", winnerId);
+        const completeMatchResponse = await axios.put(`http://localhost:8080/api/tournaments/${id}/matches/${matchId}/result`, { winnerId }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+        });
+        console.log(completeMatchResponse);
+      } catch (error) {
+      console.error('Error fetching username for players:', error);
+      }
+    }
+  };
+
+
   //UI
   return (
     <main className="relative flex min-h-screen p-10 overflow-hidden">
@@ -239,7 +268,7 @@ const ManageTournamentPage = () => {
           currentRoundNumber={currentRoundNumber}
           handleSelectWinners={handleSelectWinners}
           isSelectingWinners={isSelectingWinners}
-          advanceTournament={advanceTournament}/>
+          completeMatch={completeMatch}/>
       </div>
 
     </main>

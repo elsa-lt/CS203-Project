@@ -5,19 +5,41 @@ import Cookies from 'js-cookie';
 function RegistrationButtons({ tournamentId, username }) {
     const [isRegistered, setIsRegistered] = useState(null);
 
+    {/* using boolean */}
+    // const checkRegistrationStatus = async () => {
+    //     const token = Cookies.get('token');
+    //     try {
+    //         console.log("fetching registration status for user with username:", username);
+    //         const response = await axios.get(`http://localhost:8080/api/tournaments/${tournamentId}/participants/${username}`, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //                 'Content-Type': 'application/json',
+    //             },
+    //         });
+    //         console.log("Registration status:", response.data);
+
+    //         setIsRegistered(response.data);
+    //     } catch (error) {
+    //         console.error('Error checking registration status:', error);
+    //     }
+    // };
+
+    {/* using RegistrationStatusResponse */}
     const checkRegistrationStatus = async () => {
         const token = Cookies.get('token');
         try {
+            console.log("fetching registration status for user with username:", username);
             const response = await axios.get(`http://localhost:8080/api/tournaments/${tournamentId}/participants/${username}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
+            const responseData = response.data
+            console.log("Registration status:", responseData);
 
-            console.log("Registration status:", response.data); // Debugging 
-
-            setIsRegistered(response.data === true);
+            setIsRegistered(responseData.isRegistered);
+            console.log(isRegistered);
         } catch (error) {
             console.error('Error checking registration status:', error);
         }

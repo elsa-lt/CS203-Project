@@ -13,28 +13,10 @@ public class Round {
     @Id
     private String id;
     private int roundNumber;
-    private List<String> matchIds = new ArrayList<>(); // Correct the variable name
+    private List<String> matchIds = new ArrayList<>();
 
-    // Constructor to accept match IDs
     public Round(int roundNumber, List<String> matchIds) {
         this.roundNumber = roundNumber;
         this.matchIds = matchIds;
-    }
-
-    public List<String> getMatches() {
-        return matchIds;
-    }
-
-    // Add a match by ID
-    public void addMatch(String matchId) {
-        matchIds.add(matchId);
-    }
-
-    // Dummy method to check if match is complete
-    public boolean isComplete() {
-        return matchIds.stream().allMatch(matchId -> {
-            // Replace with actual logic to check if match is complete
-            return true;
-        });
     }
 }

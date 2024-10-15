@@ -1,39 +1,26 @@
 import React, { useState } from 'react';
+import SingleMatch from './SingleMatch';
+import ManageTournamentButtons from '../components/ManageTournamentButtons';
+import RoundModeller from '../components/RoundModeller';
 
-const ManageTournamentSubtabs = ({ tournaments, loading }) => {
-  const [activeTab, setActiveTab] = useState('ongoing-tournaments');
+const ManageTournamentSubtabs = ({ tournament, startAndInitialiseTournament, allMatches, hasStarted, currentRoundNumber, handleSelectWinners, isSelectingWinners }) => {
+  const [activeTab, setActiveTab] = useState('match-chart');
 
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
   };
+
+  const matchboxHeight = 100;
 
   return(
     <div className="w-full mx-auto">
       {/* Tab navigation */}
       <div className="flex justify-around pb-6">
         <button
-          className={`text-white py-2 px-4 ${activeTab === 'overview' ? 'border-b-2 border-blue-500' : ''} cursor-pointer hover:text-yellow-500`}
-          onClick={() => handleTabClick('overview')}
-        >
-          Overview
-        </button>
-        <button
           className={`text-white py-2 px-4 ${activeTab === 'participants' ? 'border-b-2 border-blue-500' : ''} cursor-pointer hover:text-yellow-500`}
           onClick={() => handleTabClick('participants')}
         >
           Participants
-        </button>
-        <button
-          className={`text-white py-2 px-4 ${activeTab === 'matches' ? 'border-b-2 border-blue-500' : ''} cursor-pointer hover:text-yellow-500`}
-          onClick={() => handleTabClick('matches')}
-        >
-          Matches
-        </button>
-        <button
-          className={`text-white py-2 px-4 ${activeTab === 'past-matches' ? 'border-b-2 border-blue-500' : ''} cursor-pointer hover:text-yellow-500`}
-          onClick={() => handleTabClick('past-matches')}
-        >
-          Past Matches
         </button>
         <button
           className={`text-white py-2 px-4 ${activeTab === 'match-chart' ? 'border-b-2 border-blue-500' : ''} cursor-pointer hover:text-yellow-500`}
@@ -50,15 +37,10 @@ const ManageTournamentSubtabs = ({ tournaments, loading }) => {
       </div>
 
       {/* Tab content */}
-      <div className="">
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
+      <div className="overflow-auto">
           <>
             {activeTab === 'overview' && (
-              <div>
-                nothing
-              </div>
+              <></>
             )}
             
             {activeTab === 'participants' && (
@@ -80,9 +62,35 @@ const ManageTournamentSubtabs = ({ tournaments, loading }) => {
             )}
 
             {activeTab === 'match-chart' && (
-              <div>
-                nothing
-              </div>
+              <div className="flex flex-col w-full h-full items-center">
+                <div className="flex h-full w-full p-10">
+
+                    {/* <div className="flex">
+                      <RoundModeller 
+                        matchboxHeight={matchboxHeight}
+                        currentRoundNumber={3}
+                        numberOfMatches={1}/>
+                    </div> */}
+
+                    <div className="flex">
+                      {allMatches.map((roundMatches, roundIndex) => (
+                        <RoundModeller
+                          key={roundIndex}
+                          matchboxHeight={matchboxHeight}
+                          currentRoundNumber={roundIndex + 1} // +1 because roundIndex is 0-based
+                          matches={roundMatches} // Pass matches for the specific round
+                          isSelectingWinners={isSelectingWinners}
+                        />
+                      ))}
+                    </div>
+
+                </div>
+                <ManageTournamentButtons
+                  startAndInitialiseTournament={startAndInitialiseTournament}
+                  hasStarted={hasStarted}
+                  handleSelectWinners={handleSelectWinners}
+                  isSelectingWinners={isSelectingWinners}/>
+            </div>
             )}
 
             {activeTab === 'statistics' && (
@@ -91,7 +99,6 @@ const ManageTournamentSubtabs = ({ tournaments, loading }) => {
               </div>
             )}
           </>
-        )}
     </div>
   </div>
   )

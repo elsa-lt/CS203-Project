@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 
 const LeaderBoardSubtabs = ({ username }) => {
-  const [activeTab, setActiveTab] = useState('Global-Ranking'); 
-  const [selectedBracket, setSelectedBracket] = useState('GOLD'); 
+  const [activeTab, setActiveTab] = useState('Global-Ranking');
+  const [selectedBracket, setSelectedBracket] = useState('GOLD');
   const [rankings, setRankings] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -74,7 +74,7 @@ const LeaderBoardSubtabs = ({ username }) => {
 
           {/* Dropdown*/}
           {activeTab === 'Bracket-Ranking' && (
-            <div className="mt-4">
+            <div className="mt-4 flex justify-start items-center relative left-20">
               <label htmlFor="bracket-select" className="mr-4">Choose Bracket:</label>
               <select
                 id="bracket-select"
@@ -89,10 +89,11 @@ const LeaderBoardSubtabs = ({ username }) => {
             </div>
           )}
 
+
           <div className="w-full max-w-6xl bg-white opacity-70 rounded-lg shadow-lg p-6 h-[550px] overflow-y-auto ml-20">
             <table className="table-auto w-full text-left">
               <thead className="sticky top-0 bg-white">
-                <tr>
+                <tr >
                   <th className="px-4 py-2">Rank</th>
                   <th className="px-4 py-2">Username</th>
                   <th className="px-4 py-2">Elo Rating</th>
@@ -103,7 +104,7 @@ const LeaderBoardSubtabs = ({ username }) => {
               </thead>
               <tbody>
                 {rankings.map((player, index) => (
-                  <tr key={index} className="text-center">
+                  <tr key={index} className="text-center bg-gray-50 border-b-2">
                     <td className="px-4 py-2">{index + 1}</td>
                     <td className="px-4 py-2">{player.username}</td>
                     <td className="px-4 py-2">{player.eloRating}</td>

@@ -2,7 +2,7 @@ import React from 'react';
 import SingleMatch from '../components/SingleMatch';
 import MatchChartLineGenerator from './MatchChartLineGenerator';
 
-const RoundModeller = ({ matchboxHeight, currentRoundNumber, matches, isSelectingWinners, completeMatch }) => {
+const RoundModeller = ({ matchboxHeight, currentRoundNumber, matches, isSelectingWinners, completeMatch, getMatch }) => {
 
   const numberOfMatches = matches.length;
 
@@ -76,6 +76,7 @@ const RoundModeller = ({ matchboxHeight, currentRoundNumber, matches, isSelectin
                 padding={matchBoxPadding}
                 isSelectingWinners={isSelectingWinners}
                 completeMatch={completeMatch}
+                getMatch={getMatch}
               />
             ))}
           </div>

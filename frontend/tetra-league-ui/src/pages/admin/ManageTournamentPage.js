@@ -228,6 +228,30 @@ const ManageTournamentPage = () => {
     }
   };
 
+  const getMatch = async (matchId) => {
+    const token = Cookies.get('token');
+
+    if (!token) {
+      console.error("Token is missing");
+      return;
+    }
+
+    try {
+      console.log("attempting to fetch match with match ID:", matchId);
+      const matchResponse = await axios.get(`http://localhost:8080/api/tournaments/${id}/matches/${matchId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      const matchData = matchResponse.data;
+      console.log(matchData);
+      return matchData;
+    } catch (error) {
+    console.error('Error fetching match', error);
+    return null;
+    }
+  }
 
   //UI
   return (
@@ -269,7 +293,8 @@ const ManageTournamentPage = () => {
           currentRoundNumber={currentRoundNumber}
           handleSelectWinners={handleSelectWinners}
           isSelectingWinners={isSelectingWinners}
-          completeMatch={completeMatch}/>
+          completeMatch={completeMatch}
+          getMatch={getMatch}/>
       </div>
 
     </main>

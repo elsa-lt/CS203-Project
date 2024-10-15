@@ -3,7 +3,17 @@ import SingleMatch from './SingleMatch';
 import ManageTournamentButtons from '../components/ManageTournamentButtons';
 import RoundModeller from '../components/RoundModeller';
 
-const ManageTournamentSubtabs = ({ tournament, startAndInitialiseTournament, allMatches, hasStarted, currentRoundNumber, handleSelectWinners, isSelectingWinners, advanceTournament, completeMatch }) => {
+const ManageTournamentSubtabs = (
+  { tournament,
+    startAndInitialiseTournament,
+    allMatches,
+    hasStarted,
+    currentRoundNumber,
+    handleSelectWinners,
+    isSelectingWinners,
+    advanceTournament,
+    completeMatch,
+    getMatch }) => {
   const [activeTab, setActiveTab] = useState('match-chart');
 
   const handleTabClick = (tabName) => {
@@ -81,6 +91,7 @@ const ManageTournamentSubtabs = ({ tournament, startAndInitialiseTournament, all
                           matches={roundMatches} 
                           isSelectingWinners={isSelectingWinners}
                           completeMatch={completeMatch}
+                          getMatch={getMatch}
                         />
                       ))}
                     </div>

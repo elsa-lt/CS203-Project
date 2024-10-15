@@ -2,50 +2,58 @@ import React, { useState, useEffect }  from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const SingleMatch = ({ match, matchboxHeight, padding, isSelectingWinners, completeMatch }) => {
+const SingleMatch = ({ match, matchboxHeight, padding, isSelectingWinners, completeMatch, getMatch }) => {
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const [player1Id, setPlayer1Id] = useState(match.player1Id);
-  const [player2Id, setPlayer2Id] = useState(match.player2Id);
+  const [player1Id, setPlayer1Id] = useState(null);
+  const [player2Id, setPlayer2Id] = useState(null);
   const [player1UserName, setPlayer1Username] = useState(null);
   const [player2UserName, setPlayer2Username] = useState(null);
   const [winnerId, setWinnerId] = useState(null);
 
   useEffect(() => {
-    const token = Cookies.get('token');
 
-    const fetchPlayerId = async () => {
-      try {
-        const player1InfoResponse = await axios.get(`http://localhost:8080/api/users/${player1Id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    const fetchMatchData = async () => {
+      const matchData = await getMatch(match);
 
-        const { username: fetchedUsernamePlayer1 } = player1InfoResponse.data; 
-        setPlayer1Username(fetchedUsernamePlayer1); 
-        console.log("successfully fetched and set username for player 1 with id:")
+      if (matchData) {
+        setPlayer1Id(matchData.player1Id);
+        setPlayer2Id(matchData.player2Id);
 
-        const player2InfoResponse = await axios.get(`http://localhost:8080/api/users/${player2Id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const token = Cookies.get('token');
 
-        const { username: fetchedUsernamePlayer2 } = player2InfoResponse.data; 
-        setPlayer2Username(fetchedUsernamePlayer2); 
-        console.log("successfully fetched and set username for player 2 with id:")
-
-      } catch (error) {
-        console.error('Error fetching username for players:', error);
+        if (token) {
+          try {
+            const player1InfoResponse = await axios.get(`http://localhost:8080/api/users/${matchData.player1Id}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+    
+            const { username: fetchedUsernamePlayer1 } = player1InfoResponse.data; 
+            setPlayer1Username(fetchedUsernamePlayer1); 
+            console.log("successfully fetched and set username for player 1 with id:", matchData.player1Id);
+    
+            const player2InfoResponse = await axios.get(`http://localhost:8080/api/users/${matchData.player2Id}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+    
+            const { username: fetchedUsernamePlayer2 } = player2InfoResponse.data; 
+            setPlayer2Username(fetchedUsernamePlayer2); 
+            console.log("successfully fetched and set username for player 2 with id:", matchData.player2Id);
+    
+          } catch (error) {
+            console.error('Error fetching username for players:', error);
+          }
+        } else {
+          console.error("Token is missing");
+        }
       }
     };
 
-    if (token) {
-      fetchPlayerId();
-    } else {
-      console.error("Token is missing");
-    }
-  }, [player1Id, player2Id]);
+    fetchMatchData();
+  }, [match]);
 
 
   const handleSelectPlayer1 = () => {

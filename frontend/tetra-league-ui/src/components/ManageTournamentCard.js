@@ -1,7 +1,7 @@
 import {React} from 'react';
 import Card from 'react-bootstrap/Card';
 
-const ManageTournamentCard = ({ tournament = {} }) => {
+const ManageTournamentCard = ({ tournament = {}, currentMatches = [], currentRoundNumber }) => {
 
   const { name, startDate, endDate, imageUrl } = tournament;
 
@@ -35,9 +35,8 @@ const ManageTournamentCard = ({ tournament = {} }) => {
             <div className="flex font-helvetica-neue text-center">
               Current Round
             </div>
-            {/*currently hardcoded*/}
             <div className="flex font-sans-serif text-4xl text-center pt-2">
-              SemiFinals
+              {currentRoundNumber}
             </div>
           </div>
           <div className="flex border-l-2 border-customGray border-opacity-30"></div>
@@ -45,9 +44,8 @@ const ManageTournamentCard = ({ tournament = {} }) => {
             <div className="flex font-helvetica-neue text-center">
               Ongoing Matches
             </div>
-            {/*currently hardcoded*/}
             <div className="flex font-sans-serif text-4xl text-center pt-2">
-              2
+              {currentMatches.length}
             </div>
           </div>
           <div className="flex border-l-2 border-customGray border-opacity-30"></div>

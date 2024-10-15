@@ -1,20 +1,14 @@
 package com.tetraleague.service;
 
 import com.tetraleague.model.Match;
-import com.tetraleague.model.Player;
-
 import com.tetraleague.repository.MatchRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
 @Service
 public class MatchService {
-
-    @Autowired
-    private RankingService rankingService;
 
     @Autowired
     private MatchRepository matchRepository;
@@ -24,7 +18,6 @@ public class MatchService {
                 .orElseThrow(() -> new RuntimeException("Round not found with ID: " + matchId));
     }
 
-    @Transactional
     public void completeMatch(String matchId, String winnerId) {
         Match match = getMatchById(matchId);
         

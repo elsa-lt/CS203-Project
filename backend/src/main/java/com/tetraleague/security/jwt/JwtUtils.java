@@ -2,20 +2,17 @@ package com.tetraleague.security.jwt;
 
 import java.security.Key;
 import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import com.tetraleague.security.services.UserDetailsImpl;
-
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-
 
 @Component
 public class JwtUtils {
@@ -64,6 +61,4 @@ public class JwtUtils {
       }
       return false;
   }
-  
-  
 }

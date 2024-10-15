@@ -6,10 +6,8 @@ import com.tetraleague.repository.UserRepository;
 import com.tetraleague.service.TournamentService;
 import com.tetraleague.exception.TournamentNotFoundException;
 import com.tetraleague.exception.RoundNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.HttpStatus;
@@ -95,14 +93,6 @@ public class TournamentController {
 
         public RegistrationStatusResponse(boolean isRegistered) {
             this.isRegistered = isRegistered;
-        }
-
-        public boolean isRegistered() {
-            return isRegistered;
-        }
-
-        public void setRegistered(boolean registered) {
-            isRegistered = registered;
         }
     }
 

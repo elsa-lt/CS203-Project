@@ -11,26 +11,20 @@ public class Match {
     private String id;
     private String player1Id;
     private String player2Id;
-    private String winnerId;  // initially null
+    private String winnerId;
     private int roundNumber;
-    private boolean isCompleted;  // initially false
+    private boolean isCompleted;
 
-    // Constructor
     public Match(String player1Id, String player2Id, int roundNumber) {
         this.player1Id = player1Id;
         this.player2Id = player2Id;
         this.roundNumber = roundNumber;
-        this.isCompleted = false; // new matches are not completed
+        this.isCompleted = false;
     }
 
-    // Setter for winner
     public void setWinner(String winnerId) {
         this.winnerId = winnerId;
         this.isCompleted = true; // mark as completed
         System.out.println("Winner set to: " + winnerId + ", Match completed: " + isCompleted);
-    }
-
-    public String getMatchup() {
-        return "Match " + getId() + ": " + player1Id + " vs " + player2Id;
     }
 }

@@ -4,14 +4,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import com.tetraleague.model.User;
 import com.tetraleague.model.Role;
 import com.tetraleague.model.Admin;
 import com.tetraleague.model.Player;
 import com.tetraleague.model.ERole;
+import com.tetraleague.payload.request.LoginRequest;
+import com.tetraleague.payload.request.SignupRequest;
+import com.tetraleague.payload.response.JwtResponse;
+import com.tetraleague.payload.response.MessageResponse;
+import com.tetraleague.repository.RoleRepository;
+import com.tetraleague.repository.UserRepository;
+import com.tetraleague.security.jwt.JwtUtils;
+import com.tetraleague.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,15 +30,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.tetraleague.payload.request.LoginRequest;
-import com.tetraleague.payload.request.SignupRequest;
-import com.tetraleague.payload.response.JwtResponse;
-import com.tetraleague.payload.response.MessageResponse;
-import com.tetraleague.repository.RoleRepository;
-import com.tetraleague.repository.UserRepository;
-import com.tetraleague.security.jwt.JwtUtils;
-import com.tetraleague.security.services.UserDetailsImpl;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController

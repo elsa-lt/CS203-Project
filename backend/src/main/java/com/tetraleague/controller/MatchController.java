@@ -1,8 +1,6 @@
 package com.tetraleague.controller;
 
-import com.tetraleague.model.Player;
 import com.tetraleague.service.MatchService;
-import com.tetraleague.service.TournamentService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +21,5 @@ public class MatchController {
         matchService.completeMatch(matchId, winnerId);
         return "Match " + matchId + " completed. Winner: " + winnerId;
     }
-
 }
 

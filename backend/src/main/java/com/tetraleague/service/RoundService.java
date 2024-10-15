@@ -1,10 +1,9 @@
 package com.tetraleague.service;
 
-import com.tetraleague.model.*;
-
+import com.tetraleague.model.Round;
+import com.tetraleague.model.Match;
 import com.tetraleague.repository.MatchRepository;
 import com.tetraleague.repository.RoundRepository;
-import com.tetraleague.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,16 +33,15 @@ public class RoundService {
 
         for (int i = 0; i < half; i++) {
             Match match = new Match(participantsId.get(i), participantsId.get(i + half), 1);
-            matchRepository.save(match);  // Save match to DB
-            matchIds.add(match.getId());  // Store match ID instead of object
+            matchRepository.save(match);
+            matchIds.add(match.getId());
         }
 
         Round firstRound = new Round(1, matchIds);
-        roundRepository.save(firstRound);  // Make sure to save the round
-        return firstRound;  // Return round with match IDs
+        roundRepository.save(firstRound);
+        return firstRound;
     }
 
-    // Create the next round
     public Round createNextRound(List<String> winnersId, int roundNumber) {
         int half = winnersId.size() / 2;
         List<String> nextRoundMatchIds = new ArrayList<>();

@@ -42,35 +42,38 @@ public class RoundService {
         participants.sort((p1, p2) -> Integer.compare(p2.getEloRating(), p1.getEloRating()));
         int half = participants.size() / 2;
 
-        List<Match> matches = new ArrayList<>();
+        List<String> matchIds = new ArrayList<>();
         for (int i = 0; i < half; i++) {
             Match match = new Match(participants.get(i).getId(), participants.get(i + half).getId(), 1);
             matchRepository.save(match);
-            matches.add(match);
+            matchIds.add(match.getId()); // Save the match ID instead of the match object
         }
 
-        return new Round(1, matches);
+        return new Round(1, matchIds); // Return Round with list of match IDs
     }
 
     public Round createNextRound(List<String> winnersId, int roundNumber) {
         int half = winnersId.size() / 2;
-        List<Match> nextRoundMatches = new ArrayList<>();
+        List<String> nextRoundMatchIds = new ArrayList<>();
 
         for (int i = 0; i < half; i++) {
             Match match = new Match(winnersId.get(i), winnersId.get(i + half), roundNumber);
             matchRepository.save(match);
-            nextRoundMatches.add(match);
+            nextRoundMatchIds.add(match.getId()); // Save the match ID instead of the match object
         }
 
-        winnersId.clear();
-        return new Round(roundNumber, nextRoundMatches);
+        return new Round(roundNumber, nextRoundMatchIds); // Return Round with list of match IDs
     }
 
     public boolean isRoundComplete(Round round) {
-        return round.isComplete();
+        // Check if all matches in the round are completed
+        return round.getMatchesIds().stream()
+                .allMatch(matchId -> matchService.findMatchById(matchId)
+                        .map(Match::isCompleted)
+                        .orElse(false));
     }
 
-    public void completeMatch(Match match, String winnerId) {
-        matchService.completeMatch(match.getId(), winnerId);
+    public void completeMatch(String matchId, String winnerId) {
+        matchService.completeMatch(matchId, winnerId);
     }
 }

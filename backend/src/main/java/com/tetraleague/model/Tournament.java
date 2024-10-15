@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Tournament {
+
     @Id
     private String id;
 
@@ -33,8 +34,8 @@ public class Tournament {
     @NotNull(message = "End date is required")
     private LocalDateTime endDate;
 
-    private List<String> participants = new ArrayList<>();
-    private List<Round> rounds = new ArrayList<>();
+    private List<String> playerIds = new ArrayList<>(); // Initialize to avoid null pointer issues
+    private List<String> roundIds = new ArrayList<>(); // List of round IDs
 
     private String imageUrl;
 
@@ -48,59 +49,44 @@ public class Tournament {
     private boolean started = false;
     private boolean ended = false;
 
+    // Add a participant
     public void addParticipant(String playerId) {
-        participants.add(playerId);
+        playerIds.add(playerId); // Correct the list name to playerIds
     }
 
+    // Remove a participant
     public void removeParticipant(String playerId) {
-        participants.add(playerId);
+        playerIds.remove(playerId); // Correct list to playerIds and use remove
     }
 
+    // Check if the tournament is full
     public boolean isFull() {
-        return participants.size() >= maxParticipants;
+        return playerIds.size() >= maxParticipants;
     }
 
+    // Check if the tournament has ended
     public boolean hasEnded() {
         return ended || LocalDateTime.now().isAfter(endDate);
     }
 
+    // Check if the tournament has started
     public boolean hasStarted() {
         return started || LocalDateTime.now().isAfter(startDate);
     }
 
+    // Start the tournament
     public void startTournament() {
         this.started = true;
     }
 
-    public void addRound(Round round) {
-        rounds.add(round);
+    // Add a round by ID
+    public void addRound(String roundId) {
+        roundIds.add(roundId);
     }
-    
-    
-    public Round getCurrentRound() {
-        return rounds.isEmpty() ? null : rounds.get(rounds.size() - 1);
-    }
-    
+
+    // Set the winner of the tournament
     public void setWinner(String winnerId) {
         this.winnerId = winnerId;
         this.ended = true;
-    }
-    
-    public List<String> getWinnersFromRounds() {
-        List<String> winners = new ArrayList<>();
-        for (Round round : rounds) {
-            if (round.isComplete()) {
-                winners.addAll(round.getWinnersId());
-            }
-        }
-        return winners;
-    }
-
-    public int getCurrentRoundNumber() {
-        return rounds.size();
-    }
-
-    public boolean hasRounds() {
-        return !rounds.isEmpty();
     }
 }

@@ -112,7 +112,7 @@ public class TournamentController {
     @GetMapping("/{tournamentId}/matches")
     public ResponseEntity<List<Match>> getCurrentMatches(@PathVariable String tournamentId) {
         try {
-            List<Match> currentMatches = tournamentService.getCurrentMatches(tournamentId);
+            List<String> currentMatchesId = tournamentService.getCurrentMatchesId(tournamentId);
             return ResponseEntity.ok(currentMatches);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

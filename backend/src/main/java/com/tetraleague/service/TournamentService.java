@@ -34,6 +34,9 @@ public class TournamentService {
     private RoundService roundService;
 
     @Autowired
+    private MatchService matchService;
+
+    @Autowired
     private MatchRepository matchRepository;
 
     public List<Tournament> getAllTournaments() {
@@ -136,10 +139,10 @@ public class TournamentService {
             throw new ClassCastException("User is not a valid player");
         }
     }
-    
-    public Tournament addParticipant(String tournamentId, String playerId) {
+
+    public Tournament addParticipant(String tournamentId, String participantIds) {
         Tournament tournament = getTournamentById(tournamentId);
-    
+
         if (tournament.hasEnded()) {
             throw new RuntimeException("Tournament has already ended");
         }
@@ -149,39 +152,24 @@ public class TournamentService {
         if (tournament.isFull()) {
             throw new RuntimeException("Tournament is full");
         }
-    
-        Player player = validateAndGetPlayer(playerId);
-    
-        if (tournament.getParticipants().stream().anyMatch(p -> p.equals(playerId))) {
-            throw new RuntimeException("Player is already participating in the tournament");
+
+        String[] playerIds = participantIds.split(",");
+
+        for (String playerId : playerIds) {
+            Player player = validateAndGetPlayer(playerId);
+
+            if (tournament.getPlayerIds().stream().anyMatch(p -> p.equals(playerId))) {
+                throw new RuntimeException("Player " + playerId + " is already participating in the tournament");
+            }
+
+            if (player.getRank() != tournament.getRank()) {
+                throw new RuntimeException("Player's Rank is not the allowed rank for this tournament");
+            }
+
+            tournament.addParticipant(playerId);
         }
-    
-        if (player.getRank() != tournament.getRank()) {
-            throw new RuntimeException("Player's Rank is not the allowed rank for this tournament");
-        }
-    
-        tournament.addParticipant(playerId);
+
         return tournamentRepository.save(tournament);
-    }
-
-    public Tournament removeParticipant (String tournamentId, String playerId) {
-        Tournament tournament = getTournamentById(tournamentId);
-
-        Player player = validateAndGetPlayer(playerId);
-
-        if (tournament.getParticipants().stream().noneMatch(p -> p.equals(playerId))) {
-            throw new RuntimeException("Player is not participating in the tournament");
-        }
-
-        boolean removed = tournament.getParticipants().removeIf(p -> p.equals(playerId));
-
-        if (!removed) {
-            throw new RuntimeException("Failed to remove the player from the tournament");
-        }
-
-        Tournament updatedTournament = tournamentRepository.save(tournament);
-
-        return updatedTournament;
     }
 
     public void deleteTournament (String tournamentId) {
@@ -197,7 +185,7 @@ public class TournamentService {
             throw new RuntimeException("Tournament has already started");
         }
 
-        Round firstRound = roundService.createFirstRound(tournament.getParticipants());
+        Round firstRound = roundService.createFirstRound(tournament.getPlayerIds());
         tournament.addRound(firstRound);
 
         tournament.setStarted(true);
@@ -205,21 +193,17 @@ public class TournamentService {
     }
 
     public void completeMatch(String matchId, String winnerId) {
-        Match match = getMatchById(matchId);
-        match.setCompleted(true);
-        match.setWinnerId(winnerId);
-        matchRepository.save(match);
+        matchService.completeMatch(matchId, winnerId);
     }
-    
 
     public void advanceTournament(String tournamentId) {
         Tournament tournament = getTournamentById(tournamentId);
         List<Round> rounds = tournament.getRounds();
         Round currentRound = rounds.get(rounds.size() - 1);
-    
+
         if (roundService.isRoundComplete(currentRound)) {
             List<String> winnersId = currentRound.getWinnersId();
-    
+
             if (winnersId.size() == 1) {
                 tournament.setWinner(winnersId.get(0));
                 tournament.setEnded(true);
@@ -227,17 +211,17 @@ public class TournamentService {
                 Round nextRound = roundService.createNextRound(winnersId, currentRound.getRoundNumber() + 1);
                 tournament.addRound(nextRound);
             }
-    
+
             tournamentRepository.save(tournament);
         } else {
             throw new RuntimeException("Current round is not complete, cannot advance the tournament.");
         }
     }
 
-    public List<Match> getCurrentMatches(String tournamentId) {
+    public List<String> getCurrentMatches(String tournamentId) {
         Tournament tournament = getTournamentById(tournamentId);
         Round currentRound = tournament.getCurrentRound(); 
-        return currentRound.getMatches(); 
+        return currentRound.getMatchesId();
     }
     
     public void completeAllMatchesInRound(String tournamentId, int roundNumber) {

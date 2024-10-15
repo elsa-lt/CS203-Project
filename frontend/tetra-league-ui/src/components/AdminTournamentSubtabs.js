@@ -77,7 +77,7 @@ const AdminTournamentSubtabs = ({ tournaments, loading }) => {
           <>
             {activeTab === 'ongoing-tournaments' && (
               <div>
-                <div className="flex flex-wrap gap-6">
+                <div className="flex flex-wrap justify-center items-center gap-6">
                   {sortedOngoingTournaments.length > 0 ? (
                     sortedOngoingTournaments.map(tournament => (
                       <AdminTournamentCards 
@@ -94,7 +94,7 @@ const AdminTournamentSubtabs = ({ tournaments, loading }) => {
 
             {activeTab === 'past-tournaments' && (
               <div>
-                <div className="flex flex-wrap gap-6">
+                <div className="flex flex-wrap justify-center items-center gap-6">
                   {sortedPastTournaments.length > 0 ? (
                     sortedPastTournaments.map(tournament => (
                       <AdminTournamentCards 

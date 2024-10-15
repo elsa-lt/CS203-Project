@@ -75,7 +75,7 @@ public class TournamentController {
     }
 
     @GetMapping("/{tournamentId}/participants/{username}")
-    public ResponseEntity<RegistrationStatusResponse> checkRegistrationStatus(@PathVariable String tournamentId, @PathVariable String username) {
+    public ResponseEntity<Boolean> checkRegistrationStatus(@PathVariable String tournamentId, @PathVariable String username) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         if (tournament == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -85,16 +85,16 @@ public class TournamentController {
                 .orElseThrow(() -> new RuntimeException("Player not found"));
 
         boolean isRegistered = tournament.getPlayerIds().contains(player.getId());
-        return ResponseEntity.ok(new RegistrationStatusResponse(isRegistered));
+        return ResponseEntity.ok(isRegistered);
     }
 
-    public static class RegistrationStatusResponse {
-        private boolean isRegistered;
+    // public static class RegistrationStatusResponse {
+    //     private boolean isRegistered;
 
-        public RegistrationStatusResponse(boolean isRegistered) {
-            this.isRegistered = isRegistered;
-        }
-    }
+    //     public RegistrationStatusResponse(boolean isRegistered) {
+    //         this.isRegistered = isRegistered;
+    //     }
+    // }
 
     @PostMapping("/{tournamentId}/start")
     public ResponseEntity<Void> startTournament(@PathVariable String tournamentId) {

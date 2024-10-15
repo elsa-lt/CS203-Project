@@ -77,7 +77,7 @@ public class TournamentController {
         User player = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Player not found"));
         
-        boolean isRegistered = tournament.getParticipants().contains(player);
+        boolean isRegistered = tournament.getParticipants().contains(player.getId());
         return ResponseEntity.ok(isRegistered);
     }
 

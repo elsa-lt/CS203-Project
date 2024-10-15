@@ -96,6 +96,10 @@ public class Tournament {
         return winners;
     }
 
+    public List<String> getParticipants() {
+        return participants;
+    }
+
     public int getCurrentRoundNumber() {
         return rounds.size();
     }

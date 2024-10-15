@@ -33,4 +33,8 @@ public class Match {
     public String getMatchup() {
         return "Match " + getId() + ": " + player1Id + " vs " + player2Id;
     }
+
+    public String getId() {
+        return id; 
+    }
 }

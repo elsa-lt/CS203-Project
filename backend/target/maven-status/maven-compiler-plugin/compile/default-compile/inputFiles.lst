@@ -5,6 +5,8 @@
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/controller/UserController.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/dto/PlayerRankingDTO.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/exception/GlobalExceptionHandler.java
+/Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/exception/RoundNotFoundException.java
+/Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/exception/TournamentNotFoundException.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/model/Admin.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/model/ERole.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/model/Glicko2Player.java
@@ -22,6 +24,7 @@
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/payload/response/MessageResponse.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/repository/MatchRepository.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/repository/RoleRepository.java
+/Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/repository/RoundRepository.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/repository/TournamentRepository.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/repository/UserRepository.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/security/WebSecurityConfig.java

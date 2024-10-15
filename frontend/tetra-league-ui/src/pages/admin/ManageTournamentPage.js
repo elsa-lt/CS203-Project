@@ -214,15 +214,16 @@ const ManageTournamentPage = () => {
         console.log("completing match with match ID:", matchId);
         console.log("tournamentId:", id);
         console.log("winnerId:", winnerId);
-        const completeMatchResponse = await axios.put(`http://localhost:8080/api/tournaments/${id}/matches/${matchId}/result`, { winnerId }, {
+        console.log("trying to put in http://localhost:8080/api/tournaments/" + id + "/matches/" + matchId + "/result")
+        const completeMatchResponse = await axios.put(`http://localhost:8080/api/tournaments/${id}/matches/${matchId}/result`, winnerId, {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'text/plain',
           },
         });
         console.log(completeMatchResponse);
       } catch (error) {
-      console.error('Error fetching username for players:', error);
+      console.error('Error completing match with Id:', error);
       }
     }
   };

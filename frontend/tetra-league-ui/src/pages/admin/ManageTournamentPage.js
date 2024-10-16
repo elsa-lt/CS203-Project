@@ -19,6 +19,8 @@ const ManageTournamentPage = () => {
   const [currentRoundNumber, updateCurrentRoundNumber] = useState(0);
   const [isSelectingWinners, setIsSelectingWinners] = useState(false);
   const [roundComplete, setRoundComplete] = useState(false);
+  const [tournamentEnded, setTournamentEnded] = useState(false);
+  const [winner, setWinner] = useState(null);
 
   if (!tournamentData) {
     return <div>No tournament data available.</div>;
@@ -36,7 +38,6 @@ const ManageTournamentPage = () => {
     setIsSelectingWinners(!isSelectingWinners);
   }
 
-  //Function to Start Tournament
   const startTournament = async () => {
     const confirmStart = window.confirm("Are you sure you want to start the tournament?");
     if (confirmStart) {
@@ -101,7 +102,6 @@ const ManageTournamentPage = () => {
     }
   };
 
-
   const fetchMatches = async () => {
     const token = Cookies.get('token');
   
@@ -127,6 +127,51 @@ const ManageTournamentPage = () => {
     }
   };
 
+  const fetchTournamentandMatchData = async () => {
+    try {
+      const tournamentResponse = await fetchTournamentData();
+      if (tournamentResponse) {
+        const tournamentData = tournamentResponse.data;
+        console.log("Fetched tournament data:", tournamentData);
+        updateTournamentData(tournamentData);
+        if (!tournamentResponse.ended) {
+          setTournamentEnded(true);
+          setWinner(tournamentResponse.winnerId);
+        }
+      }
+  
+      if (!tournamentResponse.ended) {
+        await fetchMatches();
+      }
+    } catch (error) {
+      console.error('Error fetching tournament and matches:', error);
+    }
+  }
+
+  const handleAdvanceTournament = async () => {
+    const token = Cookies.get('token');
+
+    if (!token) {
+      console.error("Token is missing");
+      return;
+    }
+
+    const confirmAdvance = window.confirm("Are you sure you want to advance to the next round?");
+    if (!confirmAdvance) {
+      return;
+    }
+
+    const roundCompleted = await CompleteRoundMatches();
+    if (!roundCompleted) {
+      alert("Must complete Current round before advancing");
+      return;
+    }
+
+    await advanceTournament();
+
+    setRoundComplete(false);
+    await fetchTournamentandMatchData();
+  }
 
   const CompleteRoundMatches = async () => {
     const token = Cookies.get('token');
@@ -155,51 +200,28 @@ const ManageTournamentPage = () => {
 
   const advanceTournament = async () => {
     const token = Cookies.get('token');
-  
-    const roundCompleted = await CompleteRoundMatches();
 
-    if (roundCompleted) {
-
-      if (!token) {
-        console.error("Token is missing");
-        return;
-      }
-
-      const confirmAdvance = window.confirm("Are you sure you want to start the tournament?");
-      if (confirmAdvance){
-        try {
-          console.log("Attempting to advance to next round of Tournament with ID:", id);
-          const advanceResponse = await axios.post(`http://localhost:8080/api/tournaments/${id}/rounds/${currentRoundNumber}/advance`, {}, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          console.log("Successfully advanced to next round of Tournament with ID:", id);
-          console.log(advanceResponse.data);
-          updateCurrentRoundNumber(currentRoundNumber + 1);
-  
-          const tournamentResponse = await fetchTournamentData();
-          if (tournamentResponse) {
-            const tournamentData = tournamentResponse.data; 
-            console.log("Fetched tournament data:", tournamentData);
-            updateTournamentData(tournamentData);
-          }
-  
-          await fetchMatches();
-  
-          setRoundComplete(false);
-  
-        } catch (error) {
-          console.error('Error advancing to next round of tournament:', error);
-        }
-      }
-    } else {
-      alert("Must complete Current round before advancing");
+    if (!token) {
+      console.error("Token is missing");
+      return;
     }
 
+    try {
+      console.log("Attempting to advance to next round of Tournament with ID:", id);
+      const advanceResponse = await axios.post(`http://localhost:8080/api/tournaments/${id}/rounds/${currentRoundNumber}/advance`, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      console.log("Successfully advanced to next round of Tournament with ID:", id);
+      console.log(advanceResponse.data);
+      updateCurrentRoundNumber(prevRoundNumber => prevRoundNumber + 1);
+
+    } catch (error) {
+      console.error('Error advancing to next round of tournament:', error);
+    }
   };
 
-  //sets winnerID & isCompleted = true for a single match
   const completeMatch = async (matchId, winnerId) => {
     const token = Cookies.get('token');
 
@@ -214,7 +236,6 @@ const ManageTournamentPage = () => {
         console.log("completing match with match ID:", matchId);
         console.log("tournamentId:", id);
         console.log("winnerId:", winnerId);
-        console.log("trying to put in http://localhost:8080/api/tournaments/" + id + "/matches/" + matchId + "/result")
         const completeMatchResponse = await axios.put(`http://localhost:8080/api/tournaments/${id}/matches/${matchId}/result`, winnerId, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -222,6 +243,8 @@ const ManageTournamentPage = () => {
           },
         });
         console.log(completeMatchResponse);
+        console.log("successfully updated winner for match");
+        alert("successfully updated winner for match")
       } catch (error) {
       console.error('Error completing match with Id:', error);
       }
@@ -253,7 +276,6 @@ const ManageTournamentPage = () => {
     }
   }
 
-  //UI
   return (
     <main className="relative flex min-h-screen p-10 overflow-hidden">
 
@@ -293,8 +315,12 @@ const ManageTournamentPage = () => {
           currentRoundNumber={currentRoundNumber}
           handleSelectWinners={handleSelectWinners}
           isSelectingWinners={isSelectingWinners}
+          handleAdvanceTournament={handleAdvanceTournament}
           completeMatch={completeMatch}
-          getMatch={getMatch}/>
+          getMatch={getMatch}
+          tournamentEnded={tournamentEnded}
+          winner={winner}
+        />
       </div>
 
     </main>

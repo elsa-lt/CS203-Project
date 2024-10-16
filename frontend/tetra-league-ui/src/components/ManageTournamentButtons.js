@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 
-function ManageTournamentButtons({ startAndInitialiseTournament, hasStarted, handleSelectWinners, isSelectingWinners, advanceTournament }) {
+function ManageTournamentButtons({ 
+  startAndInitialiseTournament,
+  hasStarted,
+  handleSelectWinners,
+  isSelectingWinners,
+  handleAdvanceTournament }) {
 
   return (
     <div className="flex gap-6">
 
     <div 
-        className="flex justify-center items-center font-medium helvetica-neue bg-customBlue text-white h-11 w-40 rounded-full cursor-pointer"
+        className="flex justify-center items-center font-medium helvetica-neue bg-customBlue text-white h-11 pl-6 pr-6 rounded-full cursor-pointer"
         onClick={handleSelectWinners}>
-        {isSelectingWinners ? "Confirm Winner Selection" : "Select Winners"}
+        {isSelectingWinners ? "Selecting Winners" : "Select Winners"}
       </div>
 
       <div 
-        className="flex justify-center items-center font-medium helvetica-neue bg-customBlue text-white h-11 w-40 rounded-full cursor-pointer"
-        onClick={advanceTournament}>
+        className="flex justify-center items-center font-medium helvetica-neue bg-customBlue text-white h-11 pl-6 pr-6 rounded-full cursor-pointer"
+        onClick={handleAdvanceTournament}>
         Advance
       </div>
 

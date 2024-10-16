@@ -11,9 +11,11 @@ const ManageTournamentSubtabs = (
     currentRoundNumber,
     handleSelectWinners,
     isSelectingWinners,
-    advanceTournament,
+    handleAdvanceTournament,
     completeMatch,
-    getMatch }) => {
+    getMatch,
+    tournamentEnded,
+    winner }) => {
   const [activeTab, setActiveTab] = useState('match-chart');
 
   const handleTabClick = (tabName) => {
@@ -92,6 +94,8 @@ const ManageTournamentSubtabs = (
                           isSelectingWinners={isSelectingWinners}
                           completeMatch={completeMatch}
                           getMatch={getMatch}
+                          tournamentEnded={tournamentEnded}
+                          winner={winner}
                         />
                       ))}
                     </div>
@@ -102,7 +106,7 @@ const ManageTournamentSubtabs = (
                   hasStarted={hasStarted}
                   handleSelectWinners={handleSelectWinners}
                   isSelectingWinners={isSelectingWinners}
-                  advanceTournament={advanceTournament}/>
+                  handleAdvanceTournament={handleAdvanceTournament}/>
             </div>
             )}
 

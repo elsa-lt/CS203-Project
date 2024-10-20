@@ -49,7 +49,7 @@ public class UserService {
     public void joinTournament(Player player, String tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         tournamentService.addParticipant(tournamentId, player.getId());
-        if (!player.getTournaments().contains(tournament)) {
+        if (!player.getTournamentId().contains(tournament.getId())) {
             player.addTournament(tournament);
         }
 
@@ -59,19 +59,19 @@ public class UserService {
     public void withdrawFromTournament(Player player, String tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         tournamentService.removeParticipant(tournamentId, player.getId());
-        if (player.getTournaments().contains(tournament)) {
+        if (player.getTournamentId().contains(tournament.getId())) {
             player.removeTournament(tournament);
             userRepository.save(player);
         }
     }
 
-    public List<Tournament> getTournaments(String username) {
+    public List<String> getTournaments(String username) {
         Optional<Player> playerOptional = userRepository.findByUsername(username)
                 .filter(user -> user instanceof Player)
                 .map(user -> (Player) user);
 
         if (playerOptional.isPresent()) {
-            return playerOptional.get().getTournaments();
+            return playerOptional.get().getTournamentId();
         } else {
             throw new RuntimeException("Player not found!");
         }

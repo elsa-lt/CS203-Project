@@ -16,7 +16,7 @@ public class Player extends User {
     private double ratingDeviation;
     private double volatility;
 
-    private List<Tournament> tournaments = new ArrayList<>();
+    private List<String> tournamentId = new ArrayList<>();
 
     private int gamesWon = 0;
     private int gamesLost = 0;
@@ -28,11 +28,11 @@ public class Player extends User {
     }
 
     public void addTournament(Tournament tournament) {
-        tournaments.add(tournament);
+        tournamentId.add(tournament.getId());
     }
 
     public void removeTournament(Tournament tournament) {
-        tournaments.remove(tournament);
+        tournamentId.remove(tournament.getId());
     }
 
     public double getWinRate() {

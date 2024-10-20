@@ -3,8 +3,7 @@ package com.tetraleague.controller;
 import com.tetraleague.dto.PlayerRankingDTO;
 import com.tetraleague.model.User;
 import com.tetraleague.model.UserExistsResponse;
-import com.tetraleague.model.Player; 
-import com.tetraleague.model.Tournament;
+import com.tetraleague.model.Player;
 import com.tetraleague.model.Rank;
 import com.tetraleague.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,8 +123,8 @@ public class UserController {
     }
 
     @GetMapping("/{username}/tournaments")
-    public ResponseEntity<List<Tournament>> getRegisteredTournaments(@PathVariable String username) {
-        List<Tournament> tournaments = userService.getTournaments(username);
+    public ResponseEntity<List<String>> getRegisteredTournaments(@PathVariable String username) {
+        List<String> tournaments = userService.getTournaments(username);
         return ResponseEntity.ok(tournaments);
     }
 

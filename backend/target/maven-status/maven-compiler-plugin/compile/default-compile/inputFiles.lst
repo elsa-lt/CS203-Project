@@ -33,8 +33,11 @@
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/security/jwt/JwtUtils.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/security/services/UserDetailsImpl.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/security/services/UserDetailsServiceImpl.java
+/Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/service/JavaSmtpGmailSenderService.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/service/MatchService.java
+/Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/service/OTPService.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/service/RankingService.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/service/RoundService.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/service/TournamentService.java
 /Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/service/UserService.java
+/Users/elsa/Desktop/Uni/Y2T1/CS203 Software Dev/cs203proj/backend/src/main/java/com/tetraleague/util/OTPUtil.java

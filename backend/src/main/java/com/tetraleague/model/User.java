@@ -38,10 +38,21 @@ public class User {
     @DBRef
     private Set<Role> roles = new HashSet<>();
 
+    private boolean isVerified;
+
     public User(String username, String name, String email, String password) {
         this.username = username;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.isVerified = false;
+    }
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
     }
 }

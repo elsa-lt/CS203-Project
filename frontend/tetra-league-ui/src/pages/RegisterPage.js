@@ -70,10 +70,10 @@ const RegisterPage = () => {
       if (response.status === 200) {
         navigate('/login');
       } else {
-        setError(response.data.message || 'OTP verification failed. Please try again.'); // Set error for invalid OTP
+        setError(response.data.message || 'OTP verification failed. Please try again.'); 
       }
     } catch (error) {
-      setError(error.response?.data?.message || 'OTP verification failed. Please try again.'); // Error for invalid OTP
+      setError(error.response?.data?.message || 'OTP verification failed. Please try again.')
     } finally {
       setLoading(false);
     }

@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class OTPService {
-    private Map<String, String> otpCache = new HashMap<>(); // Temporary storage
+    private Map<String, String> otpCache = new HashMap<>();
 
     @Autowired
     private JavaSmtpGmailSenderService emailService;
@@ -19,7 +19,6 @@ public class OTPService {
         otpCache.put(email, otp); // Store OTP for the user's email
         emailService.sendOTPEmail(email, otp);
 
-        // Optionally, you can set a timer to expire the OTP after a few minutes
         new java.util.Timer().schedule(
             new java.util.TimerTask() {
                 @Override
@@ -27,7 +26,7 @@ public class OTPService {
                     otpCache.remove(email);
                 }
             },
-            TimeUnit.MINUTES.toMillis(5) // OTP expires in 5 minutes
+            TimeUnit.MINUTES.toMillis(5) // Set timer to 5min, OTP expires in 5 min
         );
     }
 

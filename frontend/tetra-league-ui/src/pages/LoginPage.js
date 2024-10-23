@@ -6,9 +6,9 @@ import axios from 'axios'; // Ensure axios is imported
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [otp, setOtp] = useState(''); // State for OTP
-  const [otpSent, setOtpSent] = useState(false); // State to track if OTP was sent
-  const [loading, setLoading] = useState(false); // State to track loading status
+  const [otp, setOtp] = useState(''); 
+  const [otpSent, setOtpSent] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -18,12 +18,12 @@ const LoginPage = () => {
     console.log('Form submitted');
 
     try {
-      setLoading(true); // Disable the login button by setting loading to true
+      setLoading(true); 
       const user = await login(username, password); 
 
       // After successful login, retrieve email by username
       const emailResponse = await axios.get(`http://localhost:8080/api/auth/get-email?username=${username}`);
-      const email = emailResponse.data.email; // Get the email from the response
+      const email = emailResponse.data.email; 
 
       // Send OTP to the retrieved email
       await axios.post('http://localhost:8080/api/auth/send-otp', { email });
@@ -39,17 +39,15 @@ const LoginPage = () => {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true); // Disable the Verify OTP button while processing
-      // Retrieve email again to verify OTP
+      setLoading(true);
+      
       const emailResponse = await axios.get(`http://localhost:8080/api/auth/get-email?username=${username}`);
       const email = emailResponse.data.email;
-
+  
       const response = await axios.post('http://localhost:8080/api/auth/verify-otp', { email, otp });
-      // Handle successful OTP verification
-      console.log(response.data);
-      
+  
       // Redirect based on user role
-      const user = await login(username, password); // Log in again to get user details after OTP
+      const user = await login(username, password); 
       if (user.roles.includes('ROLE_ADMIN')) {
         console.log('Navigating to /dashboard');
         navigate('/dashboard');
@@ -57,15 +55,23 @@ const LoginPage = () => {
         console.log('Navigating to /home');
         navigate('/home');
       } else {
-        navigate('/login');
         setError('User role not recognized');
+        navigate('/login');
       }
     } catch (error) {
-      setError('Invalid OTP. Please try again.');
+      console.error('Error during OTP verification:', error);
+      // Display error message on the UI
+      if (error.response && error.response.data && error.response.data.message) {
+        setError(error.response.data.message); // Use error message from the server
+      } else {
+        setError('Invalid OTP. Please try again.'); // Default error message
+      }
     } finally {
       setLoading(false); // Enable the Verify OTP button after the process is done
     }
   };
+  
+  
 
   return (
     <main className="flex min-h-screen" style={{ backgroundImage: `url('/Background/White Background.png')` }}>
@@ -107,14 +113,14 @@ const LoginPage = () => {
               <button 
                 type="submit" 
                 className={`w-full bg-black text-white font-semibold py-2 px-4 rounded-lg ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={loading} // Disable the button if loading
+                disabled={loading} 
               >
                 {loading ? 'Processing...' : 'Login'}
               </button>
             </form>
           ) : (
-            // OTP Verification Form
             <form onSubmit={handleVerifyOtp} className="mt-4">
+              {error && <p className="text-red-600">{error}</p>}
               <div className="mb-4">
                 <label htmlFor="otp" className="block text-gray-700">Enter OTP</label>
                 <input
@@ -130,7 +136,7 @@ const LoginPage = () => {
               <button 
                 type="submit" 
                 className={`w-full bg-black text-white font-semibold py-2 px-4 rounded-lg ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={loading} // Disable the button if loading
+                disabled={loading} 
               >
                 {loading ? 'Verifying...' : 'Verify OTP'}
               </button>

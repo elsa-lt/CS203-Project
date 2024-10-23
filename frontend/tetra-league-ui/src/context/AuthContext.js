@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
                 },
             });
             const userData = response.data;
-            console.log('User data from backend:', userData);
+            //console.log('User data from backend:', userData);
             setUser(userData); 
         } catch (error) {
             console.error('Failed to fetch user info:', error);

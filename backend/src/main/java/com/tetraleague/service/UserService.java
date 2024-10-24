@@ -49,7 +49,7 @@ public class UserService {
     public void joinTournament(Player player, String tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         tournamentService.addParticipant(tournamentId, player.getId());
-        if (!player.getTournamentId().contains(tournament.getId())) {
+        if (!player.getTournamentIds().contains(tournament.getId())) {
             player.addTournament(tournament);
         }
 
@@ -59,7 +59,7 @@ public class UserService {
     public void withdrawFromTournament(Player player, String tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         tournamentService.removeParticipant(tournamentId, player.getId());
-        if (player.getTournamentId().contains(tournament.getId())) {
+        if (player.getTournamentIds().contains(tournament.getId())) {
             player.removeTournament(tournament);
             userRepository.save(player);
         }
@@ -71,7 +71,7 @@ public class UserService {
                 .map(user -> (Player) user);
 
         if (playerOptional.isPresent()) {
-            return playerOptional.get().getTournamentId();
+            return playerOptional.get().getTournamentIds();
         } else {
             throw new RuntimeException("Player not found!");
         }

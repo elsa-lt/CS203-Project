@@ -50,7 +50,6 @@ public class TournamentService {
     }
 
     public Tournament getTournamentById(String id) {
-        logger.info("Fetching tournament with ID: {}", id);
         return tournamentRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Tournament not found"));
     }
@@ -182,12 +181,38 @@ public class TournamentService {
         tournament.removeParticipant(participantId);
         tournamentRepository.save(tournament);
     }
-    
-    public void deleteTournament (String tournamentId) {
+
+    public void deleteTournament(String tournamentId) {
         Tournament tournament = tournamentRepository.findById(tournamentId)
                 .orElseThrow(() -> new RuntimeException("Tournament not found"));
-        tournamentRepository.delete(tournament);
+
+        for (String roundId : tournament.getRoundIds()) {
+            roundRepository.findById(roundId)
+                    .orElseThrow(() -> new RuntimeException("Round not found"))
+                    .getMatchIds()
+                    .forEach(matchRepository::deleteById);
+
+            roundRepository.deleteById(roundId);
+        }
+
+        List<String> playerIds = tournament.getPlayerIds();
+        for (String playerId : playerIds) {
+            Player player = userRepository.findById(playerId)
+                    .filter(user -> user instanceof Player)
+                    .map(user -> (Player) user)
+                    .orElseThrow(() -> new RuntimeException("Player not found"));
+
+            List<String> tournamentIds = player.getTournamentIds();
+            if (!tournamentIds.remove(tournamentId)) {
+                throw new RuntimeException("Tournament not found in player's record!");
+            }
+
+            userRepository.save(player);
+        }
+
+        tournamentRepository.deleteById(tournamentId);
     }
+
 
     public void startTournament(String tournamentId) {
         Tournament tournament = getTournamentById(tournamentId);

@@ -27,33 +27,21 @@ public class RoundService {
                 .orElseThrow(() -> new RuntimeException("Round not found with ID: " + roundId));
     }
 
-    public Round createFirstRound(List<String> participantsId) {
+    public Round createRound(List<String> participantsId, int roundNumber) {
         int half = participantsId.size() / 2;
         List<String> matchIds = new ArrayList<>();
 
         for (int i = 0; i < half; i++) {
-            Match match = new Match(participantsId.get(i), participantsId.get(i + half), 1);
+            Match match = new Match(participantsId.get(i), participantsId.get(i + half), roundNumber);
             matchRepository.save(match);
             matchIds.add(match.getId());
         }
 
-        Round firstRound = new Round(1, matchIds);
-        roundRepository.save(firstRound);
-        return firstRound;
+        Round round = new Round(roundNumber, matchIds);
+        roundRepository.save(round);
+        return round;
     }
 
-    public Round createNextRound(List<String> winnersId, int roundNumber) {
-        int half = winnersId.size() / 2;
-        List<String> nextRoundMatchIds = new ArrayList<>();
-
-        for (int i = 0; i < half; i++) {
-            Match match = new Match(winnersId.get(i), winnersId.get(i + half), roundNumber);
-            matchRepository.save(match);
-            nextRoundMatchIds.add(match.getId());
-        }
-
-        return new Round(roundNumber, nextRoundMatchIds);
-    }
 
     public boolean isRoundComplete(Round round) {
         return round.getMatchIds().stream()

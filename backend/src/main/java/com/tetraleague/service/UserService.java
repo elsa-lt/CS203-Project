@@ -38,10 +38,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void deleteUserById(String id) {
-        userRepository.deleteById(id);
-    }
-
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
@@ -91,5 +87,20 @@ public class UserService {
         } else {
             return Optional.empty();  
         }
+    }
+
+    public void deleteUserById(String playerId) {
+        Player player = userRepository.findById(playerId)
+                .filter(user -> user instanceof Player)
+                .map(user -> (Player) user)
+                .orElseThrow(() -> new RuntimeException("Player not found"));
+
+        List<String> tournamentIds = player.getTournamentIds();
+
+        for (String tournamentId : tournamentIds) {
+            tournamentService.removeParticipant(tournamentId, player.getId());
+        }
+
+        userRepository.deleteById(playerId);
     }
 }

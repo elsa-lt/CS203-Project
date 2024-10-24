@@ -32,5 +32,4 @@ public class MatchService {
         match.setWinner(winnerId);
         matchRepository.save(match);
     }
-    
 }

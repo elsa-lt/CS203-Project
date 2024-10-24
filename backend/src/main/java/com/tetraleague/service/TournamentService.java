@@ -196,7 +196,7 @@ public class TournamentService {
             throw new RuntimeException("Tournament has already started");
         }
 
-        Round firstRound = roundService.createFirstRound(tournament.getPlayerIds());
+        Round firstRound = roundService.createRound(tournament.getPlayerIds(), 1);
         tournament.addRound(firstRound.getId());
 
         tournament.setStarted(true);
@@ -211,7 +211,7 @@ public class TournamentService {
             throw new RuntimeException("No rounds available in the tournament.");
         }
 
-        Round currentRound = roundService.getRoundById(rounds.get(roundNumber++ - 1));
+        Round currentRound = roundService.getRoundById(rounds.get(roundNumber - 1));
 
         if (roundService.isRoundComplete(currentRound)) {
             List<String> currentMatchIds = currentRound.getMatchIds();
@@ -223,12 +223,10 @@ public class TournamentService {
             }
 
             if (winnersId.size() == 1) {
-                tournament.setWinner(winnersId.get(0));
-                System.out.println(winnersId);
-                System.out.println("Winner: " + winnersId.get(0));
+                tournament.setWinner(winnersId.getFirst());
                 tournament.setEnded(true);
             } else {
-                Round nextRound = roundService.createNextRound(winnersId, currentRound.getRoundNumber());
+                Round nextRound = roundService.createRound(winnersId, rounds.size() + 1);
                 tournament.addRound(nextRound.getId());
             }
 

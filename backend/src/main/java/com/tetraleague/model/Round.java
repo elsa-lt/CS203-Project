@@ -13,7 +13,7 @@ public class Round {
     @Id
     private String id;
     private int roundNumber;
-    private List<String> matchIds = new ArrayList<>();
+    private List<String> matchIds;
 
     public Round(int roundNumber, List<String> matchIds) {
         this.roundNumber = roundNumber;

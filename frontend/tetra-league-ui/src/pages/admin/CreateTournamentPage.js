@@ -12,6 +12,8 @@ const CreateTournamentsPage = () => {
     rank: 'UNRANKED',
     startDate: '',
     endDate: '',
+    registrationStartDate:'',
+    registrationEndDate:'',
     prizePool: 0.0,
     imageUrl: '',
   });
@@ -48,7 +50,7 @@ const CreateTournamentsPage = () => {
     setIsLoading(true); 
 
     // Validate inputs
-    if (!tournamentDetails.name || !tournamentDetails.description || !tournamentDetails.startDate || !tournamentDetails.endDate || !tournamentDetails.maxParticipants || !tournamentDetails.rank || !tournamentDetails.imageUrl) {
+    if (!tournamentDetails.name || !tournamentDetails.description || !tournamentDetails.startDate || !tournamentDetails.endDate || !tournamentDetails.registrationStartDate || !tournamentDetails.registrationEndDate || !tournamentDetails.maxParticipants || !tournamentDetails.rank || !tournamentDetails.imageUrl) {
       setErrorMessage('Please fill out all fields and upload an image.');
       setIsLoading(false); 
       return;
@@ -70,6 +72,8 @@ const CreateTournamentsPage = () => {
           rank: 'UNRANKED',
           startDate: '',
           endDate: '',
+          registrationStartDate:'',
+          registrationEndDate:'',
           prizePool: 0.0,
           imageUrl: '',
         });
@@ -151,6 +155,31 @@ const CreateTournamentsPage = () => {
                     type="datetime-local"
                     name="endDate"
                     value={tournamentDetails.endDate}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded-lg"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6 mb-6">
+                <div className="form-group">
+                  <h2 className="text-xl font-medium">Registration Start Date</h2>
+                  <input
+                    type="datetime-local"
+                    name="registrationStartDate"
+                    value={tournamentDetails.registrationStartDate}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded-lg"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <h2 className="text-xl font-medium">Registration End Date</h2>
+                  <input
+                    type="datetime-local"
+                    name="registrationEndDate"
+                    value={tournamentDetails.registrationEndDate}
                     onChange={handleChange}
                     className="w-full p-2 border rounded-lg"
                     required

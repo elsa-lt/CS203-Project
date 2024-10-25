@@ -15,6 +15,8 @@ const EditTournament = () => {
     rank: 'UNRANKED',
     startDate: '',
     endDate: '',
+    registrationStartDate:'',
+    registrationEndDate:'',
     prizePool: 0.0,
     imageUrl: '',
   });
@@ -54,6 +56,7 @@ const EditTournament = () => {
   const saveEdits = async () => {
     if (token && !isSaving) {
       setIsSaving(true); // Set saving to true
+      console.log("Form Data before saving:", formData); // Debugging log
       try {
         console.log("Attempting to edit tournament details for tournament ID:", id);
         const response = await axios.put(`http://localhost:8080/api/tournaments/${id}`, formData, {
@@ -180,6 +183,28 @@ const EditTournament = () => {
                   type="datetime-local"
                   name="endDate"
                   value={formData.endDate || ''}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                />
+              </div>
+
+              <div className="form-group">
+                <h2>Registration Start Date</h2>
+                <input
+                  type="datetime-local"
+                  name="registrationStartDate"
+                  value={formData.registrationStartDate || ''}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                />
+              </div>
+
+              <div className="form-group">
+                <h2>Registration End Date</h2>
+                <input
+                  type="datetime-local"
+                  name="registrationEndDate"
+                  value={formData.registrationEndDate || ''}
                   onChange={handleChange}
                   disabled={!isEditing}
                 />

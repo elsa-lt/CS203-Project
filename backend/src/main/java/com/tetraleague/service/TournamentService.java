@@ -64,6 +64,15 @@ public class TournamentService {
         if (!isPowerOfTwo(tournament.getMaxParticipants())) {
             throw new IllegalArgumentException("Number of participants must be a power of 2.");
         }
+        if (tournament.getRegistrationStartDate().isAfter(tournament.getRegistrationEndDate())) {
+            throw new IllegalArgumentException("Registration start date cannot be after registration end date.");
+        }
+        if (tournament.getRegistrationStartDate().isAfter(tournament.getStartDate())) {
+            throw new IllegalArgumentException("Registration start date cannot be after tournament start date.");
+        }
+        if (tournament.getRegistrationEndDate().isAfter(tournament.getStartDate())) {
+            throw new IllegalArgumentException("Registration end date cannot be after tournament start date.");
+        }
         if (tournament.getStartDate().isAfter(tournament.getEndDate())) {
             throw new IllegalArgumentException("Start date cannot be after end date.");
         }
@@ -98,6 +107,8 @@ public class TournamentService {
         tournament.setMaxParticipants(updatedTournament.getMaxParticipants());
         tournament.setStartDate(updatedTournament.getStartDate());
         tournament.setEndDate(updatedTournament.getEndDate());
+        tournament.setRegistrationStartDate(updatedTournament.getRegistrationStartDate());
+        tournament.setRegistrationEndDate(updatedTournament.getRegistrationEndDate());
         tournament.setImageUrl(updatedTournament.getImageUrl());
         tournament.setPrizePool(updatedTournament.getPrizePool());
         tournament.setRank(updatedTournament.getRank());
@@ -139,7 +150,10 @@ public class TournamentService {
     
     public Tournament addParticipant(String tournamentId, String playerId) {
         Tournament tournament = getTournamentById(tournamentId);
-    
+
+        if (tournament.registrationClosed()) {
+            throw new RuntimeException("Tournament Registration has closed");
+        }
         if (tournament.hasEnded()) {
             throw new RuntimeException("Tournament has already ended");
         }
@@ -160,8 +174,12 @@ public class TournamentService {
             throw new RuntimeException("Player's Rank is not the allowed rank for this tournament");
         }
     
-        tournament.addParticipant(playerId);
-        return tournamentRepository.save(tournament);
+        if (tournament.registrationOpen()) {
+            tournament.addParticipant(playerId);
+            return tournamentRepository.save(tournament);
+        } else {
+            throw new RuntimeException("Registration is not open yet");
+        }
     }
 
     public Tournament removeParticipant (String tournamentId, String playerId) {

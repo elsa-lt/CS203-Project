@@ -27,6 +27,12 @@ public class Tournament {
     @NotNull(message = "Number of participants is required")
     private Integer maxParticipants;
 
+    @NotNull(message = "Start registration date is required")
+    private LocalDateTime registrationStartDate;
+
+    @NotNull(message = "End registation date is required")
+    private LocalDateTime registrationEndDate;
+
     @NotNull(message = "Start date is required")
     private LocalDateTime startDate;
 
@@ -68,6 +74,14 @@ public class Tournament {
         return started || LocalDateTime.now().isAfter(startDate);
     }
 
+    public boolean registrationOpen() {
+        return LocalDateTime.now().isAfter(registrationStartDate);
+    }
+
+    public boolean registrationClosed() {
+        return LocalDateTime.now().isAfter(registrationEndDate);
+    }
+
     public void startTournament() {
         this.started = true;
     }
@@ -75,7 +89,6 @@ public class Tournament {
     public void addRound(Round round) {
         rounds.add(round);
     }
-    
     
     public Round getCurrentRound() {
         return rounds.isEmpty() ? null : rounds.get(rounds.size() - 1);
@@ -106,5 +119,13 @@ public class Tournament {
 
     public boolean hasRounds() {
         return !rounds.isEmpty();
+    }
+
+    public void setRegistrationStartDate(LocalDateTime input) {
+        this.registrationStartDate = input;
+    }
+
+    public void setRegistrationEndDate(LocalDateTime input) {
+        this.registrationEndDate = input;
     }
 }
